@@ -61,7 +61,7 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
     public CompletableFuture<Object> shutdown() {
         logger.info("shutting down language server");
 //        return CompletableFuture.completedFuture(null);
-        return null;
+        return CompletableFuture.completedFuture(null);
     }
 
     //@Override

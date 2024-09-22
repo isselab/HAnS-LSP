@@ -12,8 +12,7 @@ import org.slf4j.LoggerFactory;
 import se.isselab.HAnS.codeAnnotation.FeatureModelTree;
 
 public class HAnSTextDocumentService implements TextDocumentService {
-
-    private static final Logger logger = LoggerFactory.getLogger(HAnSLanguageServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(HAnSTextDocumentService.class);
     private HAnSLanguageServer langugageServer;
     private FeatureModelTree tree;
 
@@ -66,17 +65,17 @@ public class HAnSTextDocumentService implements TextDocumentService {
         return null;
     }
 
-    @Override
+//    @Override
     public CompletableFuture<Hover> hover(TextDocumentPositionParams textDocumentPositionParams) {
         return null;
     }
 
-    @Override
+//    @Override
     public CompletableFuture<SignatureHelp> signatureHelp(TextDocumentPositionParams textDocumentPositionParams) {
         return null;
     }
 
-    @Override
+//    @Override
     public CompletableFuture<List<? extends Location>> definition(TextDocumentPositionParams textDocumentPositionParams) {
         return null;
     }
@@ -86,20 +85,20 @@ public class HAnSTextDocumentService implements TextDocumentService {
         return null;
     }
 
-    @Override
+//    @Override
     public CompletableFuture<List<? extends DocumentHighlight>> documentHighlight(TextDocumentPositionParams textDocumentPositionParams) {
         return null;
     }
 
-    @Override
-    public CompletableFuture<List<? extends SymbolInformation>> documentSymbol(DocumentSymbolParams documentSymbolParams) {
-        return null;
-    }
-
-    @Override
-    public CompletableFuture<List<? extends Command>> codeAction(CodeActionParams codeActionParams) {
-        return null;
-    }
+//    @Override
+//    public CompletableFuture<List<? extends SymbolInformation>> documentSymbol(DocumentSymbolParams documentSymbolParams) {
+//        return null;
+//    }
+//
+//    @Override
+//    public CompletableFuture<List<? extends Command>> codeAction(CodeActionParams codeActionParams) {
+//        return null;
+//    }
 
     @Override
     public CompletableFuture<List<? extends CodeLens>> codeLens(CodeLensParams codeLensParams) {
