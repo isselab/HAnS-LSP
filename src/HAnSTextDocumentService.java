@@ -4,9 +4,16 @@ import org.eclipse.lsp4j.*;
 
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import se.isselab.HAnS.codeAnnotation.FeatureModelTree;
@@ -15,6 +22,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private static final Logger logger = LoggerFactory.getLogger(HAnSTextDocumentService.class);
     private HAnSLanguageServer langugageServer;
     private FeatureModelTree tree;
+    private String eingabe;
 
     public HAnSTextDocumentService(HAnSLanguageServer x, FeatureModelTree y ){
         this.langugageServer = x;
@@ -60,16 +68,83 @@ public class HAnSTextDocumentService implements TextDocumentService {
         });
     }
 
+
+
     @Override
     public CompletableFuture<CompletionItem> resolveCompletionItem(CompletionItem completionItem) {
         return null;
     }
 
-//    @Override
-    public CompletableFuture<Hover> hover(TextDocumentPositionParams textDocumentPositionParams) {
-        return null;
+    @Override
+    public CompletableFuture<Hover> hover(HoverParams params) {
+
+        return CompletableFuture.supplyAsync(() -> {
+            int nextline= 0;
+            int line = params.getPosition().getLine();
+            int cha = params.getPosition().getCharacter();
+            TextDocumentIdentifier doc = params.getTextDocument();
+            String workline = null;
+            try {
+                BufferedReader text = new BufferedReader( new FileReader(doc.getUri()));
+                while ((nextline-1) <= line) {
+                    workline = text.readLine();
+                    nextline++;
+                }
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if(workline != null) {
+                return existiertImString(workline, cha);
+
+            }
+            return null;
+        });
     }
 
+    private Hover existiertImString(String eingabe, int cha){
+        Hover hover = null;
+        ArrayList<String> check = new ArrayList<String>();
+        ArrayList<String> vorhanden = new ArrayList<String>();
+        check.add("$Begin");
+        check.add("$End");
+        check.add("$Line");
+
+        check.addAll(tree.PreorderNames());
+
+        for(int i = 0; i < check.size(); i++){
+            if (eingabe.contains(check.get(i))){
+                vorhanden.add(check.get(i));
+            }
+        }
+
+        for(int i = 0; i < vorhanden.size(); i++){
+            if ( eingabe.indexOf(vorhanden.get(i)) <  cha && cha < eingabe.indexOf(vorhanden.get(i))+vorhanden.get(i).length() ){
+                switch (vorhanden.get(i)){
+                    case "$Begin":
+                          hover = new Hover(
+                            new MarkupContent(MarkupKind.PLAINTEXT,"Beginning of a Feature annotation block"));
+
+                        break;
+                    case "$End":
+                          hover = new Hover(
+                            new MarkupContent(MarkupKind.PLAINTEXT,"End of a Feature annotation block"));
+                        break;
+                    case "$Line":
+                          hover = new Hover(
+                            new MarkupContent(MarkupKind.PLAINTEXT,"Feature Line annotation"));
+                        break;
+                    default:
+                        hover = new Hover(
+                                new MarkupContent(MarkupKind.PLAINTEXT,"a Feature")
+                        );
+                }
+
+            }
+        }
+        return hover;
+    }
 //    @Override
     public CompletableFuture<SignatureHelp> signatureHelp(TextDocumentPositionParams textDocumentPositionParams) {
         return null;

@@ -1,6 +1,7 @@
 package se.isselab.HAnS.codeAnnotation;
 
-import java.nio.file.Path;
+
+
 import java.util.ArrayList;
 
 public class FeatureModelTree {
@@ -47,4 +48,16 @@ public class FeatureModelTree {
     public FeatureLocation getLocation() {
         return location;
     }
+    public ArrayList<String> PreorderNames(){
+        ArrayList<String> list = new ArrayList<>();
+        addName(list, this);
+        return list;
+    }
+    private void addName(ArrayList<String> names, FeatureModelTree fmt) {
+        names.add(this.name);
+        for (int i = 0; i < fmt.getSubfeatures().size(); i++) {
+            addName(names,fmt.getSubfeatures().get(i));
+        }
+    }
+
 }
