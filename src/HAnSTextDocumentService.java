@@ -24,7 +24,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private FeatureModelTree tree;
     private String eingabe;
 
-    public HAnSTextDocumentService(HAnSLanguageServer x, FeatureModelTree y ){
+    public HAnSTextDocumentService(HAnSLanguageServer x, FeatureModelTree y) {
         this.langugageServer = x;
         this.tree = y;
     }
@@ -69,7 +69,6 @@ public class HAnSTextDocumentService implements TextDocumentService {
     }
 
 
-
     @Override
     public CompletableFuture<CompletionItem> resolveCompletionItem(CompletionItem completionItem) {
         return null;
@@ -79,14 +78,14 @@ public class HAnSTextDocumentService implements TextDocumentService {
     public CompletableFuture<Hover> hover(HoverParams params) {
 
         return CompletableFuture.supplyAsync(() -> {
-            int nextline= 0;
+            int nextline = 0;
             int line = params.getPosition().getLine();
             int cha = params.getPosition().getCharacter();
             TextDocumentIdentifier doc = params.getTextDocument();
             String workline = null;
             try {
-                BufferedReader text = new BufferedReader( new FileReader(doc.getUri()));
-                while ((nextline-1) <= line) {
+                BufferedReader text = new BufferedReader(new FileReader(doc.getUri()));
+                while ((nextline - 1) <= line) {
                     workline = text.readLine();
                     nextline++;
                 }
@@ -95,7 +94,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            if(workline != null) {
+            if (workline != null) {
                 return existiertImString(workline, cha);
 
             }
@@ -103,41 +102,41 @@ public class HAnSTextDocumentService implements TextDocumentService {
         });
     }
 
-    private Hover existiertImString(String eingabe, int cha){
+    private Hover existiertImString(String input, int cha) {
         Hover hover = null;
-        ArrayList<String> check = new ArrayList<String>();
-        ArrayList<String> vorhanden = new ArrayList<String>();
-        check.add("$Begin");
-        check.add("$End");
-        check.add("$Line");
+        ArrayList<String> toCheck = new ArrayList<String>();
+        ArrayList<String> isAvailable = new ArrayList<String>();
+        toCheck.add("$Begin");
+        toCheck.add("$End");
+        toCheck.add("$Line");
 
-        check.addAll(tree.PreorderNames());
+        toCheck.addAll(tree.PreorderNames());
 
-        for(int i = 0; i < check.size(); i++){
-            if (eingabe.contains(check.get(i))){
-                vorhanden.add(check.get(i));
+        for (int i = 0; i < toCheck.size(); i++) {
+            if (input.contains(toCheck.get(i))) {
+                isAvailable.add(toCheck.get(i));
             }
         }
 
-        for(int i = 0; i < vorhanden.size(); i++){
-            if ( eingabe.indexOf(vorhanden.get(i)) <  cha && cha < eingabe.indexOf(vorhanden.get(i))+vorhanden.get(i).length() ){
-                switch (vorhanden.get(i)){
+        for (int i = 0; i < isAvailable.size(); i++) {
+            if (input.indexOf(isAvailable.get(i)) < cha && cha < input.indexOf(isAvailable.get(i)) + isAvailable.get(i).length()) {
+                switch (isAvailable.get(i)) {
                     case "$Begin":
-                          hover = new Hover(
-                            new MarkupContent(MarkupKind.PLAINTEXT,"Beginning of a Feature annotation block"));
+                        hover = new Hover(
+                                new MarkupContent(MarkupKind.PLAINTEXT, "Beginning of a Feature annotation block"));
 
                         break;
                     case "$End":
-                          hover = new Hover(
-                            new MarkupContent(MarkupKind.PLAINTEXT,"End of a Feature annotation block"));
+                        hover = new Hover(
+                                new MarkupContent(MarkupKind.PLAINTEXT, "End of a Feature annotation block"));
                         break;
                     case "$Line":
-                          hover = new Hover(
-                            new MarkupContent(MarkupKind.PLAINTEXT,"Feature Line annotation"));
+                        hover = new Hover(
+                                new MarkupContent(MarkupKind.PLAINTEXT, "Feature Line annotation"));
                         break;
                     default:
                         hover = new Hover(
-                                new MarkupContent(MarkupKind.PLAINTEXT,"a Feature")
+                                new MarkupContent(MarkupKind.PLAINTEXT, "a Feature")
                         );
                 }
 
@@ -145,22 +144,91 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
         return hover;
     }
-//    @Override
+
+    //    @Override
     public CompletableFuture<SignatureHelp> signatureHelp(TextDocumentPositionParams textDocumentPositionParams) {
         return null;
     }
 
-//    @Override
+    //    @Override
     public CompletableFuture<List<? extends Location>> definition(TextDocumentPositionParams textDocumentPositionParams) {
         return null;
     }
 
     @Override
     public CompletableFuture<List<? extends Location>> references(ReferenceParams referenceParams) {
+        String documentUri = referenceParams.getTextDocument().getUri();
+        Position position = referenceParams.getPosition();
+
+        String documentText = getDocumentText(documentUri);
+
+        // Extract the symbol at the given position
+        String symbol = extractSymbolAtPosition(documentText, position);
+
+        // Find references to the symbol
+        List<Location> referenceLocations = findSymbolOccurrences(documentUri, documentText, symbol);
+
+        logger.info("Found references for symbol {}: {}", symbol, referenceLocations);
+
+        return CompletableFuture.completedFuture(referenceLocations);
+    }
+
+    private Hover onRightClick(String selectedText, int cha) {
+        List<String> keywords = new ArrayList<String>() {{
+            add("$Begin");
+            add("$End");
+            add("$Line");
+            addAll(tree.PreorderNames());
+        }};
+
+        List<String> availableKeywords = new ArrayList<>();
+        for (String keyword : keywords) {
+            if (selectedText.contains(keyword)) {
+                availableKeywords.add(keyword);
+            }
+        }
+
+        for (String keyword : availableKeywords) {
+            int startIndex = selectedText.indexOf(keyword);
+            int endIndex = startIndex + keyword.length();
+
+            if (startIndex < cha && cha < endIndex) {
+                return createHoverForKeyword(keyword);
+            }
+        }
+
         return null;
     }
 
-//    @Override
+    private Hover createHoverForKeyword(String keyword) {
+        MarkupContent markupContent = new MarkupContent();
+        markupContent.setKind(MarkupKind.MARKDOWN);
+
+        switch (keyword) {
+            default:
+                String featureDefinition = getFeatureDefinition(keyword);
+                if (featureDefinition != null) {
+                    markupContent.setValue("Feature definition: " + featureDefinition);
+                } else {
+                    markupContent.setValue("Feature not defined.");
+                }
+                break;
+        }
+
+        Hover hover = new Hover();
+        hover.setContents(Either.forLeft(Collections.singletonList(Either.forLeft(markupContent))));
+        return hover;
+    }
+
+    private String getFeatureDefinition(String featureName) {
+        // Mock method: In an actual implementation, this should retrieve the definition from the feature model tree or symbol table
+        // For demonstration, we return a simple string. Replace this logic as needed.
+
+        return tree.getLocation().toString();
+
+    }
+
+    //    @Override
     public CompletableFuture<List<? extends DocumentHighlight>> documentHighlight(TextDocumentPositionParams textDocumentPositionParams) {
         return null;
     }
@@ -220,7 +288,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
         String uri = params.getTextDocument().getUri();
         List<TextDocumentContentChangeEvent> changes = params.getContentChanges();
 
-        for(TextDocumentContentChangeEvent change : changes){
+        for (TextDocumentContentChangeEvent change : changes) {
             String newText = change.getText();
         }
         logger.info("File has been changed : {}", params);
