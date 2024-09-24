@@ -157,23 +157,23 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
     @Override
     public CompletableFuture<List<? extends Location>> references(ReferenceParams referenceParams) {
-        String documentUri = referenceParams.getTextDocument().getUri();
-        Position position = referenceParams.getPosition();
-
-        String documentText = getDocumentText(documentUri);
-
-        // Extract the symbol at the given position
-        String symbol = extractSymbolAtPosition(documentText, position);
-
-        // Find references to the symbol
-        List<Location> referenceLocations = findSymbolOccurrences(documentUri, documentText, symbol);
-
-        logger.info("Found references for symbol {}: {}", symbol, referenceLocations);
-
-        return CompletableFuture.completedFuture(referenceLocations);
+//        String documentUri = referenceParams.getTextDocument().getUri();
+//        Position position = referenceParams.getPosition();
+//
+//        String documentText = getDocumentText(documentUri);
+//
+//        // Extract the symbol at the given position
+//        String symbol = extractSymbolAtPosition(documentText, position);
+//
+//        // Find references to the symbol
+//        List<Location> referenceLocations = findSymbolOccurrences(documentUri, documentText, symbol);
+//
+//        logger.info("Found references for symbol {}: {}", symbol, referenceLocations);
+//
+//        return CompletableFuture.completedFuture(referenceLocations);
+        return null;
     }
-
-    private Hover onRightClick(String selectedText, int cha) {
+    private Hover hoverForReferences(String selectedText, int cha) {
         List<String> keywords = new ArrayList<String>() {{
             add("$Begin");
             add("$End");
@@ -208,15 +208,14 @@ public class HAnSTextDocumentService implements TextDocumentService {
             default:
                 String featureDefinition = getFeatureDefinition(keyword);
                 if (featureDefinition != null) {
-                    markupContent.setValue("Feature definition: " + featureDefinition);
+                    markupContent.setValue("Feature reference: " + featureDefinition);
                 } else {
                     markupContent.setValue("Feature not defined.");
                 }
                 break;
         }
 
-        Hover hover = new Hover();
-        hover.setContents(Either.forLeft(Collections.singletonList(Either.forLeft(markupContent))));
+        Hover hover = new Hover(markupContent);
         return hover;
     }
 
@@ -224,6 +223,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
         // Mock method: In an actual implementation, this should retrieve the definition from the feature model tree or symbol table
         // For demonstration, we return a simple string. Replace this logic as needed.
 
+        //TODO: fix this return
         return tree.getLocation().toString();
 
     }
