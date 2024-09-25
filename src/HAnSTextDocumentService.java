@@ -5,13 +5,15 @@ import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -23,6 +25,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private HAnSLanguageServer langugageServer;
     private FeatureModelTree tree;
     private String eingabe;
+    private Path currdoc;
 
     public HAnSTextDocumentService(HAnSLanguageServer x, FeatureModelTree y) {
         this.langugageServer = x;
@@ -95,13 +98,13 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 throw new RuntimeException(e);
             }
             if (workline != null) {
-                return existiertImString(workline, cha);
+                return hoverForReferences(workline, cha);
 
             }
             return null;
         });
     }
-
+/*
     private Hover existiertImString(String input, int cha) {
         Hover hover = null;
         ArrayList<String> toCheck = new ArrayList<String>();
@@ -120,6 +123,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
         for (int i = 0; i < isAvailable.size(); i++) {
             if (input.indexOf(isAvailable.get(i)) < cha && cha < input.indexOf(isAvailable.get(i)) + isAvailable.get(i).length()) {
+
                 switch (isAvailable.get(i)) {
                     case "$Begin":
                         hover = new Hover(
@@ -135,8 +139,9 @@ public class HAnSTextDocumentService implements TextDocumentService {
                                 new MarkupContent(MarkupKind.PLAINTEXT, "Feature Line annotation"));
                         break;
                     default:
+                        String featureDefinition = getFeatureDefinition(isAvailable.get(i));
                         hover = new Hover(
-                                new MarkupContent(MarkupKind.PLAINTEXT, "a Feature")
+                                new MarkupContent(MarkupKind.PLAINTEXT, "a Feature \n \"Feature reference: \"" + featureDefinition)
                         );
                 }
 
@@ -144,11 +149,14 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
         return hover;
     }
+*/
 
     //    @Override
     public CompletableFuture<SignatureHelp> signatureHelp(TextDocumentPositionParams textDocumentPositionParams) {
         return null;
     }
+
+
 
     //    @Override
     public CompletableFuture<List<? extends Location>> definition(TextDocumentPositionParams textDocumentPositionParams) {
@@ -205,10 +213,19 @@ public class HAnSTextDocumentService implements TextDocumentService {
         markupContent.setKind(MarkupKind.MARKDOWN);
 
         switch (keyword) {
+            case "$Begin":
+                markupContent.setValue("Beginning of a Feature annotation block");
+                break;
+            case "$End":
+                markupContent.setValue ("End of a Feature annotation block");
+                break;
+            case "$Line":
+                markupContent.setValue("Feature Line annotation");
+                break;
             default:
                 String featureDefinition = getFeatureDefinition(keyword);
                 if (featureDefinition != null) {
-                    markupContent.setValue("Feature reference: " + featureDefinition);
+                    markupContent.setValue("a Feature \n \"Feature reference: \"" + featureDefinition);
                 } else {
                     markupContent.setValue("Feature not defined.");
                 }
@@ -222,10 +239,33 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private String getFeatureDefinition(String featureName) {
         // Mock method: In an actual implementation, this should retrieve the definition from the feature model tree or symbol table
         // For demonstration, we return a simple string. Replace this logic as needed.
+        FeatureModelTree h = searchForTree(tree,featureName);
+        if (h!= null) {
+            return h.getLocation().getLocation() +" Line:"+ h.getLocation().getLineBegin();
+        }
 
         //TODO: fix this return
-        return tree.getLocation().toString();
+        return null;
 
+    }
+
+    private FeatureModelTree searchForTree(FeatureModelTree tree, String name) {
+
+        if (Objects.equals(tree.getName(), name)) {
+            return tree;
+        }
+        if (tree.getSubfeatures().isEmpty()){
+            return null;
+        }
+        else {
+            for (FeatureModelTree tree1 : tree.getSubfeatures()) {
+                FeatureModelTree tree2 = searchForTree(tree1, name);
+                if (tree2 != null){
+                    return tree2;
+                }
+            }
+            return null;
+        }
     }
 
     //    @Override
@@ -233,6 +273,30 @@ public class HAnSTextDocumentService implements TextDocumentService {
         return null;
     }
 
+    private void buildTree(){
+        int nextline = 0;
+        String workline = "";
+        int r =0;
+        ArrayList<String> pattern = new ArrayList<>();
+        pattern.add("//\\$Begin\\[[a-z]*]");
+        pattern.add("//\\$End\\[[a-z]*]");
+        pattern.add("//\\$Line\\[[a-z]*]");
+        try {
+            BufferedReader text = new BufferedReader(new FileReader(new File(currdoc.toString())));
+            while (workline != null) {
+                workline = text.readLine();
+                nextline++;
+                // check workline for regex
+
+
+                //workline.matches(p1);
+
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 //    @Override
 //    public CompletableFuture<List<? extends SymbolInformation>> documentSymbol(DocumentSymbolParams documentSymbolParams) {
 //        return null;
@@ -276,9 +340,9 @@ public class HAnSTextDocumentService implements TextDocumentService {
     @Override
     public void didOpen(DidOpenTextDocumentParams params) {
 
+        currdoc = Path.of(params.getTextDocument().getUri());
         String uri = params.getTextDocument().getUri();
-        String text = params.getTextDocument().getText();
-        logger.info("File has been opened : {}", params);
+        logger.info("File has been opened : {}", uri);
 
     }
 
