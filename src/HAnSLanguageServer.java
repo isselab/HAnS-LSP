@@ -23,7 +23,7 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
     private FeatureModelTree tree;
 
     public HAnSLanguageServer() {
-        this.tree = new FeatureModelTree();
+        this.tree = new FeatureModelTree(null);
         this.tdservice = new HAnSTextDocumentService(this, tree);
         this.wsservice = new HAnSWorkSpaceService(this, tree);
     }

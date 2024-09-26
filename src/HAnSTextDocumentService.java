@@ -24,12 +24,14 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private static final Logger logger = LoggerFactory.getLogger(HAnSTextDocumentService.class);
     private HAnSLanguageServer langugageServer;
     private FeatureModelTree tree;
+    private FeatureModelTree currtree;
     private String eingabe;
     private Path currdoc;
 
     public HAnSTextDocumentService(HAnSLanguageServer x, FeatureModelTree y) {
         this.langugageServer = x;
         this.tree = y;
+        this.currtree = tree;
     }
 
 
@@ -157,7 +159,6 @@ public class HAnSTextDocumentService implements TextDocumentService {
     }
 
 
-
     //    @Override
     public CompletableFuture<List<? extends Location>> definition(TextDocumentPositionParams textDocumentPositionParams) {
         return null;
@@ -181,6 +182,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
 //        return CompletableFuture.completedFuture(referenceLocations);
         return null;
     }
+
     private Hover hoverForReferences(String selectedText, int cha) {
         List<String> keywords = new ArrayList<String>() {{
             add("$Begin");
@@ -217,7 +219,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 markupContent.setValue("Beginning of a Feature annotation block");
                 break;
             case "$End":
-                markupContent.setValue ("End of a Feature annotation block");
+                markupContent.setValue("End of a Feature annotation block");
                 break;
             case "$Line":
                 markupContent.setValue("Feature Line annotation");
@@ -239,9 +241,9 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private String getFeatureDefinition(String featureName) {
         // Mock method: In an actual implementation, this should retrieve the definition from the feature model tree or symbol table
         // For demonstration, we return a simple string. Replace this logic as needed.
-        FeatureModelTree h = searchForTree(tree,featureName);
-        if (h!= null) {
-            return h.getLocation().getLocation() +" Line:"+ h.getLocation().getLineBegin();
+        FeatureModelTree h = searchForTree(tree, featureName);
+        if (h != null) {
+            return h.getLocation().getLocation() + " Line:" + h.getLocation().getLineBegin();
         }
 
         //TODO: fix this return
@@ -254,13 +256,12 @@ public class HAnSTextDocumentService implements TextDocumentService {
         if (Objects.equals(tree.getName(), name)) {
             return tree;
         }
-        if (tree.getSubfeatures().isEmpty()){
+        if (tree.getSubfeatures().isEmpty()) {
             return null;
-        }
-        else {
+        } else {
             for (FeatureModelTree tree1 : tree.getSubfeatures()) {
                 FeatureModelTree tree2 = searchForTree(tree1, name);
-                if (tree2 != null){
+                if (tree2 != null) {
                     return tree2;
                 }
             }
@@ -268,35 +269,103 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
     }
 
+
     //    @Override
     public CompletableFuture<List<? extends DocumentHighlight>> documentHighlight(TextDocumentPositionParams textDocumentPositionParams) {
         return null;
     }
-
-    private void buildTree(){
-        int nextline = 0;
+    //$begin[parserdocument]
+    private void buildTree() {
+        int nextline = 1;
         String workline = "";
-        int r =0;
+        int r = 0;
         ArrayList<String> pattern = new ArrayList<>();
-        pattern.add("//\\$Begin\\[[a-z]*]");
-        pattern.add("//\\$End\\[[a-z]*]");
-        pattern.add("//\\$Line\\[[a-z]*]");
+        pattern.add("[.]*//\\$Begin\\[[a-z]*][.]*");
+        pattern.add("[.]*//\\$End\\[[a-z]*][.]*");
+        pattern.add("[.]*//\\$Line\\[[a-z]*][.]*");
         try {
             BufferedReader text = new BufferedReader(new FileReader(new File(currdoc.toString())));
+            workline = text.readLine();
             while (workline != null) {
+
+                // check workline for regex
+                for (String i : pattern) {
+                    String check = workline.strip();
+                    if (check.matches(i)) {
+                        int pos = 0;
+                        pos = workline.indexOf("//$Begin[") + 9;
+                        char n = workline.charAt(pos);
+                        String FeatureName = "";
+                        switch (pattern.indexOf(i)) {
+                            case 0:
+
+                                while(n != ']'){
+                                    FeatureName += Character.toString(n);
+                                    pos++;
+                                    n = workline.charAt(pos);
+                                }
+                                if (!FeatureName.isEmpty()) {
+                                    FeatureName = "undefinedName";
+                                }
+                                FeatureModelTree next = new FeatureModelTree(currtree,FeatureName,new FeatureLocation(currdoc,nextline-1));
+                                currtree.append(next);
+                                currtree = next;
+                                break;
+                            case 1:
+                                while(n != ']'){
+                                FeatureName += Character.toString(n);
+                                pos++;
+                                n = workline.charAt(pos);
+                                if (!FeatureName.isEmpty()) {
+                                    FeatureName = "undefinedName";
+                                }
+                                FeatureModelTree help = searchForTree(tree, FeatureName);
+                                if (help != null) {
+                                    help.getLocation().setLineEnd(nextline-1);
+                                    currtree = currtree.getParent();
+                                }
+                                else{
+                                    logger.info("missing $begin[] statement");
+                                    //fehler merken
+                                    //end statemente at line nextline-1 missing $begin
+                                }
+                            }
+                                break;
+                            case 2:
+                                while(n != ']'){
+                                    FeatureName += Character.toString(n);
+                                    pos++;
+                                    n = workline.charAt(pos);
+                                }
+                                if (!FeatureName.isEmpty()) {
+                                    FeatureName = "undefinedName";
+                                }
+                                FeatureModelTree help2 = new FeatureModelTree(currtree,FeatureName,new FeatureLocation(currdoc,nextline-1,nextline-1));
+                                currtree.append(help2);
+                                break;
+                                default:
+                                    logger.info("parsing error at"+ (nextline-1));
+                                    break;
+
+                        }
+                    }
+                }
                 workline = text.readLine();
                 nextline++;
-                // check workline for regex
 
 
-                //workline.matches(p1);
 
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
+        /*
+        if(!checkTree()){
+            //return errorreport
+        }
+        */
     }
+//$End[parserdocument]
 //    @Override
 //    public CompletableFuture<List<? extends SymbolInformation>> documentSymbol(DocumentSymbolParams documentSymbolParams) {
 //        return null;

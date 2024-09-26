@@ -4,8 +4,8 @@ import java.nio.file.Path;
 
 public class FeatureLocation {
     private Path location;
-    private int lineBegin;
-    private int lineEnd;
+    private int lineBegin = -1;
+    private int lineEnd = -1;
 
     public FeatureLocation(Path location) {
         this.location = location;
@@ -33,5 +33,15 @@ public class FeatureLocation {
     }
     public boolean isSingelLine(){
         return (lineBegin == lineEnd);
+    }
+
+    public void setLineBegin(int lineBegin) {
+        this.lineBegin = lineBegin;
+    }
+    public void setLineEnd(int lineEnd) {
+        this.lineEnd = lineEnd;
+    }
+    public boolean hasLines(){
+        return lineBegin != -1 && lineEnd != -1;
     }
 }

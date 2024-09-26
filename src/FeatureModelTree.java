@@ -8,15 +8,17 @@ public class FeatureModelTree {
     private String name;
     private ArrayList<FeatureModelTree> subfeatures;
     private FeatureLocation location;
-    public FeatureModelTree() {
+    private FeatureModelTree parent;
+    public FeatureModelTree(FeatureModelTree parent) {
         subfeatures = new ArrayList<FeatureModelTree>();
+        this.parent = parent;
     }
-    public FeatureModelTree(String name) {
-        this();
+    public FeatureModelTree(FeatureModelTree parent,String name) {
+        this(parent);
         this.name = name;
     }
-    public FeatureModelTree(String name, FeatureLocation location) {
-        this();
+    public FeatureModelTree(FeatureModelTree parent,String name, FeatureLocation location) {
+        this(parent);
         this.name = name;
         this.location = location;
     }
@@ -37,7 +39,7 @@ public class FeatureModelTree {
         return subfeatures.contains(fmt);
     }
     public synchronized void addSubFeature(String name) {
-        subfeatures.add(new FeatureModelTree(name));
+        subfeatures.add(new FeatureModelTree(this,name));
     }
     public synchronized void rename(String name) {
             this.name=name;
@@ -60,4 +62,24 @@ public class FeatureModelTree {
         }
     }
 
+    public FeatureModelTree getParent() {
+        return parent;
+    }
+    public boolean istlocationcorrect (){
+        return location.getLineBegin() != -1 && location.getLineEnd() != -1;
+    }
+    public boolean checkTree(){
+        if (subfeatures.isEmpty()){
+            return location.hasLines();
+            // we could also check for a name that ist not "undefinedName"
+        }
+        for (FeatureModelTree fmt:subfeatures){
+           if(!fmt.checkTree() || !fmt.istlocationcorrect()){
+               return false;
+           }
+
+        }
+        return true;
+
+    }
 }
