@@ -3,7 +3,7 @@ grammar FeatureTree;
 
 //Parser rules
 featuretree:  feature |
-            featuretree (WS OPTIONAL)? ((WS featuretree )+ | (WS featuretree )* (LO (featuretree)(WS featuretree)+))
+            feature ((WS featuretree )+ | (WS featuretree )* (LO (featuretree)(WS featuretree)+))
 ;
 
 feature: FEATURENAME (WS OPTIONAL )?;
