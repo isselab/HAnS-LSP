@@ -2,7 +2,11 @@ package se.isselab.HAnS.codeAnnotation;// Generated from C:/Users/Taymo/Document
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class provides an empty implementation of {@link FeatureTreeListener},
@@ -16,7 +20,25 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFeaturetree(FeatureTreeParser.FeaturetreeContext ctx) { }
+	ArrayList<FeatureModelTree> trees;
+	ArrayList<String> features;
+
+	public FeatureTreeBaseListener(ArrayList<FeatureModelTree> trees, ArrayList<String> features) {
+		this.trees = trees;
+		this.features = features;
+	}
+	@Override public void enterFeaturetree(FeatureTreeParser.FeaturetreeContext ctx) {
+		FeatureModelTree t = new FeatureModelTree(null,ctx.getChild(0).getText());
+		List<ParseTree> ruletree = ctx.children;
+		for (ParseTree parseTree : ruletree) {
+			FeatureModelTree h = new FeatureModelTree(t);
+			t.append(h);
+			}
+		trees.add(t);
+		}
+		//baum erstellen namen suchen auf jeziger regel (feature)
+		//children nach subfeatures nach namen durchsuchen (feature, featuretree -> feature)(ghet nicht)
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -28,7 +50,10 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFeature(FeatureTreeParser.FeatureContext ctx) { }
+	@Override public void enterFeature(FeatureTreeParser.FeatureContext ctx) {
+		features.add(ctx.getChild(0).getText());
+		//feature namen sind in depth first search daher linksableitung
+	}
 	/**
 	 * {@inheritDoc}
 	 *

@@ -33,6 +33,14 @@ public class HAnSTextDocumentService implements TextDocumentService {
         this.tree = y;
         this.currtree = tree;
     }
+    public void parseFeaturetree(){
+        //walker erstellen listener erstellen
+    }
+
+    public void findnextfeaturetree(){
+        //nächsten gültigen featuretree finded
+    }
+
 
 
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams completionParams) {
@@ -62,6 +70,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 completionItem1.setKind(CompletionItemKind.Snippet);
                 completionItem1.setDetail("Creating a new Line Annotation");
                 completionItems.add(completionItem1);
+
+                //completion für featureliste
 
 
             } catch (Exception e) {
@@ -106,52 +116,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
             return null;
         });
     }
-/*
-    private Hover existiertImString(String input, int cha) {
-        Hover hover = null;
-        ArrayList<String> toCheck = new ArrayList<String>();
-        ArrayList<String> isAvailable = new ArrayList<String>();
-        toCheck.add("$Begin");
-        toCheck.add("$End");
-        toCheck.add("$Line");
 
-        toCheck.addAll(tree.PreorderNames());
-
-        for (int i = 0; i < toCheck.size(); i++) {
-            if (input.contains(toCheck.get(i))) {
-                isAvailable.add(toCheck.get(i));
-            }
-        }
-
-        for (int i = 0; i < isAvailable.size(); i++) {
-            if (input.indexOf(isAvailable.get(i)) < cha && cha < input.indexOf(isAvailable.get(i)) + isAvailable.get(i).length()) {
-
-                switch (isAvailable.get(i)) {
-                    case "$Begin":
-                        hover = new Hover(
-                                new MarkupContent(MarkupKind.PLAINTEXT, "Beginning of a Feature annotation block"));
-
-                        break;
-                    case "$End":
-                        hover = new Hover(
-                                new MarkupContent(MarkupKind.PLAINTEXT, "End of a Feature annotation block"));
-                        break;
-                    case "$Line":
-                        hover = new Hover(
-                                new MarkupContent(MarkupKind.PLAINTEXT, "Feature Line annotation"));
-                        break;
-                    default:
-                        String featureDefinition = getFeatureDefinition(isAvailable.get(i));
-                        hover = new Hover(
-                                new MarkupContent(MarkupKind.PLAINTEXT, "a Feature \n \"Feature reference: \"" + featureDefinition)
-                        );
-                }
-
-            }
-        }
-        return hover;
-    }
-*/
 
     //    @Override
     public CompletableFuture<SignatureHelp> signatureHelp(TextDocumentPositionParams textDocumentPositionParams) {
@@ -274,98 +239,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
     public CompletableFuture<List<? extends DocumentHighlight>> documentHighlight(TextDocumentPositionParams textDocumentPositionParams) {
         return null;
     }
-    //$begin[parserdocument]
-    private void buildTree() {
-        int nextline = 1;
-        String workline = "";
-        int r = 0;
-        ArrayList<String> pattern = new ArrayList<>();
-        pattern.add("[.]*//\\$Begin\\[[a-z]*][.]*");
-        pattern.add("[.]*//\\$End\\[[a-z]*][.]*");
-        pattern.add("[.]*//\\$Line\\[[a-z]*][.]*");
-        try {
-            BufferedReader text = new BufferedReader(new FileReader(new File(currdoc.toString())));
-            workline = text.readLine();
-            while (workline != null) {
 
-                // check workline for regex
-                for (String i : pattern) {
-                    String check = workline.strip();
-                    if (check.matches(i)) {
-                        int pos = 0;
-                        pos = workline.indexOf("//$Begin[") + 9;
-                        char n = workline.charAt(pos);
-                        String FeatureName = "";
-                        switch (pattern.indexOf(i)) {
-                            case 0:
-
-                                while(n != ']'){
-                                    FeatureName += Character.toString(n);
-                                    pos++;
-                                    n = workline.charAt(pos);
-                                }
-                                if (!FeatureName.isEmpty()) {
-                                    FeatureName = "undefinedName";
-                                }
-                                FeatureModelTree next = new FeatureModelTree(currtree,FeatureName,new FeatureLocation(currdoc,nextline-1));
-                                currtree.append(next);
-                                currtree = next;
-                                break;
-                            case 1:
-                                while(n != ']'){
-                                FeatureName += Character.toString(n);
-                                pos++;
-                                n = workline.charAt(pos);
-                                if (!FeatureName.isEmpty()) {
-                                    FeatureName = "undefinedName";
-                                }
-                                FeatureModelTree help = searchForTree(tree, FeatureName);
-                                if (help != null) {
-                                    help.getLocation().setLineEnd(nextline-1);
-                                    currtree = currtree.getParent();
-                                }
-                                else{
-                                    logger.info("missing $begin[] statement");
-                                    //fehler merken
-                                    //end statemente at line nextline-1 missing $begin
-                                }
-                            }
-                                break;
-                            case 2:
-                                while(n != ']'){
-                                    FeatureName += Character.toString(n);
-                                    pos++;
-                                    n = workline.charAt(pos);
-                                }
-                                if (!FeatureName.isEmpty()) {
-                                    FeatureName = "undefinedName";
-                                }
-                                FeatureModelTree help2 = new FeatureModelTree(currtree,FeatureName,new FeatureLocation(currdoc,nextline-1,nextline-1));
-                                currtree.append(help2);
-                                break;
-                                default:
-                                    logger.info("parsing error at"+ (nextline-1));
-                                    break;
-
-                        }
-                    }
-                }
-                workline = text.readLine();
-                nextline++;
-
-
-
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        /*
-        if(!checkTree()){
-            //return errorreport
-        }
-        */
-    }
-//$End[parserdocument]
 //    @Override
 //    public CompletableFuture<List<? extends SymbolInformation>> documentSymbol(DocumentSymbolParams documentSymbolParams) {
 //        return null;
