@@ -1,3 +1,5 @@
+package se.isselab.HAnS.codeAnnotation;
+
 // Generated from C:/Users/Taymo/Documents/GitHub/HAnS-LSP/src/FeatureTree.g4 by ANTLR 4.13.2
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;

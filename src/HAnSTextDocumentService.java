@@ -1,24 +1,25 @@
 package se.isselab.HAnS.codeAnnotation;
 
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.Lexer;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.eclipse.lsp4j.*;
 
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
 import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import se.isselab.HAnS.codeAnnotation.FeatureModelTree;
 
 public class HAnSTextDocumentService implements TextDocumentService {
     private static final Logger logger = LoggerFactory.getLogger(HAnSTextDocumentService.class);
@@ -27,6 +28,10 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private FeatureModelTree currtree;
     private String eingabe;
     private Path currdoc;
+    private Path currentFeatureModel;
+    
+    private ArrayList<FeatureModelTree> featurtrees = new ArrayList<>();
+    private ArrayList<String> featurenames = new ArrayList<>();
 
     public HAnSTextDocumentService(HAnSLanguageServer x, FeatureModelTree y) {
         this.langugageServer = x;
@@ -35,12 +40,50 @@ public class HAnSTextDocumentService implements TextDocumentService {
     }
     public void parseFeaturetree(){
         //walker erstellen listener erstellen
+        try {
+            Lexer l = new FeatureTreeLexer(CharStreams.fromPath(currentFeatureModel));
+            CommonTokenStream tokens = new CommonTokenStream(l);
+            FeatureTreeParser parser = new FeatureTreeParser(tokens);
+            ParseTree ptree = parser.featuretree();
+            FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(featurtrees, featurenames);
+            ParseTreeWalker walker = new ParseTreeWalker();
+            walker.walk(ftbl, ptree);
+        } catch (IOException e) {
+            logger.error("");
+        }
     }
 
-    public void findnextfeaturetree(){
-        //nächsten gültigen featuretree finded
+    public void findNextFeatureModel() {
+        try {
+            // Get the directory of the current document if it exists
+            if (currdoc != null) {
+                Path startDir = currdoc.getParent();  // Start search from the directory containing the current class
+
+                // Find all files ending with .featureModel
+                List<Path> featureModelFiles = new ArrayList<>();
+                Files.walk(startDir)  // Use walk to traverse the directory recursively
+                        .filter(Files::isRegularFile)
+                        .filter(p -> p.getFileName().toString().equalsIgnoreCase(".feature-model"))
+                        //.filter(path -> path.toString().endsWith(".feature-model"))  // Filter to get only .feature-model files
+                        .forEach(featureModelFiles::add);  // Collect each matching file
+                        //TODO walker should go through the rest of the project files        
+
+                // Print or log found files
+                for (Path file : featureModelFiles) {
+                    logger.info("Found feature model file: {}", file);
+                    if(currentFeatureModel == null) {
+                        currentFeatureModel = file;
+                    }//konflickt lösen
+                }
+            } else {
+                logger.warn("Current document path is not set. Cannot locate .featureModel files.");
+            }
+        } catch (IOException e) {
+            logger.error("Error while searching for feature model files: ", e);
+        }
     }
 
+    
 
 
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams completionParams) {
@@ -72,6 +115,15 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 completionItems.add(completionItem1);
 
                 //completion für featureliste
+                for(String feature : featurenames){
+                    CompletionItem completionItem2 = new CompletionItem();
+                    completionItem2.setInsertText(feature);
+                    completionItem2.setLabel(feature);
+                    completionItem2.setKind(CompletionItemKind.Snippet);
+                    completionItem2.setDetail("a feature defined in the model");
+                    completionItems.add(completionItem2);
+
+                }
 
 
             } catch (Exception e) {
@@ -286,6 +338,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
         currdoc = Path.of(params.getTextDocument().getUri());
         String uri = params.getTextDocument().getUri();
         logger.info("File has been opened : {}", uri);
+
 
     }
 
