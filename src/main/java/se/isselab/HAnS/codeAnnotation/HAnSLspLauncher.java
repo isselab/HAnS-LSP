@@ -12,6 +12,8 @@ public class HAnSLspLauncher {
         OutputStream out = System.out;
         HAnSLanguageServer server = new HAnSLanguageServer();
         Launcher<LanguageClient> launcher = LSPLauncher.createServerLauncher(server, in, out);
+        LanguageClient client = launcher.getRemoteProxy();
+        server.connect(client);
         launcher.startListening();
     }
 }
