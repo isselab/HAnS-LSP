@@ -6,8 +6,8 @@ import org.eclipse.lsp4j.services.LanguageServer;
 import org.eclipse.lsp4j.services.TextDocumentService;
 import org.eclipse.lsp4j.services.WorkspaceService;
 import org.eclipse.lsp4j.services.LanguageClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import se.isselab.HAnS.codeAnnotation.HAnSWorkSpaceService;
 import se.isselab.HAnS.codeAnnotation.FeatureModelTree;
 
@@ -19,7 +19,7 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
     private HAnSTextDocumentService tdservice;
     private HAnSWorkSpaceService wsservice;
     private LanguageClient client;
-    private static final Logger logger = LoggerFactory.getLogger(HAnSLanguageServer.class);
+    private static final Logger logger = LogManager.getLogger();
     private FeatureModelTree tree;
 
     public HAnSLanguageServer() {

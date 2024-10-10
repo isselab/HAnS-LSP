@@ -1,17 +1,19 @@
 package se.isselab.HAnS.codeAnnotation;
 
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.lsp4j.*;
 import org.eclipse.lsp4j.services.WorkspaceService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class HAnSWorkSpaceService implements WorkspaceService {
 
-    private static final Logger logger = LoggerFactory.getLogger(HAnSLanguageServer.class);
+    private static final Logger logger = LogManager.getLogger();
     private HAnSLanguageServer langugageServer;
     private FeatureModelTree tree;
 

@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class HAnSTextDocumentService implements TextDocumentService {
-    private static final Logger logger = LoggerFactory.getLogger(HAnSTextDocumentService.class);
+    private static final Logger logger = LogManager.getLogger();
     private HAnSLanguageServer langugageServer;
     private FeatureModelTree tree;
     private FeatureModelTree currtree;
