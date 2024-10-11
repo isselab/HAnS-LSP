@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class HAnSTextDocumentService implements TextDocumentService {
-    private static final Logger logger = LogManager.getLogger();
+    private static FileLogger logger;
     private HAnSLanguageServer langugageServer;
     private FeatureModelTree tree;
     private FeatureModelTree currtree;
@@ -34,6 +34,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private ArrayList<String> featurenames = new ArrayList<>();
 
     public HAnSTextDocumentService(HAnSLanguageServer x, FeatureModelTree y) {
+       // System.setProperty("log4j.configurationFile", "log4jconfig.xml");
+        logger = new FileLogger(HAnSTextDocumentService.class);
         this.langugageServer = x;
         this.tree = y;
         this.currtree = tree;
@@ -70,7 +72,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
                 // Print or log found files
                 for (Path file : featureModelFiles) {
-                    logger.info("Found feature model file: {}", file);
+                    //logger.info("Found feature model file: {}", file);
                     if(currentFeatureModel == null) {
                         currentFeatureModel = file;
                     }//konflickt lösen
@@ -79,7 +81,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 logger.warn("Current document path is not set. Cannot locate .featureModel files.");
             }
         } catch (IOException e) {
-            logger.error("Error while searching for feature model files: ", e);
+            logger.error("Error while searching for feature model files: " + e.toString());
         }
     }
 
@@ -337,7 +339,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
         currdoc = Path.of(params.getTextDocument().getUri());
         String uri = params.getTextDocument().getUri();
-        logger.info("File has been opened : {}", uri);
+        logger.info("File has been opened : "+ uri);
 
 
     }
@@ -351,19 +353,19 @@ public class HAnSTextDocumentService implements TextDocumentService {
         for (TextDocumentContentChangeEvent change : changes) {
             String newText = change.getText();
         }
-        logger.info("File has been changed : {}", params);
+        logger.info("File has been changed : "+ params.toString());
     }
 
     @Override
     public void didClose(DidCloseTextDocumentParams params) {
-        logger.info("File has been closed : {}", params);
+        logger.info("File has been closed : {}"+ params.toString());
 
     }
 
     @Override
     public void didSave(DidSaveTextDocumentParams params) {
         String uri = params.getTextDocument().getUri();
-        logger.info("File has been saved : {}", params);
+        logger.info("File has been saved : {}"+ params.toString());
     }
 
 }

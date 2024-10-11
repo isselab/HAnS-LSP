@@ -1,0 +1,58 @@
+package se.isselab.HAnS.codeAnnotation;
+
+import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+public class FileLogger {
+
+    String name;
+    BufferedWriter writer;
+    File logFile;
+    public FileLogger(Class o) {
+        name = o.toString();
+        logFile = new File(name + ".log");
+        try {
+            logFile.createNewFile();
+            writer = new BufferedWriter(new FileWriter(logFile,true));
+            writer.append("--------"+LocalDateTime.now().format( DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " Logger Started" + "--------" + System.getProperty("line.separator"));
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+    public void warn(String msg){
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        try {
+            writer.append("[WARN]"+ now.format(formatter) + msg + System.getProperty("line.separator"));
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void info(String msg){
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        try {
+            writer.append( now.format(formatter) + msg + System.getProperty("line.separator"));
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void error(String msg){
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        try {
+            writer.append("[!ERROR!]"+ now.format(formatter) + msg + System.getProperty("line.separator"));
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
+}

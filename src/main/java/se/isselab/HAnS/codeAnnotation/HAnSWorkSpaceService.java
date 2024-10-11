@@ -13,17 +13,19 @@ import java.util.concurrent.CompletableFuture;
 
 public class HAnSWorkSpaceService implements WorkspaceService {
 
-    private static final Logger logger = LogManager.getLogger();
+    private static FileLogger logger;
     private HAnSLanguageServer langugageServer;
     private FeatureModelTree tree;
 
     public HAnSWorkSpaceService(HAnSLanguageServer x, FeatureModelTree y) {
+        //System.setProperty("log4j.configurationFile", "log4jconfig.xml");
+        logger = new FileLogger(HAnSWorkSpaceService.class);
         this.langugageServer = x;
         this.tree = y;
     }
 
     public void didChangeConfiguration(DidChangeConfigurationParams params) {
-        logger.info("Configuration has been changed : {}", params);
+        logger.info("Configuration has been changed :"+ params.toString() );
 
     }
 

@@ -19,13 +19,18 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
     private HAnSTextDocumentService tdservice;
     private HAnSWorkSpaceService wsservice;
     private LanguageClient client;
-    private static final Logger logger = LogManager.getLogger();
+
+    private static FileLogger logger;
     private FeatureModelTree tree;
 
     public HAnSLanguageServer() {
+        //System.setProperty("log4j.configurationFile", "log4jconfig.xml");
+        logger = new FileLogger(HAnSLanguageServer.class);
+        logger.info("LanguageServer starting");
         this.tree = new FeatureModelTree(null);
         this.tdservice = new HAnSTextDocumentService(this, tree);
         this.wsservice = new HAnSWorkSpaceService(this, tree);
+        logger.info("LanguageServer Started");
     }
 
 
@@ -41,7 +46,7 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
     @Override
     public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
 
-        logger.info("Initializing language server with params: {}", params);
+        logger.info("Initializing language server with params: {}"+ params.toString());
 
         final InitializeResult result = new InitializeResult(new ServerCapabilities());
 //        ServerCapabilities capabilities = new ServerCapabilities();
@@ -59,7 +64,7 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
 
     @Override
     public CompletableFuture<Object> shutdown() {
-        logger.info("shutting down language server");
+      logger.info("shutting down language server");
 //        return CompletableFuture.completedFuture(null);
         return CompletableFuture.completedFuture(null);
     }
@@ -88,7 +93,7 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
     }*/
 
     public void connect(LanguageClient client) {
-        logger.info("connecting language server with client: {}", client);
+        logger.info("connecting language server with client: {}"+ client.toString());
         this.client = client;
     }
 
