@@ -15,7 +15,7 @@ public class FileLogger {
         try {
             logFile.createNewFile();
             writer = new BufferedWriter(new FileWriter(logFile,true));
-            writer.append("--------"+LocalDateTime.now().format( DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + " Logger Started" + "--------" + System.getProperty("line.separator"));
+            writer.append("--------"+LocalDateTime.now().format( DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")) + " Logger Started" + "--------" + System.getProperty("line.separator"));
             writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -25,7 +25,7 @@ public class FileLogger {
     }
     public void warn(String msg){
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         try {
             writer.append("[WARN]"+ now.format(formatter) + msg + System.getProperty("line.separator"));
             writer.flush();
@@ -35,7 +35,7 @@ public class FileLogger {
     }
     public void info(String msg){
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         try {
             writer.append( now.format(formatter) + msg + System.getProperty("line.separator"));
             writer.flush();
@@ -45,7 +45,7 @@ public class FileLogger {
     }
     public void error(String msg){
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         try {
             writer.append("[!ERROR!]"+ now.format(formatter) + msg + System.getProperty("line.separator"));
             writer.flush();
