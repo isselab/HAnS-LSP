@@ -12,6 +12,45 @@
   "activationEvents": [],
   "main": "./extension.js",
   "contributes": {
+    "languages": [
+      {
+        "id": "Java",
+        "extensions": [
+          ".java"
+        ]
+      },
+      {
+        "id": "C",
+        "extensions": [
+          ".c"
+        ]
+      },
+      {
+        "id": "javascript",
+        "extensions": [
+          ".js"
+        ]
+      },
+      {
+        "id": "typescript",
+        "extensions": [
+          ".ts"
+        ]
+      },
+      {
+        "id": ".Feature-Model",
+        "extensions": [
+          ".Feature-Model"
+        ]
+      },
+      {
+        "id": ".Feature-To-File",
+        "extensions": [
+          ".Feature-To-File"
+        ]
+      }
+    ],
+    
     "commands": [{
       "command": "lsp-hans-vscode-plugin.helloWorld",
       "title": "Hello World"
