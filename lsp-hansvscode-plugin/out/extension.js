@@ -64,7 +64,7 @@ function deactivate() {
     return client.stop();
 }
 function getServerOptions() {
-    const PROJECT_HOME = "C:\\Users\\Taymo\\Documents\\GitHub\\HAnS-LSP\\lsp-hans-vscode-plugin";
+    const PROJECT_HOME = "C:\\Users\\Taymo\\Documents\\GitHub\\HAnS-LSP\\lsp-hansvscode-plugin";
     const LS_LIB = "src\\HAnS-LSP-1.0-SNAPSHOT-jar-with-dependencies.jar"; // Added ".jar"
     const LS_HOME = path.join(PROJECT_HOME, LS_LIB);
     //const JAVA_HOME = process.env.JAVA_HOME;

@@ -1,0 +1,4 @@
+//&Begin
+public class hello{
+	
+}

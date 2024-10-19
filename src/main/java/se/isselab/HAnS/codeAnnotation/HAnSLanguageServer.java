@@ -46,7 +46,7 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
     @Override
     public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
 
-        logger.info("Initializing language server with params: {}"+ params.toString());
+        logger.info("Initializing language server with params: {}");
 
         final InitializeResult result = new InitializeResult(new ServerCapabilities());
 //        ServerCapabilities capabilities = new ServerCapabilities();

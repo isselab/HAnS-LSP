@@ -6,12 +6,12 @@ import java.time.format.DateTimeFormatter;
 
 public class FileLogger {
 
-    String name;
+    String name ;
     BufferedWriter writer;
     File logFile;
     public FileLogger(Class o) {
         name = o.toString();
-        logFile = new File(name + ".log");
+        logFile = new File("C:\\Users\\Taymo\\Documents\\GitHub\\HAnS-LSP\\lsp-hansvscode-plugin" + name + ".log");
         try {
             logFile.createNewFile();
             writer = new BufferedWriter(new FileWriter(logFile,true));
