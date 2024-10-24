@@ -11,7 +11,7 @@ public class FileLogger {
     File logFile;
     public FileLogger(Class o) {
         name = o.toString();
-        logFile = new File("C:\\Users\\Taymo\\Documents\\GitHub\\HAnS-LSP\\lsp-hansvscode-plugin" + name + ".log");
+        logFile = new File("C:\\Users\\Tim\\hans-lsp-vscode-extension\\serverlog\\" + name + ".log");
         try {
             logFile.createNewFile();
             writer = new BufferedWriter(new FileWriter(logFile,true));
@@ -27,7 +27,7 @@ public class FileLogger {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         try {
-            writer.append("[WARN]"+ now.format(formatter) + msg + System.getProperty("line.separator"));
+            writer.append("[WARN]"+ now.format(formatter) +" "+ msg + System.getProperty("line.separator"));
             writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -37,7 +37,7 @@ public class FileLogger {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         try {
-            writer.append( now.format(formatter) + msg + System.getProperty("line.separator"));
+            writer.append( now.format(formatter) +" "+ msg + System.getProperty("line.separator"));
             writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -47,7 +47,7 @@ public class FileLogger {
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss");
         try {
-            writer.append("[!ERROR!]"+ now.format(formatter) + msg + System.getProperty("line.separator"));
+            writer.append("[!ERROR!]"+ now.format(formatter) +" "+ msg + System.getProperty("line.separator"));
             writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);

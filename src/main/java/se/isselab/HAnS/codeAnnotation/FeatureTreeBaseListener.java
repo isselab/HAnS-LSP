@@ -22,12 +22,15 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	 */
 	ArrayList<FeatureModelTree> trees;
 	ArrayList<String> features;
+	private static FileLogger logger;
 
 	public FeatureTreeBaseListener(ArrayList<FeatureModelTree> trees, ArrayList<String> features) {
+		logger = new FileLogger(FeatureTreeBaseListener.class);
 		this.trees = trees;
 		this.features = features;
 	}
 	@Override public void enterFeaturetree(FeatureTreeParser.FeaturetreeContext ctx) {
+		logger.info("ChildCountFeaturetree:" + ctx.getChildCount());
 		FeatureModelTree t = new FeatureModelTree(null,ctx.getChild(0).getText());
 		List<ParseTree> ruletree = ctx.children;
 		for (ParseTree parseTree : ruletree) {
@@ -51,7 +54,11 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterFeature(FeatureTreeParser.FeatureContext ctx) {
-		features.add(ctx.getChild(0).getText());
+
+		for(int i = 0; i<ctx.getChildCount(); i++ ) {
+			features.add(ctx.getChild(i).getText());
+			logger.info("foundfeature:" + ctx.getChild(i).getText() );
+		}
 		//feature namen sind in depth first search daher linksableitung
 	}
 	/**

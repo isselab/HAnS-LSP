@@ -1,5 +1,4 @@
-package se.isselab.HAnS.codeAnnotation;
-// Generated from C:/Users/Taymo/Documents/GitHub/HAnS-LSP/src/FeatureTree.g4 by ANTLR 4.13.2
+package se.isselab.HAnS.codeAnnotation;// Generated from C:/Users/Tim/Documents/GitHub/HAnS-LSP/src/main/java/se/isselab/HAnS/codeAnnotation/FeatureTree.g4 by ANTLR 4.13.2
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -95,10 +94,6 @@ public class FeatureTreeParser extends Parser {
 			return getRuleContext(FeatureContext.class,0);
 		}
 		public TerminalNode LO() { return getToken(FeatureTreeParser.LO, 0); }
-		public List<TerminalNode> WS() { return getTokens(FeatureTreeParser.WS); }
-		public TerminalNode WS(int i) {
-			return getToken(FeatureTreeParser.WS, i);
-		}
 		public List<FeaturetreeContext> featuretree() {
 			return getRuleContexts(FeaturetreeContext.class);
 		}
@@ -125,7 +120,7 @@ public class FeatureTreeParser extends Parser {
 		int _la;
 		try {
 			int _alt;
-			setState(29);
+			setState(26);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 			case 1:
@@ -133,19 +128,12 @@ public class FeatureTreeParser extends Parser {
 				{
 				setState(4);
 				feature();
-				}
-				break;
-			case 2:
-				enterOuterAlt(_localctx, 2);
-				{
-				setState(5);
-				feature();
-				setState(27);
+				setState(23);
 				_errHandler.sync(this);
 				switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 				case 1:
 					{
-					setState(8); 
+					setState(6); 
 					_errHandler.sync(this);
 					_alt = 1;
 					do {
@@ -153,9 +141,7 @@ public class FeatureTreeParser extends Parser {
 						case 1:
 							{
 							{
-							setState(6);
-							match(WS);
-							setState(7);
+							setState(5);
 							featuretree();
 							}
 							}
@@ -163,7 +149,7 @@ public class FeatureTreeParser extends Parser {
 						default:
 							throw new NoViableAltException(this);
 						}
-						setState(10); 
+						setState(8); 
 						_errHandler.sync(this);
 						_alt = getInterpreter().adaptivePredict(_input,0,_ctx);
 					} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -171,30 +157,28 @@ public class FeatureTreeParser extends Parser {
 					break;
 				case 2:
 					{
-					setState(16);
+					setState(13);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
-					while (_la==WS) {
+					while (_la==FEATURENAME) {
 						{
 						{
-						setState(12);
-						match(WS);
-						setState(13);
+						setState(10);
 						featuretree();
 						}
 						}
-						setState(18);
+						setState(15);
 						_errHandler.sync(this);
 						_la = _input.LA(1);
 					}
 					{
-					setState(19);
+					setState(16);
 					match(LO);
 					{
-					setState(20);
+					setState(17);
 					featuretree();
 					}
-					setState(23); 
+					setState(19); 
 					_errHandler.sync(this);
 					_alt = 1;
 					do {
@@ -202,9 +186,7 @@ public class FeatureTreeParser extends Parser {
 						case 1:
 							{
 							{
-							setState(21);
-							match(WS);
-							setState(22);
+							setState(18);
 							featuretree();
 							}
 							}
@@ -212,7 +194,7 @@ public class FeatureTreeParser extends Parser {
 						default:
 							throw new NoViableAltException(this);
 						}
-						setState(25); 
+						setState(21); 
 						_errHandler.sync(this);
 						_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
 					} while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
@@ -220,6 +202,13 @@ public class FeatureTreeParser extends Parser {
 					}
 					break;
 				}
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(25);
+				feature();
 				}
 				break;
 			}
@@ -238,7 +227,6 @@ public class FeatureTreeParser extends Parser {
 	@SuppressWarnings("CheckReturnValue")
 	public static class FeatureContext extends ParserRuleContext {
 		public TerminalNode FEATURENAME() { return getToken(FeatureTreeParser.FEATURENAME, 0); }
-		public TerminalNode WS() { return getToken(FeatureTreeParser.WS, 0); }
 		public TerminalNode OPTIONAL() { return getToken(FeatureTreeParser.OPTIONAL, 0); }
 		public FeatureContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -257,23 +245,22 @@ public class FeatureTreeParser extends Parser {
 	public final FeatureContext feature() throws RecognitionException {
 		FeatureContext _localctx = new FeatureContext(_ctx, getState());
 		enterRule(_localctx, 2, RULE_feature);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(31);
+			setState(28);
 			match(FEATURENAME);
-			setState(34);
+			setState(30);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,5,_ctx) ) {
-			case 1:
+			_la = _input.LA(1);
+			if (_la==OPTIONAL) {
 				{
-				setState(32);
-				match(WS);
-				setState(33);
+				setState(29);
 				match(OPTIONAL);
 				}
-				break;
 			}
+
 			}
 		}
 		catch (RecognitionException re) {
@@ -288,33 +275,31 @@ public class FeatureTreeParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001\u0004%\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0001"+
-		"\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0004\u0000\t\b\u0000\u000b"+
-		"\u0000\f\u0000\n\u0001\u0000\u0001\u0000\u0005\u0000\u000f\b\u0000\n\u0000"+
-		"\f\u0000\u0012\t\u0000\u0001\u0000\u0001\u0000\u0001\u0000\u0001\u0000"+
-		"\u0004\u0000\u0018\b\u0000\u000b\u0000\f\u0000\u0019\u0003\u0000\u001c"+
-		"\b\u0000\u0003\u0000\u001e\b\u0000\u0001\u0001\u0001\u0001\u0001\u0001"+
-		"\u0003\u0001#\b\u0001\u0001\u0001\u0000\u0000\u0002\u0000\u0002\u0000"+
-		"\u0000(\u0000\u001d\u0001\u0000\u0000\u0000\u0002\u001f\u0001\u0000\u0000"+
-		"\u0000\u0004\u001e\u0003\u0002\u0001\u0000\u0005\u001b\u0003\u0002\u0001"+
-		"\u0000\u0006\u0007\u0005\u0001\u0000\u0000\u0007\t\u0003\u0000\u0000\u0000"+
-		"\b\u0006\u0001\u0000\u0000\u0000\t\n\u0001\u0000\u0000\u0000\n\b\u0001"+
-		"\u0000\u0000\u0000\n\u000b\u0001\u0000\u0000\u0000\u000b\u001c\u0001\u0000"+
-		"\u0000\u0000\f\r\u0005\u0001\u0000\u0000\r\u000f\u0003\u0000\u0000\u0000"+
-		"\u000e\f\u0001\u0000\u0000\u0000\u000f\u0012\u0001\u0000\u0000\u0000\u0010"+
-		"\u000e\u0001\u0000\u0000\u0000\u0010\u0011\u0001\u0000\u0000\u0000\u0011"+
-		"\u0013\u0001\u0000\u0000\u0000\u0012\u0010\u0001\u0000\u0000\u0000\u0013"+
-		"\u0014\u0005\u0002\u0000\u0000\u0014\u0017\u0003\u0000\u0000\u0000\u0015"+
-		"\u0016\u0005\u0001\u0000\u0000\u0016\u0018\u0003\u0000\u0000\u0000\u0017"+
-		"\u0015\u0001\u0000\u0000\u0000\u0018\u0019\u0001\u0000\u0000\u0000\u0019"+
-		"\u0017\u0001\u0000\u0000\u0000\u0019\u001a\u0001\u0000\u0000\u0000\u001a"+
-		"\u001c\u0001\u0000\u0000\u0000\u001b\b\u0001\u0000\u0000\u0000\u001b\u0010"+
-		"\u0001\u0000\u0000\u0000\u001c\u001e\u0001\u0000\u0000\u0000\u001d\u0004"+
-		"\u0001\u0000\u0000\u0000\u001d\u0005\u0001\u0000\u0000\u0000\u001e\u0001"+
-		"\u0001\u0000\u0000\u0000\u001f\"\u0005\u0003\u0000\u0000 !\u0005\u0001"+
-		"\u0000\u0000!#\u0005\u0004\u0000\u0000\" \u0001\u0000\u0000\u0000\"#\u0001"+
-		"\u0000\u0000\u0000#\u0003\u0001\u0000\u0000\u0000\u0006\n\u0010\u0019"+
-		"\u001b\u001d\"";
+		"\u0004\u0001\u0004!\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0001"+
+		"\u0000\u0001\u0000\u0004\u0000\u0007\b\u0000\u000b\u0000\f\u0000\b\u0001"+
+		"\u0000\u0005\u0000\f\b\u0000\n\u0000\f\u0000\u000f\t\u0000\u0001\u0000"+
+		"\u0001\u0000\u0001\u0000\u0004\u0000\u0014\b\u0000\u000b\u0000\f\u0000"+
+		"\u0015\u0003\u0000\u0018\b\u0000\u0001\u0000\u0003\u0000\u001b\b\u0000"+
+		"\u0001\u0001\u0001\u0001\u0003\u0001\u001f\b\u0001\u0001\u0001\u0000\u0000"+
+		"\u0002\u0000\u0002\u0000\u0000$\u0000\u001a\u0001\u0000\u0000\u0000\u0002"+
+		"\u001c\u0001\u0000\u0000\u0000\u0004\u0017\u0003\u0002\u0001\u0000\u0005"+
+		"\u0007\u0003\u0000\u0000\u0000\u0006\u0005\u0001\u0000\u0000\u0000\u0007"+
+		"\b\u0001\u0000\u0000\u0000\b\u0006\u0001\u0000\u0000\u0000\b\t\u0001\u0000"+
+		"\u0000\u0000\t\u0018\u0001\u0000\u0000\u0000\n\f\u0003\u0000\u0000\u0000"+
+		"\u000b\n\u0001\u0000\u0000\u0000\f\u000f\u0001\u0000\u0000\u0000\r\u000b"+
+		"\u0001\u0000\u0000\u0000\r\u000e\u0001\u0000\u0000\u0000\u000e\u0010\u0001"+
+		"\u0000\u0000\u0000\u000f\r\u0001\u0000\u0000\u0000\u0010\u0011\u0005\u0002"+
+		"\u0000\u0000\u0011\u0013\u0003\u0000\u0000\u0000\u0012\u0014\u0003\u0000"+
+		"\u0000\u0000\u0013\u0012\u0001\u0000\u0000\u0000\u0014\u0015\u0001\u0000"+
+		"\u0000\u0000\u0015\u0013\u0001\u0000\u0000\u0000\u0015\u0016\u0001\u0000"+
+		"\u0000\u0000\u0016\u0018\u0001\u0000\u0000\u0000\u0017\u0006\u0001\u0000"+
+		"\u0000\u0000\u0017\r\u0001\u0000\u0000\u0000\u0018\u001b\u0001\u0000\u0000"+
+		"\u0000\u0019\u001b\u0003\u0002\u0001\u0000\u001a\u0004\u0001\u0000\u0000"+
+		"\u0000\u001a\u0019\u0001\u0000\u0000\u0000\u001b\u0001\u0001\u0000\u0000"+
+		"\u0000\u001c\u001e\u0005\u0003\u0000\u0000\u001d\u001f\u0005\u0004\u0000"+
+		"\u0000\u001e\u001d\u0001\u0000\u0000\u0000\u001e\u001f\u0001\u0000\u0000"+
+		"\u0000\u001f\u0003\u0001\u0000\u0000\u0000\u0006\b\r\u0015\u0017\u001a"+
+		"\u001e";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

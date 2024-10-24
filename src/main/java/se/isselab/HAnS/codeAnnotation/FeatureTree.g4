@@ -2,20 +2,15 @@ grammar FeatureTree;
 
 
 //Parser rules
-featuretree:  feature |
-            feature ((WS featuretree )+ | (WS featuretree )* (LO (featuretree)(WS featuretree)+));
+featuretree: feature ((featuretree )+ | ( featuretree )* (LO (featuretree)( featuretree)+)) | feature;
 
-feature: FEATURENAME (WS OPTIONAL )?;
+feature: FEATURENAME (OPTIONAL )?;
 
 //lexer rules
-WS: [ \t\r\n]+ -> skip;
+WS: [ \r\n\t]+ -> skip;
 LO: 'xor'
     | 'or'
 ;
 FEATURENAME:
     [a-zA-Z_][a-zA-Z_0-9:]*;
 OPTIONAL: '?';
-
-//grfg
-    //ggg ?
-        //gGegeg

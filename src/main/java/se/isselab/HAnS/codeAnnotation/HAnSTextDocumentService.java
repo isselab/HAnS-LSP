@@ -11,6 +11,8 @@ import org.eclipse.lsp4j.jsonrpc.messages.Either;
 import org.eclipse.lsp4j.services.TextDocumentService;
 
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -42,16 +44,21 @@ public class HAnSTextDocumentService implements TextDocumentService {
     }
     public void parseFeaturetree(){
         //walker erstellen listener erstellen
-        try {
-            Lexer l = new FeatureTreeLexer(CharStreams.fromPath(currentFeatureModel));
-            CommonTokenStream tokens = new CommonTokenStream(l);
-            FeatureTreeParser parser = new FeatureTreeParser(tokens);
-            ParseTree ptree = parser.featuretree();
-            FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(featurtrees, featurenames);
-            ParseTreeWalker walker = new ParseTreeWalker();
-            walker.walk(ftbl, ptree);
-        } catch (IOException e) {
-            logger.error("");
+        logger.info("Parsing Featuretree");
+        findNextFeatureModel();
+        if (currentFeatureModel != null) {
+            try {
+                Lexer l = new FeatureTreeLexer(CharStreams.fromPath(currentFeatureModel));
+                CommonTokenStream tokens = new CommonTokenStream(l);
+                FeatureTreeParser parser = new FeatureTreeParser(tokens);
+                ParseTree ptree = parser.featuretree();
+                FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(featurtrees, featurenames);
+                ParseTreeWalker walker = new ParseTreeWalker();
+                walker.walk(ftbl, ptree);
+                logger.info("Features found" + featurenames.toString());
+            } catch (IOException e) {
+                logger.error("");
+            }
         }
     }
 
@@ -77,6 +84,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                         currentFeatureModel = file;
                     }//konflickt lösen
                 }
+                logger.info("Found FeatureModel: " + currentFeatureModel.toString());
             } else {
                 logger.warn("Current document path is not set. Cannot locate .featureModel files.");
             }
@@ -90,6 +98,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams completionParams) {
         // Provide completion item.
+        logger.info("completion");
         return CompletableFuture.supplyAsync(() -> {
             List<CompletionItem> completionItems = new ArrayList<>();
             try {
@@ -145,6 +154,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
     @Override
     public CompletableFuture<Hover> hover(HoverParams params) {
+        logger.info("hover");
 
         return CompletableFuture.supplyAsync(() -> {
             int nextline = 0;
@@ -336,10 +346,17 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
     @Override
     public void didOpen(DidOpenTextDocumentParams params) {
-
-        currdoc = Path.of(params.getTextDocument().getUri());
+        logger.info("File has been opened:"+ params.getTextDocument().getUri() );
         String uri = params.getTextDocument().getUri();
-        logger.info("File has been opened : "+ uri);
+        try {
+            currdoc = Path.of(new URI(uri));
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+        featurenames.clear();
+        parseFeaturetree();
+
+
 
 
     }
@@ -353,19 +370,19 @@ public class HAnSTextDocumentService implements TextDocumentService {
         for (TextDocumentContentChangeEvent change : changes) {
             String newText = change.getText();
         }
-        logger.info("File has been changed : "+ params.toString());
+        logger.info("File has been changed : "+ params.getTextDocument().getUri() ); //logging change range?
     }
 
     @Override
     public void didClose(DidCloseTextDocumentParams params) {
-        logger.info("File has been closed : {}"+ params.toString());
+        logger.info("File has been closed : {}"+ params.getTextDocument().getUri() );
 
     }
 
     @Override
     public void didSave(DidSaveTextDocumentParams params) {
         String uri = params.getTextDocument().getUri();
-        logger.info("File has been saved : {}"+ params.toString());
+        logger.info("File has been saved : {}"+ params.getTextDocument().getUri() );
     }
 
 }
