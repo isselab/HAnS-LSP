@@ -4,4 +4,9 @@ class HelloWorldApp {
     }
 }
 //&Begin[Test1]
-//&End[]
+
+//&End[Test1]
+//&Begin[test2]
+
+//&End[test2]
+

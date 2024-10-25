@@ -9,7 +9,7 @@ import {
   TransportKind,
 } from "vscode-languageclient/node";
 
-import { RevealOutputChannelOn } from "vscode-languageclient";
+import { Disposable, DocumentSelector, RevealOutputChannelOn } from "vscode-languageclient";
 import { Server } from "http";
 
 let client: LanguageClient;
@@ -42,14 +42,25 @@ export function activate(context: ExtensionContext) {
 
   // Create the language client and start the client.
   client = new LanguageClient(
-    "HAnS-LSP-id",
-    "HAnS-LSP",
+    "HAnSLSPid",
+    "HAnSLSP",
     serverOptions,
     clientOptions
   
   );
   console.log("Server options: ", serverOptions);
   console.log("client:",client);
+
+  let sel: DocumentSelector = [{ scheme: "file", language: "plaintext" },{scheme: "file", language: "javascript"},{scheme: "file", language: "typescript"},{scheme: "file", language: "Featuremodel"},{scheme: "file", language: "java"}]
+  let disposable = vscode.languages.registerHoverProvider(sel,{
+    provideHover(document,position,token){
+      return{
+        contents: [position.line.toString(), position.character.toString()]
+      };
+    }
+   });
+  context.subscriptions.push(disposable);
+
 
   // Start the client. This will also launch the server
   client.start();
@@ -81,7 +92,9 @@ function getServerOptions() {
   let serverOptions: ServerOptions = {
     command: executable,
     args: [...args, LS_Launcher_Main],
-    options: {},
+    options: {
+       
+    },
   };
   //TODO:
   return serverOptions;

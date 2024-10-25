@@ -52,9 +52,18 @@ function activate(context) {
         },
     };
     // Create the language client and start the client.
-    client = new node_1.LanguageClient("HAnS-LSP-id", "HAnS-LSP", serverOptions, clientOptions);
+    client = new node_1.LanguageClient("HAnSLSPid", "HAnSLSP", serverOptions, clientOptions);
     console.log("Server options: ", serverOptions);
     console.log("client:", client);
+    let sel = [{ scheme: "file", language: "plaintext" }, { scheme: "file", language: "javascript" }, { scheme: "file", language: "typescript" }, { scheme: "file", language: "Featuremodel" }, { scheme: "file", language: "java" }];
+    let disposable = vscode.languages.registerHoverProvider(sel, {
+        provideHover(document, position, token) {
+            return {
+                contents: [position.line.toString(), position.character.toString()]
+            };
+        }
+    });
+    context.subscriptions.push(disposable);
     // Start the client. This will also launch the server
     client.start();
 }
