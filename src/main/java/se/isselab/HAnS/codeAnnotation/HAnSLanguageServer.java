@@ -53,6 +53,7 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
 
         // Set capabilities here, for example, text document synchronization
         result.getCapabilities().setTextDocumentSync(TextDocumentSyncKind.Full);
+        result.getCapabilities().setHoverProvider(true);
 
         CompletionOptions completionOptions = new CompletionOptions();
         result.getCapabilities().setCompletionProvider(completionOptions);

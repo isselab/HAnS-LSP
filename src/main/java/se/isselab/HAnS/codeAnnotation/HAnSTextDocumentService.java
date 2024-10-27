@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.nio.file.Paths;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -154,23 +155,36 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
     @Override
     public CompletableFuture<Hover> hover(HoverParams params) {
-        logger.info("hover");
+        logger.info("Hover request received.");
 
         return CompletableFuture.supplyAsync(() -> {
             int nextline = 0;
             int line = params.getPosition().getLine();
             int cha = params.getPosition().getCharacter();
             TextDocumentIdentifier doc = params.getTextDocument();
+            Position position = params.getPosition();
             String workline = null;
+            String filePath;
+
             try {
-                BufferedReader text = new BufferedReader(new FileReader(doc.getUri()));
+                URI uri = new URI(doc.getUri());
+                filePath = Paths.get(uri).toString();
+            } catch (Exception e) {
+                throw new RuntimeException("Invalid URI: " + doc.getUri() + e);
+            }
+            try {
+                BufferedReader text = new BufferedReader(new FileReader(filePath));
+                logger.info("Document URI: {} " + doc.getUri());
+                logger.info("Hover request received at line: {}, character: {} " + line+ " " + cha);
                 while ((nextline - 1) <= line) {
                     workline = text.readLine();
                     nextline++;
                 }
             } catch (FileNotFoundException e) {
+                logger.info("FileNotFoundException e");
                 throw new RuntimeException(e);
             } catch (IOException e) {
+                logger.info("IOException e.");
                 throw new RuntimeException(e);
             }
             if (workline != null) {
@@ -180,6 +194,94 @@ public class HAnSTextDocumentService implements TextDocumentService {
             return null;
         });
     }
+
+    private Hover hoverForReferences(String selectedText, int cha) {
+        logger.info("Entered hoverForReferences");
+
+        // Additional check in hoverForReferences to avoid null references
+        if (selectedText == null || selectedText.isEmpty()) {
+            logger.info("No text available for analysis in hoverForReferences.");
+            return new Hover(new MarkupContent(MarkupKind.MARKDOWN, "No text available for analysis."));
+        }
+
+        List<String> keywords = new ArrayList<String>() {{
+            add("Begin");
+            add("End");
+            add("Line");
+            addAll(tree.PreorderNames());
+        }};
+
+        List<String> availableKeywords = new ArrayList<>();
+        for (String keyword : keywords) {
+            if (selectedText != null && selectedText.equals(keyword)) {
+                availableKeywords.add(keyword);
+            }
+        }
+
+        if (availableKeywords.isEmpty()) {
+            logger.info("No matching keywords found.");
+            return new Hover(new MarkupContent(MarkupKind.MARKDOWN, "No keyword found, availableKeywords.isEmpty"));
+        }
+
+        for (int i = Math.max(0, cha - 3); i < selectedText.length() && i <= cha + 3; i++) {
+            char currentChar = selectedText.charAt(i);
+            String potentialKeyword = "";
+            for (String keyword : keywords) {
+                if (keyword.charAt(0) == currentChar) {
+                    potentialKeyword = keyword;
+                    break;
+                }
+            }
+            if (!potentialKeyword.isEmpty()) {
+                // Check if the entire keyword is present starting from currentChar
+                if (selectedText.substring(i).startsWith(potentialKeyword)) {
+                    logger.info("Found keyword: " + potentialKeyword + " at position: " + i);
+                    // Found the keyword at position i, return hover content
+                    return createHoverForKeyword(potentialKeyword);
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private Hover createHoverForKeyword(String keyword) {
+        logger.info("createHoverForKeyword");
+        MarkupContent markupContent = new MarkupContent();
+        markupContent.setKind(MarkupKind.MARKDOWN);
+
+        switch (keyword) {
+            case "Begin":
+                markupContent.setValue("Beginning of a Feature annotation block");
+                break;
+            case "End":
+                markupContent.setValue("End of a Feature annotation block");
+                break;
+            case "Line":
+                markupContent.setValue("Feature Line annotation");
+                break;
+            default:
+               // String featureDefinition = getFeatureDefinition(keyword);
+                //if (featureDefinition != null) {
+                    markupContent.setValue("a Feature Feature reference: " );
+                //} else {
+                //    markupContent.setValue("Feature not defined.");
+                break;
+        }
+
+        Hover hover = new Hover(markupContent);
+        return hover;
+    }
+    //hard coded hover method that works for tests:
+    /**public CompletableFuture<Hover> hover(HoverParams params) {
+        logger.info("Hover request received.");
+        MarkupContent markupContent = new MarkupContent();
+        markupContent.setKind(MarkupKind.MARKDOWN);
+        markupContent.setValue("Test Hover Text");
+
+        Hover hover = new Hover(markupContent);
+        return CompletableFuture.completedFuture(hover);
+    }*/
 
 
     //    @Override
@@ -210,61 +312,6 @@ public class HAnSTextDocumentService implements TextDocumentService {
 //
 //        return CompletableFuture.completedFuture(referenceLocations);
         return null;
-    }
-
-    private Hover hoverForReferences(String selectedText, int cha) {
-        List<String> keywords = new ArrayList<String>() {{
-            add("$Begin");
-            add("$End");
-            add("$Line");
-            addAll(tree.PreorderNames());
-        }};
-
-        List<String> availableKeywords = new ArrayList<>();
-        for (String keyword : keywords) {
-            if (selectedText.contains(keyword)) {
-                availableKeywords.add(keyword);
-            }
-        }
-
-        for (String keyword : availableKeywords) {
-            int startIndex = selectedText.indexOf(keyword);
-            int endIndex = startIndex + keyword.length();
-
-            if (startIndex < cha && cha < endIndex) {
-                return createHoverForKeyword(keyword);
-            }
-        }
-
-        return null;
-    }
-
-    private Hover createHoverForKeyword(String keyword) {
-        MarkupContent markupContent = new MarkupContent();
-        markupContent.setKind(MarkupKind.MARKDOWN);
-
-        switch (keyword) {
-            case "$Begin":
-                markupContent.setValue("Beginning of a Feature annotation block");
-                break;
-            case "$End":
-                markupContent.setValue("End of a Feature annotation block");
-                break;
-            case "$Line":
-                markupContent.setValue("Feature Line annotation");
-                break;
-            default:
-                String featureDefinition = getFeatureDefinition(keyword);
-                if (featureDefinition != null) {
-                    markupContent.setValue("a Feature \n \"Feature reference: \"" + featureDefinition);
-                } else {
-                    markupContent.setValue("Feature not defined.");
-                }
-                break;
-        }
-
-        Hover hover = new Hover(markupContent);
-        return hover;
     }
 
     private String getFeatureDefinition(String featureName) {

@@ -51,15 +51,15 @@ export function activate(context: ExtensionContext) {
   console.log("Server options: ", serverOptions);
   console.log("client:",client);
 
-  let sel: DocumentSelector = [{ scheme: "file", language: "plaintext" },{scheme: "file", language: "javascript"},{scheme: "file", language: "typescript"},{scheme: "file", language: "Featuremodel"},{scheme: "file", language: "java"}]
-  let disposable = vscode.languages.registerHoverProvider(sel,{
-    provideHover(document,position,token){
-      return{
-        contents: [position.line.toString(), position.character.toString()]
-      };
-    }
-   });
-  context.subscriptions.push(disposable);
+  let sel: DocumentSelector = [{ scheme: "file", language: "plaintext" },{scheme: "file", language: "javascript"},{scheme: "file", language: "typescript"},{scheme: "file", language: "Featuremodel"},{scheme: "file", language: "java"}];
+  // let disposable = vscode.languages.registerHoverProvider(sel,{
+  //   provideHover(document,position,token){
+  //     return{
+  //       contents: [position.line.toString(), position.character.toString()]
+  //     };
+  //   }
+  //  });
+  // context.subscriptions.push(disposable);
 
 
   // Start the client. This will also launch the server
@@ -73,11 +73,11 @@ export function deactivate(): Thenable<void> | undefined {
   return client.stop();
 }
 function getServerOptions() {
-  const PROJECT_HOME =    "C:\\Users\\Tim\\Documents\\GitHub\\HAnS-LSP\\target";
+  const PROJECT_HOME =    "C:\\Users\\Taymo\\Documents\\GitHub\\HAnS-LSP\\target";
   const LS_LIB = "HAnS-LSP-1.0-SNAPSHOT-jar-with-dependencies.jar"; // Added ".jar"
   const LS_HOME = path.join(PROJECT_HOME, LS_LIB);
 
-  const JAVA_HOME = process.env.JAVA_HOME;
+  const JAVA_HOME = "C:\\Program Files\\Java\\jdk-23";
   //console.log("JAVA_HOME:", JAVA_HOME);
   //const JAVA_HOME = "C:\\Program Files\\Java\\jdk-23"; // Replace with the actual path to your Java JDK
 
