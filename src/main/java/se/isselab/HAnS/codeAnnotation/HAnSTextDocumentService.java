@@ -209,12 +209,12 @@ public class HAnSTextDocumentService implements TextDocumentService {
             //add("Begin");
             //add("End");
             //add("Line");
-            add("$Begin");
-            add("$End");
-            add("$Line");
-            add("Begin[");
-            add("End[");
-            add("Line[");
+            add("&Begin");
+            add("&End");
+            add("&Line");
+            //add("Begin[");
+            //add("End[");
+            //add("Line[");
             //add("//$Begin");
             //add("//$End");
             //add("//$Line");
@@ -274,19 +274,19 @@ public class HAnSTextDocumentService implements TextDocumentService {
         markupContent.setKind(MarkupKind.MARKDOWN);
 
         switch (keyword) {
-            case "$Begin", "Begin[":
+            case "&Begin":
                 markupContent.setValue("Beginning of a Feature annotation block");
                 break;
-            case "$End", "End[":
+            case "&End":
                 markupContent.setValue("End of a Feature annotation block");
                 break;
-            case "$Line", "Line[":
+            case "&Line":
                 markupContent.setValue("Feature Line annotation");
                 break;
             default:
                // String featureDefinition = getFeatureDefinition(keyword);
                 //if (featureDefinition != null) {
-                    markupContent.setValue(keyword + "is a Feature Feature defined in the feature-model reference: " );
+                    markupContent.setValue(keyword + " is a Feature Feature defined in the feature-model reference: " );
                 //} else {
                 //    markupContent.setValue("Feature not defined.");
                 break;
