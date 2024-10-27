@@ -176,7 +176,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 BufferedReader text = new BufferedReader(new FileReader(filePath));
                 logger.info("Document URI: {} " + doc.getUri());
                 logger.info("Hover request received at line: {}, character: {} " + line+ " " + cha);
-                while ((nextline - 1) <= line) {
+                while ((nextline ) <= line) {
                     workline = text.readLine();
                     nextline++;
                 }
@@ -188,6 +188,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 throw new RuntimeException(e);
             }
             if (workline != null) {
+                logger.info("workline: "+ workline);
                 return hoverForReferences(workline, cha);
 
             }
@@ -205,16 +206,28 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
 
         List<String> keywords = new ArrayList<String>() {{
-            add("Begin");
-            add("End");
-            add("Line");
-            addAll(tree.PreorderNames());
+            //add("Begin");
+            //add("End");
+            //add("Line");
+            add("$Begin");
+            add("$End");
+            add("$Line");
+            add("Begin[");
+            add("End[");
+            add("Line[");
+            //add("//$Begin");
+            //add("//$End");
+            //add("//$Line");
+            //addAll(tree.PreorderNames());
+            addAll(featurenames);
         }};
-
+        logger.info("keywords :" + keywords.toString() );
         List<String> availableKeywords = new ArrayList<>();
         for (String keyword : keywords) {
-            if (selectedText != null && selectedText.equals(keyword)) {
+            //logger.info("testing available keyword:" + keyword);
+            if (selectedText.contains(keyword)){
                 availableKeywords.add(keyword);
+                logger.info("available keyword:" + keyword);
             }
         }
 
@@ -222,7 +235,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
             logger.info("No matching keywords found.");
             return new Hover(new MarkupContent(MarkupKind.MARKDOWN, "No keyword found, availableKeywords.isEmpty"));
         }
-
+        logger.info("found available keywords:" + availableKeywords.toString() );
+        /*
         for (int i = Math.max(0, cha - 3); i < selectedText.length() && i <= cha + 3; i++) {
             char currentChar = selectedText.charAt(i);
             String potentialKeyword = "";
@@ -241,7 +255,16 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 }
             }
         }
-
+        */
+        for (String keyword : availableKeywords) {
+            int startIndex = selectedText.indexOf(keyword);
+            int endIndex = startIndex + keyword.length();
+            logger.info("keyword:" + keyword);
+            if (startIndex < cha && cha < endIndex) {
+                logger.info("found keyword:" + keyword);
+                return createHoverForKeyword(keyword);
+            }
+        }
         return null;
     }
 
@@ -251,19 +274,19 @@ public class HAnSTextDocumentService implements TextDocumentService {
         markupContent.setKind(MarkupKind.MARKDOWN);
 
         switch (keyword) {
-            case "Begin":
+            case "$Begin", "Begin[":
                 markupContent.setValue("Beginning of a Feature annotation block");
                 break;
-            case "End":
+            case "$End", "End[":
                 markupContent.setValue("End of a Feature annotation block");
                 break;
-            case "Line":
+            case "$Line", "Line[":
                 markupContent.setValue("Feature Line annotation");
                 break;
             default:
                // String featureDefinition = getFeatureDefinition(keyword);
                 //if (featureDefinition != null) {
-                    markupContent.setValue("a Feature Feature reference: " );
+                    markupContent.setValue(keyword + "is a Feature Feature defined in the feature-model reference: " );
                 //} else {
                 //    markupContent.setValue("Feature not defined.");
                 break;
