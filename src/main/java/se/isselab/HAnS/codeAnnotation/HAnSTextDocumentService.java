@@ -64,6 +64,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
     }
 
     public void findNextFeatureModel() {
+        /*
         try {
             // Get the directory of the current document if it exists
             if (currdoc != null) {
@@ -89,9 +90,37 @@ public class HAnSTextDocumentService implements TextDocumentService {
             } else {
                 logger.warn("Current document path is not set. Cannot locate .featureModel files.");
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             logger.error("Error while searching for feature model files: " + e.toString());
         }
+        */
+
+        if (currdoc != null) {
+            Path currparrent = currdoc.getParent();
+            File currDir;
+            Path featuremodel= null;
+            while (featuremodel ==null){
+                currDir = new File (currparrent.toString()+"\\" + ".feature-model");
+                if(currDir.exists()){
+                    logger.info("found featuremodel at: " + currparrent.toString() );
+                    featuremodel = currDir.toPath() ;
+                }
+                else {
+                    if (currparrent.getParent() != null) {
+                        currparrent = currparrent.getParent();
+                    }
+                    else{
+                        logger.info("no feature model found");
+                        break;
+
+                    }
+                }
+            }
+            currentFeatureModel = featuremodel;
+        }
+
+
     }
 
     
@@ -108,7 +137,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 // Define the text to be inserted in to the file if the completion item is selected.
                 completionItem.setInsertText("//&Begin[]\n//&End[]\n");
                 // Set the label that shows when the completion drop down appears in the Editor.
-                completionItem.setLabel("&Begin[]");
+                completionItem.setLabel("//&Begin[] ... //&End[]");
                 // Set the completion kind. This is a snippet.
                 // That means it replace character which trigger the completion and
                 // replace it with what defined in inserted text.
@@ -121,19 +150,55 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 // Item 2 (Line block)
                 CompletionItem completionItem1 = new CompletionItem();
                 completionItem1.setInsertText("//&Line[]\n");
-                completionItem1.setLabel("&Line[]");
+                completionItem1.setLabel("//&Line[]");
                 completionItem1.setKind(CompletionItemKind.Snippet);
                 completionItem1.setDetail("Creating a new Line Annotation");
                 completionItems.add(completionItem1);
 
+                CompletionItem completionItem2 = new CompletionItem();
+                completionItem2.setInsertText("&Line[]\n");
+                completionItem2.setLabel("&Line[]");
+                completionItem2.setKind(CompletionItemKind.Snippet);
+                completionItem2.setDetail("Creating a new Line Annotation");
+                completionItems.add(completionItem2);
+
+                CompletionItem completionItem3 = new CompletionItem();
+                completionItem3.setInsertText("&Begin[]\n");
+                completionItem3.setLabel("&Begin[]");
+                completionItem3.setKind(CompletionItemKind.Snippet);
+                completionItem3.setDetail("Creating a new Begin Annotation");
+                completionItems.add(completionItem3);
+
+                CompletionItem completionItem4 = new CompletionItem();
+                completionItem4.setInsertText("&Begin[]\n //&End[]");
+                completionItem4.setLabel("&Begin[] ... //&End[]");
+                completionItem4.setKind(CompletionItemKind.Snippet);
+                completionItem4.setDetail("Creating a new block for feature");
+                completionItems.add(completionItem4);
+
+                CompletionItem completionItem5 = new CompletionItem();
+                completionItem5.setInsertText("//&End[]");
+                completionItem5.setLabel("//&End[]");
+                completionItem5.setKind(CompletionItemKind.Snippet);
+                completionItem5.setDetail("Creating a new End Annotation");
+                completionItems.add(completionItem5);
+
+                CompletionItem completionItem6 = new CompletionItem();
+                completionItem6.setInsertText("&End[]");
+                completionItem6.setLabel("&End[]");
+                completionItem6.setKind(CompletionItemKind.Snippet);
+                completionItem6.setDetail("Creating a new End Annotation");
+                completionItems.add(completionItem6);
+
+
                 //completion für featureliste
                 for(String feature : featurenames){
-                    CompletionItem completionItem2 = new CompletionItem();
-                    completionItem2.setInsertText(feature);
-                    completionItem2.setLabel(feature);
-                    completionItem2.setKind(CompletionItemKind.Snippet);
-                    completionItem2.setDetail("a feature defined in the model");
-                    completionItems.add(completionItem2);
+                    CompletionItem completionItemi = new CompletionItem();
+                    completionItemi.setInsertText(feature);
+                    completionItemi.setLabel(feature);
+                    completionItemi.setKind(CompletionItemKind.Snippet);
+                    completionItemi.setDetail("a feature defined in the model");
+                    completionItems.add(completionItemi);
 
                 }
 
@@ -271,7 +336,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private Hover createHoverForKeyword(String keyword) {
         logger.info("createHoverForKeyword");
         MarkupContent markupContent = new MarkupContent();
-        markupContent.setKind(MarkupKind.MARKDOWN);
+        markupContent.setKind(MarkupKind.PLAINTEXT); //MARKDOWN
 
         switch (keyword) {
             case "&Begin":
@@ -286,7 +351,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
             default:
                // String featureDefinition = getFeatureDefinition(keyword);
                 //if (featureDefinition != null) {
-                    markupContent.setValue(keyword + " is a Feature Feature defined in the feature-model reference: " );
+                markupContent.setValue(keyword + " is a Feature Feature defined in the feature-model" + System.lineSeparator() + "reference: "+ (currentFeatureModel) );
                 //} else {
                 //    markupContent.setValue("Feature not defined.");
                 break;

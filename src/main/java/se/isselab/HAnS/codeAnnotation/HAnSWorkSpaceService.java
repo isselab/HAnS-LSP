@@ -33,6 +33,14 @@ public class HAnSWorkSpaceService implements WorkspaceService {
     public void didChangeWatchedFiles(DidChangeWatchedFilesParams params) {
 
     }
+    public void didChangeWorkspaceFolders(DidChangeWorkspaceFoldersParams params){
+        /*
+        List<WorkspaceFolder> fils = params.getEvent().getAdded();
+        for (WorkspaceFolder folder : fils) {
+
+        }
+         */
+    }
 
 
     public void renameFiles(RenameFilesParams params) {

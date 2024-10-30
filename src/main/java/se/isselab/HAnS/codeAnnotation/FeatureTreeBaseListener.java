@@ -55,10 +55,16 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	 */
 	@Override public void enterFeature(FeatureTreeParser.FeatureContext ctx) {
 
+		features.add(ctx.getChild(0).getText());
+		logger.info("foundfeature:" + ctx.getChild(0).getText() );
+
+		/*
 		for(int i = 0; i<ctx.getChildCount(); i++ ) {
 			features.add(ctx.getChild(i).getText());
 			logger.info("foundfeature:" + ctx.getChild(i).getText() );
 		}
+		*/
+
 		//feature namen sind in depth first search daher linksableitung
 	}
 	/**

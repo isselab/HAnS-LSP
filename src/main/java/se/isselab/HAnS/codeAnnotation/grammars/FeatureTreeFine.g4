@@ -2,16 +2,23 @@ grammar FeatureTree;
 
 
 //Parser rules
-featuretree: feature (((subfeature )+) | ((subfeature )* (orxor))) | feature;
+featermodle:
+    featuretree+
+;
+featuretree: feature Newline  (((WS+ subfeature Newline)+) | ((WS+ subfeature Newline )* (orxor))) | feature Newline;
 
-subfeature: featuretree | feature ;
+subfeature: featuretree Newline | feature Newline ;
 
-orxor: LO (feature)( feature)+  ;
+orxor: LO (feature Newline )(WS+ feature Newline)+  ;
 
-feature: FEATURENAME (OPTIONAL)?;
+feature: FEATURENAME WS (OPTIONAL)? Newline;
 
 //lexer rules
-WS: [ \r\n\t] + -> skip;
+WS: [ \r\t] ;
+
+Newline : [\n] ;
+
+
 LO: 'xor'
     | 'or'
 ;
@@ -20,5 +27,11 @@ FEATURENAME:
 OPTIONAL: '?';
 
 //grfg
-    //ggg ?
-        //gGegeg
+    //grdfstx
+        //gGegeg        W,#;WW
+        //gGfdff        e,#;WW
+            //ggr       W,#;WWW
+                //ggdegdg   W,#;WWWW
+    //gdfsv
+    //or fefed
+    //desf
