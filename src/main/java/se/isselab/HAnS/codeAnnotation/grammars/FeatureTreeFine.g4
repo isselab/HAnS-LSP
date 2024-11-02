@@ -9,7 +9,7 @@ featuretree: feature Newline  (((WS+ subfeature Newline)+) | ((WS+ subfeature Ne
 
 subfeature: featuretree Newline | feature Newline ;
 
-orxor: LO (feature Newline )(WS+ feature Newline)+  ;
+orxor: LO (feature Newline )(WS+ feature Newline)+ ;
 
 feature: FEATURENAME WS (OPTIONAL)? Newline;
 

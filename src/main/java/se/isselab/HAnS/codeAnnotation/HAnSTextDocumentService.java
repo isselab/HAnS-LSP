@@ -32,6 +32,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private String eingabe;
     private Path currdoc;
     private Path currentFeatureModel;
+    private HAnSWorkSpaceService workSpaceService;
+    private List<WorkspaceFolder> workspaceFolders;
     
     private ArrayList<FeatureModelTree> featurtrees = new ArrayList<>();
     private ArrayList<String> featurenames = new ArrayList<>();
@@ -42,6 +44,10 @@ public class HAnSTextDocumentService implements TextDocumentService {
         this.langugageServer = x;
         this.tree = y;
         this.currtree = tree;
+    }
+
+    public void setWorkspaceFolders(List<WorkspaceFolder> workspaceFolders) {
+        this.workspaceFolders = workspaceFolders;
     }
     public void parseFeaturetree(){
         //walker erstellen listener erstellen
@@ -57,6 +63,13 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 ParseTreeWalker walker = new ParseTreeWalker();
                 walker.walk(ftbl, ptree);
                 logger.info("Features found" + featurenames.toString());
+                String featuretreerep ="";
+                /*for(FeatureModelTree fmt : featurtrees){
+                    featuretreerep += fmt.toString() + "\n";
+                }
+                logger.info("Featuretrees: " + featuretreerep );
+                */
+                 logger.info("Featuretrees: " + featurtrees.size());
             } catch (IOException e) {
                 logger.error("");
             }
@@ -97,10 +110,22 @@ public class HAnSTextDocumentService implements TextDocumentService {
         */
 
         if (currdoc != null) {
+
             Path currparrent = currdoc.getParent();
             File currDir;
             Path featuremodel= null;
-            while (featuremodel ==null){
+            Path endpath = currparrent.getRoot();
+            if (workspaceFolders != null) {
+                for (WorkspaceFolder folder : workspaceFolders) {
+                    if (currparrent.startsWith(folder.getUri())) {
+                        endpath = Paths.get(folder.getUri());
+                    }
+                }
+            }
+            else{
+                logger.info("no workspacefolder found: searching whole path");
+            }
+            while (featuremodel ==null && currparrent.startsWith(endpath)){
                 currDir = new File (currparrent.toString()+"\\" + ".feature-model");
                 if(currDir.exists()){
                     logger.info("found featuremodel at: " + currparrent.toString() );
@@ -323,11 +348,13 @@ public class HAnSTextDocumentService implements TextDocumentService {
         */
         for (String keyword : availableKeywords) {
             int startIndex = selectedText.indexOf(keyword);
-            int endIndex = startIndex + keyword.length();
+            int endIndex = startIndex + keyword.length() -1;
             logger.info("keyword:" + keyword);
-            if (startIndex < cha && cha < endIndex) {
-                logger.info("found keyword:" + keyword);
-                return createHoverForKeyword(keyword);
+            if(selectedText.indexOf("[") == (startIndex - 1) && selectedText.indexOf("]") == (endIndex +1 )  ) {
+                if (startIndex < cha && cha < endIndex) {
+                    logger.info("found keyword:" + keyword);
+                    return createHoverForKeyword(keyword);
+                }
             }
         }
         return null;
@@ -445,9 +472,9 @@ public class HAnSTextDocumentService implements TextDocumentService {
 //    }
 //
 //    @Override
-//    public CompletableFuture<List<? extends Command>> codeAction(CodeActionParams codeActionParams) {
-//        return null;
-//    }
+//  public java.util.concurrent.CompletableFuture<java.util.List<org.eclipse.lsp4j.jsonrpc.messages.Either<Command,CodeAction>>> codeAction(CodeActionParams codeActionParams) {
+//    return null
+//  }
 
     @Override
     public CompletableFuture<List<? extends CodeLens>> codeLens(CodeLensParams codeLensParams) {
@@ -476,6 +503,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
     @Override
     public CompletableFuture<WorkspaceEdit> rename(RenameParams renameParams) {
+        logger.info("rename at:" + renameParams.getTextDocument().getUri().toString() + " " + renameParams.getPosition() );
         return null;
     }
 

@@ -1,4 +1,5 @@
-package se.isselab.HAnS.codeAnnotation;// Generated from C:/Users/Taymo/Documents/GitHub/HAnS-LSP/src/FeatureTree.g4 by ANTLR 4.13.2
+package se.isselab.HAnS.codeAnnotation;
+// Generated from C:/Users/Tim/Documents/GitHub/HAnS-LSP/src/main/java/se/isselab/HAnS/codeAnnotation/FeatureTree.g4 by ANTLR 4.13.2
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -15,13 +16,11 @@ import java.util.List;
  */
 @SuppressWarnings("CheckReturnValue")
 public class FeatureTreeBaseListener implements FeatureTreeListener {
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	ArrayList<FeatureModelTree> trees;
+	FeatureModelTree root = new FeatureModelTree(null, ".feature-model");
+	FeatureModelTree currentTree = root ;
 	ArrayList<String> features;
+	ArrayList<FeatureTreeParser.FeatureContext> featureContexts = new ArrayList<>();
 	private static FileLogger logger;
 
 	public FeatureTreeBaseListener(ArrayList<FeatureModelTree> trees, ArrayList<String> features) {
@@ -29,43 +28,77 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 		this.trees = trees;
 		this.features = features;
 	}
-	@Override public void enterFeaturetree(FeatureTreeParser.FeaturetreeContext ctx) {
-		logger.info("ChildCountFeaturetree:" + ctx.getChildCount());
-		FeatureModelTree t = new FeatureModelTree(null,ctx.getChild(0).getText());
-		List<ParseTree> ruletree = ctx.children;
-		for (ParseTree parseTree : ruletree) {
-			FeatureModelTree h = new FeatureModelTree(t);
-			t.append(h);
-			}
-		trees.add(t);
-		}
-		//baum erstellen namen suchen auf jeziger regel (feature)
-		//children nach subfeatures nach namen durchsuchen (feature, featuretree -> feature)(ghet nicht)
-
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitFeaturetree(FeatureTreeParser.FeaturetreeContext ctx) { }
+	@Override public void enterFeaturetree(FeatureTreeParser.FeaturetreeContext ctx) {
+		logger.info("ChildCountFeaturetree:" + ctx.getChildCount());
+	}
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFeaturetree(FeatureTreeParser.FeaturetreeContext ctx) {
+		int currentindentdepht = 0;
+		int featurecount = 0;
+		for(FeatureTreeParser.FeatureContext f : ctx.feature()) {
+			if(f.FEATURENAME() == null) {
+				if(currentTree.getParent() != null) {
+					currentTree = currentTree.getParent();
+				}
+			}
+			else {
+				/*
+				if (f.WS(0) != null) {
+					logger.info("currentindentdepht: " + currentindentdepht + " WSchildcount: " + f.WS(0).toString()+ " in line: " + featurecount);
+					while (currentindentdepht  > f.getChild(0).getChildCount()) {
+
+						if (currentTree.getParent() != null) {
+							currentTree = currentTree.getParent();
+							logger.info("escaping featuretree in line: " + featurecount);
+						}
+						currentindentdepht++;
+					}
+					currentindentdepht = f.WS(0).getChildCount();
+				}
+				*/
+
+
+
+
+				String LO = "NONE";
+				boolean isOPtional = false;
+				if (f.LO() != null) {
+					LO = f.LO().getText();
+				}
+				if (f.OPTIONAL() != null) {
+					isOPtional = true;
+				}
+				FeatureModelTree t = new FeatureModelTree(currentTree, f.FEATURENAME().toString(), isOPtional, LO);
+				currentTree.addSubFeatureTree(t);
+				currentTree = t;
+				currentindentdepht ++;
+				featurecount++;
+			}
+		}
+		trees.add(root);
+		logger.info("FeatureTree:" + root.toString());
+		logger.info("FeatureTree:" + root.PreorderNames());
+	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterFeature(FeatureTreeParser.FeatureContext ctx) {
-
-		features.add(ctx.getChild(0).getText());
-		logger.info("foundfeature:" + ctx.getChild(0).getText() );
-
-		/*
-		for(int i = 0; i<ctx.getChildCount(); i++ ) {
-			features.add(ctx.getChild(i).getText());
-			logger.info("foundfeature:" + ctx.getChild(i).getText() );
+		featureContexts.add(ctx);
+		if(ctx.FEATURENAME() != null) {
+			features.add(ctx.FEATURENAME().toString());
+			logger.info("foundfeature:" + ctx.FEATURENAME().getText());
 		}
-		*/
-
-		//feature namen sind in depth first search daher linksableitung
 	}
 	/**
 	 * {@inheritDoc}

@@ -7,6 +7,8 @@ import java.util.ArrayList;
 public class FeatureModelTree {
     private String name;
     private ArrayList<FeatureModelTree> subfeatures;
+    private String LO = "NONE";
+    private boolean isOptional = false;
     private FeatureLocation location;
     private FeatureModelTree parent;
     public FeatureModelTree(FeatureModelTree parent) {
@@ -17,10 +19,11 @@ public class FeatureModelTree {
         this(parent);
         this.name = name;
     }
-    public FeatureModelTree(FeatureModelTree parent,String name, FeatureLocation location) {
+    public FeatureModelTree(FeatureModelTree parent,String name, boolean isOptional , String LO) {
         this(parent);
         this.name = name;
-        this.location = location;
+        this.LO = LO;
+        this.isOptional = isOptional;
     }
     public synchronized void append(FeatureModelTree fmt) {
         subfeatures.add(fmt);
@@ -41,6 +44,9 @@ public class FeatureModelTree {
     public synchronized void addSubFeature(String name) {
         subfeatures.add(new FeatureModelTree(this,name));
     }
+    public synchronized void addSubFeatureTree(FeatureModelTree t) {
+        subfeatures.add(t);
+    }
     public synchronized void rename(String name) {
             this.name=name;
     }
@@ -50,10 +56,19 @@ public class FeatureModelTree {
     public FeatureLocation getLocation() {
         return location;
     }
-    public ArrayList<String> PreorderNames(){
-        ArrayList<String> list = new ArrayList<>();
-        addName(list, this);
-        return list;
+    public String PreorderNames(){
+        String childrenrep = "";
+        for (FeatureModelTree fmt : subfeatures){
+            childrenrep += " " + fmt.PreorderNames();
+        }
+        return (name + " " + childrenrep );
+    }
+    public String toString(){
+        String childrenrep = "";
+        for (FeatureModelTree fmt : subfeatures){
+            childrenrep += "\n" + fmt.toString();
+        }
+        return (name +"[ " + childrenrep + "]" );
     }
     private void addName(ArrayList<String> names, FeatureModelTree fmt) {
         names.add(this.name);
@@ -81,5 +96,14 @@ public class FeatureModelTree {
         }
         return true;
 
+    }
+    public String getLO(){
+        return LO;
+    }
+    public void setLO(String LO) {
+        this.LO = LO;
+    }
+    public boolean getisOptional() {
+        return isOptional;
     }
 }

@@ -16,12 +16,14 @@ public class HAnSWorkSpaceService implements WorkspaceService {
     private static FileLogger logger;
     private HAnSLanguageServer langugageServer;
     private FeatureModelTree tree;
+    private HAnSTextDocumentService textService;
 
     public HAnSWorkSpaceService(HAnSLanguageServer x, FeatureModelTree y) {
         //System.setProperty("log4j.configurationFile", "log4jconfig.xml");
         logger = new FileLogger(HAnSWorkSpaceService.class);
         this.langugageServer = x;
         this.tree = y;
+        this.textService = (HAnSTextDocumentService) langugageServer.getTextDocumentService();
     }
 
     public void didChangeConfiguration(DidChangeConfigurationParams params) {
@@ -34,12 +36,9 @@ public class HAnSWorkSpaceService implements WorkspaceService {
 
     }
     public void didChangeWorkspaceFolders(DidChangeWorkspaceFoldersParams params){
-        /*
-        List<WorkspaceFolder> fils = params.getEvent().getAdded();
-        for (WorkspaceFolder folder : fils) {
+        logger.info("files opened: " + params.getEvent().getAdded());
+        textService.setWorkspaceFolders(params.getEvent().getAdded());
 
-        }
-         */
     }
 
 
