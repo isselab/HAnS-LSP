@@ -11,6 +11,9 @@ import org.apache.logging.log4j.Logger;
 import se.isselab.HAnS.codeAnnotation.HAnSWorkSpaceService;
 import se.isselab.HAnS.codeAnnotation.FeatureModelTree;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 
@@ -23,6 +26,7 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
     private static FileLogger logger;
     private FeatureModelTree tree;
 
+    private Path workspaceFolderPath; //to store workspace path
     public HAnSLanguageServer() {
         //System.setProperty("log4j.configurationFile", "log4jconfig.xml");
         logger = new FileLogger(HAnSLanguageServer.class);
@@ -45,25 +49,34 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
 
     @Override
     public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
-
         logger.info("Initializing language server with params: {}");
 
-        final InitializeResult result = new InitializeResult(new ServerCapabilities());
-//        ServerCapabilities capabilities = new ServerCapabilities();
+        //new code for workspacefolder
+        if (params.getInitializationOptions() instanceof Map) {
+            Map<?, ?> options = (Map<?, ?>) params.getInitializationOptions();
+            if (options.containsKey("workspaceFolder")) {
+                String workspaceFolder = (String) options.get("workspaceFolder");
+                if (workspaceFolder != null) {
+                    this.workspaceFolderPath = Paths.get(workspaceFolder);
+                    tdservice.setWorkspaceFolderPath(this.workspaceFolderPath); // Pass to text document service
+                    logger.info("Workspace folder path set to: " + workspaceFolder);
+                } else {
+                    logger.warn("Workspace folder path is null");
+                }
+            } else {
+                logger.warn("Initialization options did not contain workspace folder key.");
+            }
+        } else {
+            logger.warn("Initialization options is not a map or is null.");
+        }
 
-        // Set capabilities here, for example, text document synchronization
+        InitializeResult result = new InitializeResult(new ServerCapabilities());
         result.getCapabilities().setTextDocumentSync(TextDocumentSyncKind.Full);
         result.getCapabilities().setHoverProvider(true);
-        WorkspaceFoldersOptions wspo = new WorkspaceFoldersOptions();
-        wspo.setSupported(true);
-        result.getCapabilities().setWorkspace(new WorkspaceServerCapabilities(wspo));
+        result.getCapabilities().setWorkspace(new WorkspaceServerCapabilities(new WorkspaceFoldersOptions()));
 
-        CompletionOptions completionOptions = new CompletionOptions();
-        result.getCapabilities().setCompletionProvider(completionOptions);
-//        result.setCapabilities(capabilities);
         return CompletableFuture.supplyAsync(() -> result);
-
-    }
+    };
 
 
     @Override

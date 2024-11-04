@@ -38,12 +38,18 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private ArrayList<FeatureModelTree> featurtrees = new ArrayList<>();
     private ArrayList<String> featurenames = new ArrayList<>();
 
+    private Path workspaceFolderPath;//Store the workspace folder path
     public HAnSTextDocumentService(HAnSLanguageServer x, FeatureModelTree y) {
        // System.setProperty("log4j.configurationFile", "log4jconfig.xml");
         logger = new FileLogger(HAnSTextDocumentService.class);
         this.langugageServer = x;
         this.tree = y;
         this.currtree = tree;
+    }
+
+    //Set the workspace folder path
+    public void setWorkspaceFolderPath(Path workspaceFolderPath) {
+        this.workspaceFolderPath = workspaceFolderPath;
     }
 
     public void setWorkspaceFolders(List<WorkspaceFolder> workspaceFolders) {
@@ -109,44 +115,30 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
         */
 
-        if (currdoc != null) {
+        if (workspaceFolderPath != null) {
+            logger.info("worspace path is :" + workspaceFolderPath.toString());//Updated condition
+            try {
+                Files.walk(workspaceFolderPath)
+                        .filter(Files::isRegularFile)
+                        .filter(p -> p.getFileName().toString().equalsIgnoreCase(".feature-model"))
+                        .findFirst()
+                        .ifPresent(featureModel -> currentFeatureModel = featureModel);
 
-            Path currparrent = currdoc.getParent();
-            File currDir;
-            Path featuremodel= null;
-            Path endpath = currparrent.getRoot();
-            if (workspaceFolders != null) {
-                for (WorkspaceFolder folder : workspaceFolders) {
-                    if (currparrent.startsWith(folder.getUri())) {
-                        endpath = Paths.get(folder.getUri());
-                    }
+                if (currentFeatureModel != null) {
+                    logger.info("Found feature model at: " + currentFeatureModel.toString());
+                } else {
+                    logger.info("No feature model file found in workspace.");
                 }
+            } catch (IOException e) {
+                logger.error("Error while searching for feature model file: " + e.toString());
             }
-            else{
-                logger.info("no workspacefolder found: searching whole path");
-            }
-            while (featuremodel ==null && currparrent.startsWith(endpath)){
-                currDir = new File (currparrent.toString()+"\\" + ".feature-model");
-                if(currDir.exists()){
-                    logger.info("found featuremodel at: " + currparrent.toString() );
-                    featuremodel = currDir.toPath() ;
-                }
-                else {
-                    if (currparrent.getParent() != null) {
-                        currparrent = currparrent.getParent();
-                    }
-                    else{
-                        logger.info("no feature model found");
-                        break;
-
-                    }
-                }
-            }
-            currentFeatureModel = featuremodel;
+        } else {
+            logger.warn("Workspace folder path is not set. Cannot locate .feature-model files.");
+        }
         }
 
 
-    }
+
 
     
 
