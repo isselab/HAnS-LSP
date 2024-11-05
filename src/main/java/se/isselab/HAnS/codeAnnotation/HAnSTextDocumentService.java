@@ -115,10 +115,44 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
         */
 
-        if (workspaceFolderPath != null) {
-            logger.info("worspace path is :" + workspaceFolderPath.toString());//Updated condition
+
+        if (currdoc != null) {
+
+            Path currparrent = currdoc.getParent();
+            File currDir;
+            Path featuremodel = null;
+            Path endpath = currparrent.getRoot();
+            if (workspaceFolders != null) {
+                for (WorkspaceFolder folder : workspaceFolders) {
+                    if (currparrent.startsWith(folder.getUri())) {
+                        endpath = Paths.get(folder.getUri());
+                    }
+                }
+            } else {
+                logger.info("no workspacefolder found: searching whole path");
+            }
+            while (featuremodel == null && currparrent.startsWith(endpath)) {
+                currDir = new File(currparrent.toString() + "\\" + ".feature-model");
+                if (currDir.exists()) {
+                    logger.info("found featuremodel at: " + currparrent.toString());
+                    featuremodel = currDir.toPath();
+                } else {
+                    if (currparrent.getParent() != null) {
+                        currparrent = currparrent.getParent();
+                    } else {
+                        logger.info("no feature model found");
+                        break;
+
+                    }
+                }
+            }
+        }
+
+
+        if (workspaceFolders != null) {
+            logger.info("worspace path is :" + workspaceFolders.getFirst().toString());//Updated condition
             try {
-                Files.walk(workspaceFolderPath)
+                Files.walk(Path.of(workspaceFolders.getFirst().getUri()))
                         .filter(Files::isRegularFile)
                         .filter(p -> p.getFileName().toString().equalsIgnoreCase(".feature-model"))
                         .findFirst()
@@ -135,7 +169,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
         } else {
             logger.warn("Workspace folder path is not set. Cannot locate .feature-model files.");
         }
-        }
+
+    }
 
 
 

@@ -52,6 +52,8 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
         logger.info("Initializing language server with params: {}");
 
         //new code for workspacefolder
+
+        /*
         if (params.getInitializationOptions() instanceof Map) {
             Map<?, ?> options = (Map<?, ?>) params.getInitializationOptions();
             if (options.containsKey("workspaceFolder")) {
@@ -69,11 +71,17 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
         } else {
             logger.warn("Initialization options is not a map or is null.");
         }
+        */
+
 
         InitializeResult result = new InitializeResult(new ServerCapabilities());
         result.getCapabilities().setTextDocumentSync(TextDocumentSyncKind.Full);
         result.getCapabilities().setHoverProvider(true);
-        result.getCapabilities().setWorkspace(new WorkspaceServerCapabilities(new WorkspaceFoldersOptions()));
+        WorkspaceFoldersOptions wspo = new WorkspaceFoldersOptions();
+        wspo.setSupported(true);
+        wspo.setChangeNotifications(true);
+        result.getCapabilities().setWorkspace(new WorkspaceServerCapabilities(wspo));
+
 
         return CompletableFuture.supplyAsync(() -> result);
     };
