@@ -377,10 +377,18 @@ public class HAnSTextDocumentService implements TextDocumentService {
             int startIndex = selectedText.indexOf(keyword);
             int endIndex = startIndex + keyword.length() -1;
             logger.info("keyword:" + keyword);
-            if(selectedText.indexOf("[") == (startIndex - 1) && selectedText.indexOf("]") == (endIndex +1 )  ) {
-                if (startIndex < cha && cha < endIndex) {
+            if (keyword.equals("&Begin") || keyword.equals("&End") || keyword.equals("&Line")) {
+                if (startIndex-1 < cha && cha < endIndex + 1) {
                     logger.info("found keyword:" + keyword);
                     return createHoverForKeyword(keyword);
+                }
+            }
+            else{
+                if (selectedText.indexOf("[") == (startIndex - 1) && selectedText.indexOf("]") == (endIndex + 1)) {
+                    if (startIndex < cha && cha < endIndex) {
+                        logger.info("found keyword:" + keyword);
+                        return createHoverForKeyword(keyword);
+                    }
                 }
             }
         }
