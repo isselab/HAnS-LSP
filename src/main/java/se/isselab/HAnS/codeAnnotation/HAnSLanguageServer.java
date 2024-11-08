@@ -77,19 +77,23 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
         InitializeResult result = new InitializeResult(new ServerCapabilities());
         result.getCapabilities().setTextDocumentSync(TextDocumentSyncKind.Full);
         result.getCapabilities().setHoverProvider(true);
+        CompletionOptions completionOptions = new CompletionOptions();
+        completionOptions.setResolveProvider(true);
+        result.getCapabilities().setCompletionProvider(completionOptions);
 
         WorkspaceFoldersOptions wspo = new WorkspaceFoldersOptions();
-        wspo.setSupported(true);
-        wspo.setChangeNotifications(true);
+        wspo.setSupported(Boolean.TRUE);
+        wspo.setChangeNotifications(Boolean.TRUE);
 
-        FileOperationsServerCapabilities fosc = new FileOperationsServerCapabilities();
+        //FileOperationsServerCapabilities fosc = new FileOperationsServerCapabilities();
 
 
         WorkspaceServerCapabilities capabilities = new WorkspaceServerCapabilities();
         capabilities.setWorkspaceFolders(wspo);
         //capabilities.setFileOperations(fosc);
 
-        //result.getCapabilities().setWorkspace(capabilities);
+
+        result.getCapabilities().setWorkspace(capabilities);
 
 
         return CompletableFuture.supplyAsync(() -> result);

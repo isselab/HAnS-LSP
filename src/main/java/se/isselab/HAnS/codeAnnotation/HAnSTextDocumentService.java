@@ -32,6 +32,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private String eingabe;
     private Path currdoc;
     private Path currentFeatureModel;
+    private Path projectroot;
     private HAnSWorkSpaceService workSpaceService;
     private List<WorkspaceFolder> workspaceFolders;
     
@@ -55,15 +56,32 @@ public class HAnSTextDocumentService implements TextDocumentService {
     public void setWorkspaceFolders(List<WorkspaceFolder> workspaceFolders) {
         this.workspaceFolders = workspaceFolders;
     }
+    public void parseTextdocument(){
+        try {
+            Lexer l = new TextDocumentLexer(CharStreams.fromPath(currdoc));
+            CommonTokenStream tokens = new CommonTokenStream(l);
+            TextDocumentParser parser = new TextDocumentParser(tokens);
+            ParseTree ptree = parser.document();
+            TextDocumentBaseListener tdbl = new TextDocumentBaseListener(featurenames);
+            ParseTreeWalker walker = new ParseTreeWalker();
+            walker.walk(tdbl, ptree);
+        } catch (IOException e) {
+            logger.error("");
+        }
+    }
+
     public void parseFeaturetree(){
         //walker erstellen listener erstellen
         logger.info("Parsing Featuretree");
+        findProjektRoot();
         findNextFeatureModel();
+
         if (currentFeatureModel != null) {
             try {
                 Lexer l = new FeatureTreeLexer(CharStreams.fromPath(currentFeatureModel));
                 CommonTokenStream tokens = new CommonTokenStream(l);
                 FeatureTreeParser parser = new FeatureTreeParser(tokens);
+                featurtrees.clear();
                 ParseTree ptree = parser.featuretree();
                 FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(featurtrees, featurenames);
                 ParseTreeWalker walker = new ParseTreeWalker();
@@ -83,38 +101,6 @@ public class HAnSTextDocumentService implements TextDocumentService {
     }
 
     public void findNextFeatureModel() {
-        /*
-        try {
-            // Get the directory of the current document if it exists
-            if (currdoc != null) {
-                Path startDir = currdoc.getParent();  // Start search from the directory containing the current class
-
-                // Find all files ending with .featureModel
-                List<Path> featureModelFiles = new ArrayList<>();
-                Files.walk(startDir)  // Use walk to traverse the directory recursively
-                        .filter(Files::isRegularFile)
-                        .filter(p -> p.getFileName().toString().equalsIgnoreCase(".feature-model"))
-                        //.filter(path -> path.toString().endsWith(".feature-model"))  // Filter to get only .feature-model files
-                        .forEach(featureModelFiles::add);  // Collect each matching file
-                        //TODO walker should go through the rest of the project files        
-
-                // Print or log found files
-                for (Path file : featureModelFiles) {
-                    //logger.info("Found feature model file: {}", file);
-                    if(currentFeatureModel == null) {
-                        currentFeatureModel = file;
-                    }//konflickt lösen
-                }
-                logger.info("Found FeatureModel: " + currentFeatureModel.toString());
-            } else {
-                logger.warn("Current document path is not set. Cannot locate .featureModel files.");
-            }
-        }
-        catch (IOException e) {
-            logger.error("Error while searching for feature model files: " + e.toString());
-        }
-        */
-
 
         if (currdoc != null) {
 
@@ -122,19 +108,15 @@ public class HAnSTextDocumentService implements TextDocumentService {
             File currDir;
             Path featuremodel = null;
             Path endpath = currparrent.getRoot();
-            if (workspaceFolders != null) {
-                for (WorkspaceFolder folder : workspaceFolders) {
-                    if (currparrent.startsWith(folder.getUri())) {
-                        endpath = Paths.get(folder.getUri());
-                    }
-                }
+            if (projectroot != null) {
+                endpath = projectroot;
             } else {
                 logger.info("no workspacefolder found: searching whole path");
             }
             while (featuremodel == null && currparrent.startsWith(endpath)) {
                 currDir = new File(currparrent.toString() + "\\" + ".feature-model");
                 if (currDir.exists()) {
-                    logger.info("found featuremodel at: " + currparrent.toString());
+                    logger.info("found featuremodel at: " + currparrent.toString()+ "\\" + ".feature-model");
                     featuremodel = currDir.toPath();
                 } else {
                     if (currparrent.getParent() != null) {
@@ -146,9 +128,10 @@ public class HAnSTextDocumentService implements TextDocumentService {
                     }
                 }
             }
+            currentFeatureModel = featuremodel;
         }
 
-
+/*
         if (workspaceFolders != null) {
             logger.info("worspace path is :" + workspaceFolders.getFirst().toString());//Updated condition
             try {
@@ -169,11 +152,33 @@ public class HAnSTextDocumentService implements TextDocumentService {
         } else {
             logger.warn("Workspace folder path is not set. Cannot locate .feature-model files.");
         }
-
+     */
     }
 
 
+    public void findProjektRoot(){
+        if(currdoc != null){
+            projectroot = null;
+            Path currparrent = currdoc.getParent();
+            File currDir;
+            while (projectroot == null) {
+                currDir = new File(currparrent.toString() + "\\" + "src");
+                if (currDir.exists()) {
+                    logger.info("found project root: " + currparrent.toString());
+                    projectroot = Path.of(currDir.getParent());
+                } else {
+                    if (currparrent.getParent() != null) {
+                        currparrent = currparrent.getParent();
+                    } else {
+                        logger.info("no project root found");
+                        break;
 
+                    }
+                }
+            }
+        }
+
+    }
 
     
 
@@ -553,6 +558,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
         featurenames.clear();
         parseFeaturetree();
+        parseTextdocument();
 
 
 

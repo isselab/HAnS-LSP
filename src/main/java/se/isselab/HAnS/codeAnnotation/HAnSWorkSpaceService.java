@@ -33,7 +33,8 @@ public class HAnSWorkSpaceService implements WorkspaceService {
 
     @Override
     public void didChangeWatchedFiles(DidChangeWatchedFilesParams params) {
-
+        logger.info("files changed: " + params.getChanges().toString());
+        //textService.setWorkspaceFolders()
     }
     public void didChangeWorkspaceFolders(DidChangeWorkspaceFoldersParams params){
         logger.info("files opened: " + params.getEvent().getAdded());
