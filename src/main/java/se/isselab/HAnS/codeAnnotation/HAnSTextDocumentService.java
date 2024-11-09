@@ -100,6 +100,31 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
     }
 
+    public void parseFeatureTreeAfterChange(){
+        if (currentFeatureModel != null) {
+            try {
+                Lexer l = new FeatureTreeLexer(CharStreams.fromPath(currentFeatureModel));
+                CommonTokenStream tokens = new CommonTokenStream(l);
+                FeatureTreeParser parser = new FeatureTreeParser(tokens);
+                featurtrees.clear();
+                ParseTree ptree = parser.featuretree();
+                FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(featurtrees, featurenames);
+                ParseTreeWalker walker = new ParseTreeWalker();
+                walker.walk(ftbl, ptree);
+                logger.info("Features found" + featurenames.toString());
+                String featuretreerep ="";
+                /*for(FeatureModelTree fmt : featurtrees){
+                    featuretreerep += fmt.toString() + "\n";
+                }
+                logger.info("Featuretrees: " + featuretreerep );
+                */
+                logger.info("Featuretrees: " + featurtrees.size());
+            } catch (IOException e) {
+                logger.error("");
+            }
+        }
+    }
+
     public void findNextFeatureModel() {
 
         if (currdoc != null) {
@@ -192,7 +217,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 // Completion Item (Begin End blocks)
                 CompletionItem completionItem = new CompletionItem();
                 // Define the text to be inserted in to the file if the completion item is selected.
-                completionItem.setInsertText("//&Begin[]\n//&End[]\n");
+                completionItem.setInsertText("//&Begin[]\n\n//&End[]\n");
                 // Set the label that shows when the completion drop down appears in the Editor.
                 completionItem.setLabel("//&Begin[] ... //&End[]");
                 // Set the completion kind. This is a snippet.
@@ -206,14 +231,14 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
                 // Item 2 (Line block)
                 CompletionItem completionItem1 = new CompletionItem();
-                completionItem1.setInsertText("//&Line[]\n");
+                completionItem1.setInsertText("//&Line[]");
                 completionItem1.setLabel("//&Line[]");
                 completionItem1.setKind(CompletionItemKind.Snippet);
                 completionItem1.setDetail("Creating a new Line Annotation");
                 completionItems.add(completionItem1);
 
                 CompletionItem completionItem2 = new CompletionItem();
-                completionItem2.setInsertText("&Line[]\n");
+                completionItem2.setInsertText("&Line[]");
                 completionItem2.setLabel("&Line[]");
                 completionItem2.setKind(CompletionItemKind.Snippet);
                 completionItem2.setDetail("Creating a new Line Annotation");
@@ -227,7 +252,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 completionItems.add(completionItem3);
 
                 CompletionItem completionItem4 = new CompletionItem();
-                completionItem4.setInsertText("&Begin[]\n //&End[]");
+                completionItem4.setInsertText("&Begin[]\n\n//&End[]");
                 completionItem4.setLabel("&Begin[] ... //&End[]");
                 completionItem4.setKind(CompletionItemKind.Snippet);
                 completionItem4.setDetail("Creating a new block for feature");
@@ -324,7 +349,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
         // Additional check in hoverForReferences to avoid null references
         if (selectedText == null || selectedText.isEmpty()) {
             logger.info("No text available for analysis in hoverForReferences.");
-            return new Hover(new MarkupContent(MarkupKind.MARKDOWN, "No text available for analysis."));
+            //return new Hover(new MarkupContent(MarkupKind.MARKDOWN, "No text available for analysis."));
+            return null;
         }
 
         List<String> keywords = new ArrayList<String>() {{
@@ -334,6 +360,9 @@ public class HAnSTextDocumentService implements TextDocumentService {
             add("&Begin");
             add("&End");
             add("&Line");
+            add("&begin");
+            add("&end");
+            add("&line");
             //add("Begin[");
             //add("End[");
             //add("Line[");
@@ -355,7 +384,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
         if (availableKeywords.isEmpty()) {
             logger.info("No matching keywords found.");
-            return new Hover(new MarkupContent(MarkupKind.MARKDOWN, "No keyword found, availableKeywords.isEmpty"));
+            //return new Hover(new MarkupContent(MarkupKind.MARKDOWN, "No keyword found, availableKeywords.isEmpty"));
+            return null;
         }
         logger.info("found available keywords:" + availableKeywords.toString() );
         /*
@@ -382,7 +412,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
             int startIndex = selectedText.indexOf(keyword);
             int endIndex = startIndex + keyword.length() -1;
             logger.info("keyword:" + keyword);
-            if (keyword.equals("&Begin") || keyword.equals("&End") || keyword.equals("&Line")) {
+            if (keyword.equalsIgnoreCase("&begin") || keyword.equalsIgnoreCase("&end") || keyword.equalsIgnoreCase("&line")) {
                 if (startIndex-1 < cha && cha < endIndex + 1) {
                     logger.info("found keyword:" + keyword);
                     return createHoverForKeyword(keyword);
@@ -406,19 +436,19 @@ public class HAnSTextDocumentService implements TextDocumentService {
         markupContent.setKind(MarkupKind.PLAINTEXT); //MARKDOWN
 
         switch (keyword) {
-            case "&Begin":
+            case "&Begin", "&begin":
                 markupContent.setValue("Beginning of a Feature annotation block");
                 break;
-            case "&End":
+            case "&End", "&end":
                 markupContent.setValue("End of a Feature annotation block");
                 break;
-            case "&Line":
+            case "&Line", "&line":
                 markupContent.setValue("Feature Line annotation");
                 break;
             default:
                // String featureDefinition = getFeatureDefinition(keyword);
                 //if (featureDefinition != null) {
-                markupContent.setValue(keyword + " is a Feature Feature defined in the feature-model" + System.lineSeparator() + "reference: "+ (currentFeatureModel) );
+                markupContent.setValue(keyword + " is a Feature defined in the feature-model" + System.lineSeparator() + "reference: "+ (currentFeatureModel) );
                 //} else {
                 //    markupContent.setValue("Feature not defined.");
                 break;
@@ -575,6 +605,10 @@ public class HAnSTextDocumentService implements TextDocumentService {
             String newText = change.getText();
         }
         logger.info("File has been changed : "+ params.getTextDocument().getUri() ); //logging change range?
+        featurenames.clear();
+        parseFeatureTreeAfterChange();
+        parseTextdocument();
+
     }
 
     @Override
