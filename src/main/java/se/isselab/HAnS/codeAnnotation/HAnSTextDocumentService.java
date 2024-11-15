@@ -435,40 +435,24 @@ public class HAnSTextDocumentService implements TextDocumentService {
         MarkupContent markupContent = new MarkupContent();
         markupContent.setKind(MarkupKind.PLAINTEXT); //MARKDOWN
 
-        switch (keyword) {
-            case "&Begin", "&begin":
+        switch (keyword.toLowerCase()) {
+            case "&begin":
                 markupContent.setValue("Beginning of a Feature annotation block");
                 break;
-            case "&End", "&end":
+            case "&end":
                 markupContent.setValue("End of a Feature annotation block");
                 break;
-            case "&Line", "&line":
+            case "&line":
                 markupContent.setValue("Feature Line annotation");
                 break;
             default:
-               // String featureDefinition = getFeatureDefinition(keyword);
-                //if (featureDefinition != null) {
-                markupContent.setValue(keyword + " is a Feature defined in the feature-model" + System.lineSeparator() + "reference: "+ (currentFeatureModel) );
-                //} else {
-                //    markupContent.setValue("Feature not defined.");
+                markupContent.setValue(keyword + " is a Feature defined in the feature-model" + System.lineSeparator() + "Defined  at: "+ (currentFeatureModel) );
                 break;
         }
 
         Hover hover = new Hover(markupContent);
         return hover;
     }
-    //hard coded hover method that works for tests:
-    /**public CompletableFuture<Hover> hover(HoverParams params) {
-        logger.info("Hover request received.");
-        MarkupContent markupContent = new MarkupContent();
-        markupContent.setKind(MarkupKind.MARKDOWN);
-        markupContent.setValue("Test Hover Text");
-
-        Hover hover = new Hover(markupContent);
-        return CompletableFuture.completedFuture(hover);
-    }*/
-
-
     //    @Override
     public CompletableFuture<SignatureHelp> signatureHelp(TextDocumentPositionParams textDocumentPositionParams) {
         return null;
