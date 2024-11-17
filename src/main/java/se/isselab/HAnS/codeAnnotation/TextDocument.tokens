@@ -1,0 +1,13 @@
+T__0=1
+T__1=2
+WS=3
+Begin=4
+End=5
+Line=6
+FEATURENAME=7
+Text=8
+'['=1
+']'=2
+'&Begin'=4
+'&End'=5
+'&Line'=6

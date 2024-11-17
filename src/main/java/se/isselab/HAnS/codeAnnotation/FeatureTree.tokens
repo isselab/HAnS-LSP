@@ -1,0 +1,6 @@
+WS=1
+Newline=2
+LO=3
+FEATURENAME=4
+OPTIONAL=5
+'?'=5
