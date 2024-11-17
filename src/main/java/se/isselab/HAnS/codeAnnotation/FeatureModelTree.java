@@ -5,10 +5,12 @@ package se.isselab.HAnS.codeAnnotation;
 import java.util.ArrayList;
 
 public class FeatureModelTree {
+
+
     private String name;
     private ArrayList<FeatureModelTree> subfeatures;
-    private String LO = "NONE";
     private boolean isOptional = false;
+    private  int FeatureLine;
     private FeatureLocation location;
     private FeatureModelTree parent;
     public FeatureModelTree(FeatureModelTree parent) {
@@ -19,11 +21,11 @@ public class FeatureModelTree {
         this(parent);
         this.name = name;
     }
-    public FeatureModelTree(FeatureModelTree parent,String name, boolean isOptional , String LO) {
+    public FeatureModelTree(FeatureModelTree parent,String name,int line, boolean isOptional) {
         this(parent);
         this.name = name;
-        this.LO = LO;
         this.isOptional = isOptional;
+        this.FeatureLine = line;
     }
     public synchronized void append(FeatureModelTree fmt) {
         subfeatures.add(fmt);
@@ -97,13 +99,14 @@ public class FeatureModelTree {
         return true;
 
     }
-    public String getLO(){
-        return LO;
-    }
-    public void setLO(String LO) {
-        this.LO = LO;
-    }
     public boolean getisOptional() {
         return isOptional;
+    }
+
+    public void setFeatureLine(int featureLine) {
+        FeatureLine = featureLine;
+    }
+    public int getFeatureLine() {
+        return FeatureLine;
     }
 }

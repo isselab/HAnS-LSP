@@ -25,7 +25,10 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 
 	private int currentindentdepht = 0;
 	private int featurecount = 0;
-	private int line = 1;
+	private int line = 0;
+	private int indent = 4;
+	private boolean inLogicaltree = false;
+	private ArrayList<FeatureModelTreeLO> LOtrees = new ArrayList<>();
 
 	public FeatureTreeBaseListener(ArrayList<FeatureModelTree> trees, ArrayList<String> features) {
 		logger = new FileLogger(FeatureTreeBaseListener.class);
@@ -40,7 +43,7 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	@Override public void enterFeaturetree(FeatureTreeParser.FeaturetreeContext ctx) {
 		currentindentdepht = 0;
 		featurecount = 0;
-		line = 1;
+		line = 0;
 		logger.info("ChildCountFeaturetree:" + ctx.getChildCount());
 	}
 	/**
@@ -62,7 +65,8 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 		featureContexts.add(ctx);
 		if(ctx.FEATURENAME() != null) {
 			features.add(ctx.FEATURENAME().toString());
-			logger.info("foundfeature:" + ctx.FEATURENAME().getText() + " in line: "+ line);
+			logger.info("foundfeature:" + ctx.FEATURENAME().getText() + " in line: " + line);
+
 		}
 	}
 	/**
@@ -74,6 +78,14 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 		int lineindent = 0;
 		if(ctx.FEATURENAME() == null) {
 			logger.info("empty line in line: " + line);
+			if(!LOtrees.isEmpty()){
+				for(FeatureModelTreeLO tree: LOtrees){
+					tree.setOperands(LOtrees);
+				}
+				logger.info("LOtree found: " + LOtrees.toString() + " with Logicaloperator: "+ LOtrees.getFirst().getOperator() );
+				LOtrees.clear();
+			}
+			inLogicaltree = false;
 		}
 		else {
 			/*
@@ -102,6 +114,7 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 						break;
 					}
 				}
+				inLogicaltree = true;
 			}
 			else{
 				for(int i =0; i < ctx.getChildCount(); i++) {
@@ -115,23 +128,34 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 			}
 			if (ctx.OPTIONAL() != null) {
 				isOPtional = true;
+				logger.info("feature: "+ ctx.FEATURENAME().getText() +" is optional");
 			}
 			logger.info("currentindentdepht: " + currentindentdepht + " WSchildcount: " + lineindent +   " in line: " + line);
 			int workingindent = lineindent;
 			int workingcurrentindent = currentindentdepht;
+
+			if(workingcurrentindent < workingindent) {
+				indent = workingindent - workingcurrentindent;
+			}
+
 			while ( workingcurrentindent > workingindent) {
 				if (currentTree.getParent() != null) {
 					currentTree = currentTree.getParent();
 					logger.info("escaping featuretree in line: " + line +" currentindent: "+ workingcurrentindent + " ws size: " +workingindent );
 				}
 				logger.info("diffrent WS in line : " + line +" currentindent: "+ workingcurrentindent + " ws size: " +workingindent );
-				workingindent += 4;
+				workingindent += indent;
 			}
 			currentindentdepht = lineindent;
 
-
-
-			FeatureModelTree t = new FeatureModelTree(currentTree, ctx.FEATURENAME().toString(), isOPtional, LO);
+			FeatureModelTree t;
+			if(inLogicaltree){
+				t = new FeatureModelTreeLO(currentTree, ctx.FEATURENAME().toString(),line, isOPtional, LO);
+				LOtrees.add((FeatureModelTreeLO) t);
+			}
+			else {
+				t = new FeatureModelTree(currentTree, ctx.FEATURENAME().toString(),line , isOPtional);
+			}
 			currentTree.addSubFeatureTree(t);
 			currentTree = t;
 			currentindentdepht ++;
