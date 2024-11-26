@@ -83,7 +83,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 FeatureTreeParser parser = new FeatureTreeParser(tokens);
                 featurtrees.clear();
                 ParseTree ptree = parser.featuretree();
-                FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(featurtrees, featurenames);
+                FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(tree, featurenames);
                 ParseTreeWalker walker = new ParseTreeWalker();
                 walker.walk(ftbl, ptree);
                 logger.info("Features found" + featurenames.toString());
@@ -108,7 +108,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 FeatureTreeParser parser = new FeatureTreeParser(tokens);
                 featurtrees.clear();
                 ParseTree ptree = parser.featuretree();
-                FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(featurtrees, featurenames);
+                FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(tree, featurenames);
                 ParseTreeWalker walker = new ParseTreeWalker();
                 walker.walk(ftbl, ptree);
                 logger.info("Features found" + featurenames.toString());
@@ -273,15 +273,28 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 completionItems.add(completionItem6);
 
 
+                ArrayList<String> duplicates = new ArrayList<>();
+                if (tree.getDuplicates().isEmpty()) {
+                    duplicates = tree.getDuplicates().get();
+                }
                 //completion für featureliste
                 for(String feature : featurenames){
+                    if(!duplicates.contains(feature)){
+                        CompletionItem completionItemi = new CompletionItem();
+                        completionItemi.setInsertText(feature);
+                        completionItemi.setLabel(feature);
+                        completionItemi.setKind(CompletionItemKind.Snippet);
+                        completionItemi.setDetail("a feature defined in the model");
+                        completionItems.add(completionItemi);
+                    }
+                }
+                for (String feature: tree.getDuplicatesWithParrent()) {
                     CompletionItem completionItemi = new CompletionItem();
                     completionItemi.setInsertText(feature);
                     completionItemi.setLabel(feature);
                     completionItemi.setKind(CompletionItemKind.Snippet);
                     completionItemi.setDetail("a feature defined in the model");
                     completionItems.add(completionItemi);
-
                 }
 
 
@@ -371,13 +384,15 @@ public class HAnSTextDocumentService implements TextDocumentService {
             //add("//$Line");
             //addAll(tree.PreorderNames());
             addAll(featurenames);
+            addAll(tree.getDuplicatesWithParrent());
         }};
+        //logger.info("duplicates: " + tree.getDuplicates());
         logger.info("keywords :" + keywords.toString() );
         List<String> availableKeywords = new ArrayList<>();
         for (String keyword : keywords) {
             //logger.info("testing available keyword:" + keyword);
             if (selectedText.contains(keyword)){
-                availableKeywords.add(keyword);
+                availableKeywords.add(keyword); // name::name
                 logger.info("available keyword:" + keyword);
             }
         }
@@ -411,7 +426,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
         for (String keyword : availableKeywords) {
             int startIndex = selectedText.indexOf(keyword);
             int endIndex = startIndex + keyword.length() -1;
-            logger.info("keyword:" + keyword);
+            logger.info("keyword:" + keyword + " at: "+startIndex +", "+endIndex);
             if (keyword.equalsIgnoreCase("&begin") || keyword.equalsIgnoreCase("&end") || keyword.equalsIgnoreCase("&line")) {
                 if (startIndex-1 < cha && cha < endIndex + 1) {
                     logger.info("found keyword:" + keyword);
@@ -419,10 +434,12 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 }
             }
             else{
-                if (selectedText.indexOf("[") == (startIndex - 1) && selectedText.indexOf("]") == (endIndex + 1)) {
+                if (selectedText.charAt((startIndex - 1)) == '['  && selectedText.charAt((endIndex + 1)) == ']' ) {
                     if (startIndex < cha && cha < endIndex) {
                         logger.info("found keyword:" + keyword);
                         return createHoverForKeyword(keyword);
+
+
                     }
                 }
             }
@@ -446,9 +463,10 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 markupContent.setValue("Feature Line annotation");
                 break;
             default:
-                markupContent.setValue(keyword + " is a Feature defined in the feature-model" + System.lineSeparator() + "Defined  at: "+ (currentFeatureModel) );
+                markupContent.setValue(keyword + " is a Feature defined in the feature-model" + System.lineSeparator() + "Defined  at: " + (currentFeatureModel));
                 break;
         }
+
 
         Hover hover = new Hover(markupContent);
         return hover;

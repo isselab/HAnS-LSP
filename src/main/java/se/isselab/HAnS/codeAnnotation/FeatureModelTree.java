@@ -3,6 +3,8 @@ package se.isselab.HAnS.codeAnnotation;
 
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class FeatureModelTree {
 
@@ -108,5 +110,47 @@ public class FeatureModelTree {
     }
     public int getFeatureLine() {
         return FeatureLine;
+    }
+
+    public Optional<ArrayList<String>> getDuplicates(){
+        ArrayList<String> visited = new ArrayList<>();
+        ArrayList<String> duplicates = new ArrayList<>();
+        this.lookforduplicates(visited,duplicates);
+        return Optional.of(duplicates);
+    }
+    private void lookforduplicates(ArrayList<String> duplicates, ArrayList<String> visited) {
+        if (visited.contains(name)){
+            duplicates.add(name);
+        }
+        visited.add(name);
+        for (FeatureModelTree fmt : subfeatures){
+            fmt.lookforduplicates(duplicates,visited);
+        }
+    }
+    public ArrayList<String> getDuplicatesWithParrent(){
+        ArrayList<String> duplicates = new ArrayList<>();
+        if (this.getDuplicates().isPresent()) {
+        duplicates = this.getDuplicates().get();
+        }
+        ArrayList<String> replaced = new ArrayList<>();
+
+        this.replaceduplicates(replaced,duplicates);
+
+        return replaced;
+    }
+    private void replaceduplicates(ArrayList<String> replaced, ArrayList<String> duplicates) {
+        if (duplicates.contains(name)){
+            if(this.getParent()!=null){
+                replaced.add(this.getParent().getName() + "::" + name);
+            }
+            else {
+                replaced.add("::" + name);
+            }
+
+
+        }
+        for (FeatureModelTree fmt : subfeatures){
+            fmt.lookforduplicates(replaced,duplicates);
+        }
     }
 }

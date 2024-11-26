@@ -18,6 +18,19 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "grammars": [
+      {
+        "path": "./syntaxes/HAnS-injection.json",
+        "scopeName": "HAnS-vscode.injection",
+        "injectTo": ["source.java"],
+        "embeddedLanguages": {
+          "comment.line.double-slash.java": "java"
+        },
+        "tokenTypes": {
+          "comment.line.double-slash.java": "other"
+        }
+      }
+    ],
     "languages": [
       {
         "id": "java",
@@ -45,6 +58,7 @@
       }
     ],
     "commands": []
+    
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

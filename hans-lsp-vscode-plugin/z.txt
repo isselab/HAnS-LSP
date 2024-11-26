@@ -1,0 +1,3 @@
+Java -jar C:\Users\Tim\Downloads\antlr-4.13.2-complete.jar -Dlanguage=Java C:\Users\Tim\Documents\GitHub\HAnS-LSP\src\main\java\se\isselab\HAnS\codeAnnotation\FeatureTree.g4
+
+Java -jar C:\Users\Tim\Downloads\antlr-4.13.2-complete.jar -Dlanguage=Java C:\Users\Tim\Documents\GitHub\HAnS-LSP\src\main\java\se\isselab\HAnS\codeAnnotation\TextDocument.g4
