@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.nio.file.Paths;
 
@@ -83,7 +84,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 FeatureTreeParser parser = new FeatureTreeParser(tokens);
                 featurtrees.clear();
                 ParseTree ptree = parser.featuretree();
-                FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(tree, featurenames);
+                FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(featurenames);
                 ParseTreeWalker walker = new ParseTreeWalker();
                 walker.walk(ftbl, ptree);
                 logger.info("Features found" + featurenames.toString());
@@ -93,6 +94,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 }
                 logger.info("Featuretrees: " + featuretreerep );
                 */
+                tree = ftbl.getFeatureModelTree();
                  logger.info("Featuretrees: " + featurtrees.size());
             } catch (IOException e) {
                 logger.error("");
@@ -108,7 +110,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 FeatureTreeParser parser = new FeatureTreeParser(tokens);
                 featurtrees.clear();
                 ParseTree ptree = parser.featuretree();
-                FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(tree, featurenames);
+                FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(featurenames);
                 ParseTreeWalker walker = new ParseTreeWalker();
                 walker.walk(ftbl, ptree);
                 logger.info("Features found" + featurenames.toString());
@@ -118,6 +120,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 }
                 logger.info("Featuretrees: " + featuretreerep );
                 */
+                tree = ftbl.getFeatureModelTree();
                 logger.info("Featuretrees: " + featurtrees.size());
             } catch (IOException e) {
                 logger.error("");
@@ -273,11 +276,9 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 completionItems.add(completionItem6);
 
 
-                ArrayList<String> duplicates = new ArrayList<>();
-                if (tree.getDuplicates().isEmpty()) {
-                    duplicates = tree.getDuplicates().get();
-                }
+                ArrayList<String> duplicates = tree.getDuplicates();
                 //completion für featureliste
+                logger.info("duplicates: "+duplicates.toString() );
                 for(String feature : featurenames){
                     if(!duplicates.contains(feature)){
                         CompletionItem completionItemi = new CompletionItem();
@@ -288,13 +289,17 @@ public class HAnSTextDocumentService implements TextDocumentService {
                         completionItems.add(completionItemi);
                     }
                 }
-                for (String feature: tree.getDuplicatesWithParrent()) {
-                    CompletionItem completionItemi = new CompletionItem();
-                    completionItemi.setInsertText(feature);
-                    completionItemi.setLabel(feature);
-                    completionItemi.setKind(CompletionItemKind.Snippet);
-                    completionItemi.setDetail("a feature defined in the model");
-                    completionItems.add(completionItemi);
+                ArrayList<String> DuplicateFeatures = tree.getDuplicatesWithParrent();
+                logger.info("duplicates ersetzt: "+DuplicateFeatures.toString() );
+                if(!DuplicateFeatures.isEmpty()) {
+                    for (String feature : DuplicateFeatures) {
+                        CompletionItem completionItemi = new CompletionItem();
+                        completionItemi.setInsertText(feature);
+                        completionItemi.setLabel(feature);
+                        completionItemi.setKind(CompletionItemKind.Snippet);
+                        completionItemi.setDetail("a feature defined in the model");
+                        completionItems.add(completionItemi);
+                    }
                 }
 
 

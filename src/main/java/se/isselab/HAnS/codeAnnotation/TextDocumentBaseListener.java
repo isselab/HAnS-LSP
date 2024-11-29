@@ -16,6 +16,7 @@ public class TextDocumentBaseListener implements TextDocumentListener {
 	ArrayList<String> features;
 	private static FileLogger logger;
 
+
 	public TextDocumentBaseListener(ArrayList<String> features) {
 		logger = new FileLogger(TextDocumentBaseListener.class);
 		this.features = features;

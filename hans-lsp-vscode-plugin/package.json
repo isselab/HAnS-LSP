@@ -2,6 +2,7 @@
   "name": "hans-lsp-vscode-extension",
   "displayName": "HAnS-LSP-vscode-Extension",
   "description": "Extention for HAnS-LSP-LS",
+  "repository": "https://github.com/isselab/HAnS-LSP" ,
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.94.0"
@@ -54,6 +55,18 @@
         "id": "Featuremodel",
         "extensions": [
           ".feature-model"
+        ]
+      },
+      {
+        "id": "FeatureToFile",
+        "extensions": [
+          ".feature-to-file"
+        ]
+      },
+      {
+        "id": "FeatureToFolder",
+        "extensions": [
+          ".feature-to-folder"
         ]
       }
     ],

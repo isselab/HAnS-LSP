@@ -16,7 +16,6 @@ import java.util.List;
  */
 @SuppressWarnings("CheckReturnValue")
 public class FeatureTreeBaseListener implements FeatureTreeListener {
-	FeatureModelTree trees;
 	FeatureModelTree root = new FeatureModelTree(null, ".feature-model");
 	FeatureModelTree currentTree = root ;
 	ArrayList<String> features;
@@ -30,9 +29,8 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	private boolean inLogicaltree = false;
 	private ArrayList<FeatureModelTreeLO> LOtrees = new ArrayList<>();
 
-	public FeatureTreeBaseListener(FeatureModelTree trees, ArrayList<String> features) {
+	public FeatureTreeBaseListener(ArrayList<String> features) {
 		logger = new FileLogger(FeatureTreeBaseListener.class);
-		this.trees = trees;
 		this.features = features;
 	}
 	/**
@@ -52,7 +50,9 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFeaturetree(FeatureTreeParser.FeaturetreeContext ctx) {
-		trees = currentTree;
+	}
+	public FeatureModelTree getFeatureModelTree() {
+		return root;
 	}
 	/**
 	 * {@inheritDoc}

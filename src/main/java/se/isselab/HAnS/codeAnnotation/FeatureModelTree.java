@@ -112,29 +112,34 @@ public class FeatureModelTree {
         return FeatureLine;
     }
 
-    public Optional<ArrayList<String>> getDuplicates(){
+    public ArrayList<String> getDuplicates(){
         ArrayList<String> visited = new ArrayList<>();
         ArrayList<String> duplicates = new ArrayList<>();
-        this.lookforduplicates(visited,duplicates);
-        return Optional.of(duplicates);
-    }
-    private void lookforduplicates(ArrayList<String> duplicates, ArrayList<String> visited) {
-        if (visited.contains(name)){
-            duplicates.add(name);
+        this.lookforduplicates(visited);
+        for(int i = 0 ; i < visited.size() ; i++){
+            String comp = visited.get(i);
+            for(int j = 0 ; j < visited.size() ; j++){
+                if(comp.equals(visited.get(j)) && j!=i ){
+                    duplicates.add(comp);
+                }
+            }
         }
-        visited.add(name);
+        return duplicates;
+    }
+    private void lookforduplicates(ArrayList<String> visited) {
+        if(this.name != null) {
+            visited.add(name);
+        }
         for (FeatureModelTree fmt : subfeatures){
-            fmt.lookforduplicates(duplicates,visited);
+            fmt.lookforduplicates(visited);
         }
     }
     public ArrayList<String> getDuplicatesWithParrent(){
-        ArrayList<String> duplicates = new ArrayList<>();
-        if (this.getDuplicates().isPresent()) {
-        duplicates = this.getDuplicates().get();
-        }
+        ArrayList<String> duplicates = this.getDuplicates();
         ArrayList<String> replaced = new ArrayList<>();
-
+        if (!duplicates.isEmpty()) {
         this.replaceduplicates(replaced,duplicates);
+        }
 
         return replaced;
     }
@@ -150,7 +155,7 @@ public class FeatureModelTree {
 
         }
         for (FeatureModelTree fmt : subfeatures){
-            fmt.lookforduplicates(replaced,duplicates);
+            fmt.replaceduplicates(replaced,duplicates);
         }
     }
 }

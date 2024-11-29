@@ -33,12 +33,14 @@ const node_1 = require("vscode-languageclient/node");
 let client;
 const LS_Launcher_Main = "HAnS-LSP-1.0-SNAPSHOT-jar-with-dependencies";
 const outputChannel = vscode.window.createOutputChannel("LSP-HAnS");
+var LSPPath;
 function activate(context) {
     // The server is implemented in node
     let serverModule = context.asAbsolutePath(path.join("server", "out", "server.js"));
     // The debug options for the server
     // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
     let debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
+    LSPPath = context.asAbsolutePath("./HAnS-LSP-1.0-SNAPSHOT-jar-with-dependencies.jar");
     const workspaceFolderPath = vscode_1.workspace.workspaceFolders ? vscode_1.workspace.workspaceFolders[0].uri.fsPath : undefined;
     //const workspaceFolderPath = workspace.workspaceFolders ? workspace.workspaceFolders[0].uri.fsPath :URI};
     console.log("Workspace folder path being sent to server:", workspaceFolderPath);
@@ -95,7 +97,7 @@ function activate(context) {
         let clientOptions = {
             // Register the server for plain text documents,
             workspaceFolder: workspaceFolder,
-            documentSelector: [{ scheme: "file", language: "plaintext" }, { scheme: "file", language: "javascript" }, { scheme: "file", language: "typescript" }, { scheme: "file", language: "Featuremodel" }, { scheme: "file", language: "java" }],
+            documentSelector: [{ scheme: "file", language: "plaintext" }, { scheme: "file", language: "javascript" }, { scheme: "file", language: "typescript" }, { scheme: "file", language: "Featuremodel" }, { scheme: "file", language: "java" }, { scheme: "file", language: "FeatureToFile" }, { scheme: "file", language: "FeatureToFolder" }],
             synchronize: {
                 // Notify the server about file changes to '.clientrc files contained in the workspace
                 fileEvents: vscode_1.workspace.createFileSystemWatcher("**/.clientrc"),
@@ -154,7 +156,8 @@ function getServerOptions() {
         throw new Error("JAVA_HOME is not defined.");
     }*/
     let executable = path.join(String(JAVA_HOME), "bin", "java");
-    let args = ["-jar", LS_HOME];
+    //let args: string[] = ["-jar", LS_HOME];
+    let args = ["-jar", LSPPath];
     let serverOptions = {
         command: executable,
         args: [...args, LS_Launcher_Main],

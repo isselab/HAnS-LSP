@@ -16,6 +16,7 @@ import { Server } from "http";
 let client: LanguageClient;
 const LS_Launcher_Main = "HAnS-LSP-1.0-SNAPSHOT-jar-with-dependencies";
 const outputChannel = vscode.window.createOutputChannel("LSP-HAnS");
+var LSPPath:string;
 
 export function activate(context: ExtensionContext) {
   // The server is implemented in node
@@ -26,7 +27,7 @@ export function activate(context: ExtensionContext) {
   // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
   let debugOptions = { execArgv: ["--nolazy", "--inspect=6009"] };
 
-
+  LSPPath =context.asAbsolutePath("./HAnS-LSP-1.0-SNAPSHOT-jar-with-dependencies.jar");
 
 
   const workspaceFolderPath = workspace.workspaceFolders ? workspace.workspaceFolders[0].uri.fsPath : undefined;
@@ -99,7 +100,7 @@ export function activate(context: ExtensionContext) {
     // Register the server for plain text documents,
       
       workspaceFolder: workspaceFolder,
-      documentSelector: [{ scheme: "file", language: "plaintext" },{scheme: "file", language: "javascript"},{scheme: "file", language: "typescript"},{scheme: "file", language: "Featuremodel"},{scheme: "file", language: "java"}],
+      documentSelector: [{ scheme: "file", language: "plaintext" },{scheme: "file", language: "javascript"},{scheme: "file", language: "typescript"},{scheme: "file", language: "Featuremodel"},{scheme: "file", language: "java"},{scheme: "file", language: "FeatureToFile"},{scheme: "file", language: "FeatureToFolder"}],
       synchronize: {
        // Notify the server about file changes to '.clientrc files contained in the workspace
        fileEvents: workspace.createFileSystemWatcher("**/.clientrc"), 
@@ -188,7 +189,8 @@ function getServerOptions() {
   }*/
 
   let executable: string = path.join(String(JAVA_HOME), "bin", "java");
-  let args: string[] = ["-jar", LS_HOME];
+  //let args: string[] = ["-jar", LS_HOME];
+  let args: string[] = ["-jar", LSPPath];
 
   let serverOptions: ServerOptions = {
     command: executable,
