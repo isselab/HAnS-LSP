@@ -12,10 +12,13 @@ The purpose of this repo is to test and evaluate the embedded feature annotation
 
 ### JAVA HOME SETTINGS
 
+Search for 'Edit the system environment variables' 
 ![alt tag](./guide/system-Variables.png)
+click on 'Environment Variables'
 ![alt tag](./guide/Environment Variables.png)
+click 'new...' to create a new variable.
 ![alt tag](./guide/JAVA_Home.png)
-
+Name the Variable 'JAVA_HOME' and add the path to your JDK 22+ as the value 
 Make sure to use "PROGRA~1" instead of "Program Files" in the path
 ![alt tag](./guide/Variable_Value.png)
 
@@ -128,6 +131,8 @@ extension `.feature-to-folder` as below. Features must be separated by either sp
 The purpose of HAnS is to enable recording and editing support for feature annotations.
 
 #### HAnS-text supports:
+For the parsing to work properly, make sure to save four files after changes.
+
 * Embedded Feature Annotations (check .feature-model to browse all defined features)
 
 * Code Completion (ctrl space to get suggested completion)

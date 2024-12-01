@@ -1,6 +1,7 @@
 # Tasks to complete
 
 During the task, take notes while coding, so you can answer the questionnaire after completing all the tasks.
+Make sure you save your changes for the extension to work correctly.
 
 ## First part:
 
@@ -27,13 +28,13 @@ If the length of the snake is less than or equal to three, the snake dies. Hint:
 
 ### Task 2:
 
-Add a file .feature-to-file to the pojo package.
+Add a .feature-to-file file to the pojo package.
  * Verify that the feature Tile is defined in the Feature Model. * 
  Map the feature Tile to the file Tuple.java.
 
 ### Task 3:
 
-add a feature to the .feature-model file, then annotate both functions, namely getWindowWidth() and getWindowHeight(), in a single block ( //Begin[you feature's name] ... both functions logic....//End[you feature's name] ).
+add a feature to the .feature-model file, then annotate both functions, namely getWindowWidth() and getWindowHeight(), in a single block ( //&Begin[you feature's name] ... both functions logic....//&End[you feature's name] ).
 these functions can be found in the /src/graphics/Window.java file.
 
 ## Second part:
@@ -70,7 +71,7 @@ The feature should be defined as a child feature of GameState in the Feature Mod
 
 ### Task 6
 
-in the file /src/graphics/Window.java check all feature annotations. then go to .feature-model file and check if each feature is defined there.
+in the file /src/graphics/Window.java check all feature annotations. then go to .feature-model file and check if each feature is defined there. If a feature is not defined in the .feature-model file add it.
 
 # Answer questions
 After the above tasks are completed, fill out the [survey](https://docs.google.com/forms/d/e/1FAIpQLSdcpbnTASBGH6cRMHw2DUJWOQm3MigtSJPRo37Q_eYchaOqZg/viewform?usp=sf_link).
