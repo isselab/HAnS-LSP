@@ -15,8 +15,11 @@ You have now mapped the feature Playing_Area to the graphics directory.
 
 ### Task 1:
 
-Implement and annotate a feature (choose a fitting name) that adds a red poison tile that if eaten shrinks the snake by three tiles.
-If the length of the snake is less than or equal to three, the snake dies. Hint: The poison would follow similar implementation as the feature Food.
+Implement and annotate a feature (choose a fitting name) that chages the size the snake grows by.
+add a methode 'changeGrowth(int x){...}' to /src/logic/ThreadsController.java..
+The feature should be defined as a child feature of Snake in the Feature Model. 
+ * Hint 1: the growth depends on the growth variable *
+
 
 **Reminder: Make sure you annotate the code you write!**
 
@@ -49,18 +52,19 @@ You have now mapped the feature *DataTypes* to the *pojo* directory.
 
 ### Task 4
 
-Implement and annotate a feature that raises the difficulty of the game by increasing its speed by one every time the snake crosses the borders of the playing area.
-The feature should be defined as a child feature of GameState in the Feature Model. The current difficulty should be displayed as the title of the window, create methods to enable this.
- * Hint 1: The speed of the game is inverted. It is implemented as a sleep call, so the shorter the sleep, the faster the game. * 
- Hint 2: The difficulty may never be equal to or exceed the speed variable.
- * Hint 3: To check if the snake passes the bottom border check if the head is equal to 0. * 
- Hint 4: Look at the new Head feature.
+Implement and annotate a feature (choose a fitting name) that changes the speed of the snake.
+add a methode 'changeSpeed(long x){...}' to /src/logic/ThreadsController.java. that changes the speed of the snake
+The feature should be defined as a child feature of Snake in the Feature Model. 
+ * Hint 1: the speed is dependent on the game speed *
+* Hint 2: gamespeed depends on the sleep time of the pause methode * 
+* Hint 3: the pause time depends on the delay methode * 
+
 
 **Reminder: Make sure you annotate the code you write!**
 
 ### Task 5
 
-    Verify that the feature Controls is defined in the Feature Model.
+    Verify that the feature 'Controls' is defined in the Feature Model.
     Map the feature Controls to the file KeyboardListener.java in .feature-to-file in the logic package.
 
 ### Task 6

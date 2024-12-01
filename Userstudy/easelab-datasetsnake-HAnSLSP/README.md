@@ -7,10 +7,11 @@ The purpose of this repo is to test and evaluate the embedded feature annotation
 
 * Visual Studio code installed
 * Required JDK 22+
-* Installed HAnS-LSP-text plugin
-* JAVA_Home Settings
+* Installed HAnS-LSP-vscode plugin
+* JAVA_Home Set
 
 ### JAVA HOME SETTINGS
+How to set JAVA_HOME on windows:
 
 Search for 'Edit the system environment variables' 
 ![alt tag](./guide/system-Variables.png)

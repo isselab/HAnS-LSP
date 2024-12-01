@@ -10,7 +10,8 @@ public class ThreadsController extends Thread {
     private final ArrayList<ArrayList<DataOfSquare>> Squares;
     private final Tuple headSnakePos;
     private int sizeSnake = 3;
-    private final long delay = 75;
+    private long delay = 75;
+    private int growth = 1;
     public static Direction directionSnake;
 
     private final ArrayList<Tuple> positions = new ArrayList<>();
@@ -73,7 +74,7 @@ public class ThreadsController extends Thread {
         boolean eatingFood = posCritique.getX() == foodPosition.y && posCritique.getY() == foodPosition.x;
         if (eatingFood) {
             System.out.println("Yummy!");
-            sizeSnake = sizeSnake + 1;
+            sizeSnake = sizeSnake + growth;
             foodPosition = getTileNotInSnake();
 
             spawnFood(foodPosition); // &line[Spawn]
