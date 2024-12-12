@@ -25,7 +25,7 @@ The feature should be defined as a child feature of Snake in the Feature Model.
 
 ### Task 2:
 
-Add a .feature-to-file file to the pojo package.
+ Add a .feature-to-file file to the pojo package.
  * Verify that the feature Tile is defined in the Feature Model. * 
  Map the feature Tile to the file Tuple.java.
 
@@ -57,8 +57,7 @@ add a methode 'changeSpeed(long x){...}' to /src/logic/ThreadsController.java. t
 The feature should be defined as a child feature of Snake in the Feature Model. 
  * Hint 1: the speed is dependent on the game speed *
 * Hint 2: gamespeed depends on the sleep time of the pause methode * 
-* Hint 3: the pause time depends on the delay methode * 
-
+* Hint 3: the pause time depends on the delay variable * 
 
 **Reminder: Make sure you annotate the code you write!**
 

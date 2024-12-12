@@ -4,12 +4,13 @@ grammar FeatureToFolder;
 //Parser rules
 
 
-features: FEATURENAME (Kommer FEATURENAME)*;
+features: feature WS+ (feature)*;
 
+feature: FEATURENAME ('::' FEATURENAME)*;
 
 
 //lexer rules
-WS: [ \t\r\n] -> skip;
+WS: [ \t\r\n];
 FEATURENAME:
-    [a-zA-Z_][a-zA-Z_0-9:]*;
+    [a-zA-Z_][a-zA-Z_0-9]*;
 Kommer: ',';

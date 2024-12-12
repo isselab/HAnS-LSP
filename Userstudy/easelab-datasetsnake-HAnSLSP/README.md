@@ -132,15 +132,16 @@ extension `.feature-to-folder` as below. Features must be separated by either sp
 The purpose of HAnS is to enable recording and editing support for feature annotations.
 
 #### HAnS-text supports:
-For the parsing to work properly, make sure to save four files after changes.
+For the parsing to work properly, make sure to save your files after changes.
 
 * Embedded Feature Annotations (check .feature-model to browse all defined features)
 
 * Code Completion (ctrl space to get suggested completion)
 
 * Hover over annotation (either hover over the feeature name, or over the annotation marker, e.g. begin, end or line)
+	**please note: hovering is keeping the mouse on the word, no clicks needed**
 * feature name suggestion (ctrl space to get suggested name)
 
-## Study Group
+## Study Group 
 * [Group 1](./guide/group1.md)
 * [Group 2](./guide/group2.md)

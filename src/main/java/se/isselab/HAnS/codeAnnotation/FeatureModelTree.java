@@ -9,19 +9,24 @@ import java.util.Optional;
 public class FeatureModelTree {
 
 
+
     private String name;
     private ArrayList<FeatureModelTree> subfeatures;
     private boolean isOptional = false;
     private  int FeatureLine;
-    private FeatureLocation location;
+    private  int FeatureStart;
+    private  int FeatureEnd;
+    private ArrayList<FeatureLocation> location;
     private FeatureModelTree parent;
     public FeatureModelTree(FeatureModelTree parent) {
         subfeatures = new ArrayList<FeatureModelTree>();
+        this.location = new ArrayList<>();
         this.parent = parent;
     }
     public FeatureModelTree(FeatureModelTree parent,String name) {
         this(parent);
         this.name = name;
+
     }
     public FeatureModelTree(FeatureModelTree parent,String name,int line, boolean isOptional) {
         this(parent);
@@ -55,9 +60,9 @@ public class FeatureModelTree {
             this.name=name;
     }
     public synchronized void addlocation(FeatureLocation p) {
-        this.location = p;
+        location.add(p);
     }
-    public FeatureLocation getLocation() {
+    public ArrayList<FeatureLocation> getLocation() {
         return location;
     }
     public String PreorderNames(){
@@ -83,23 +88,6 @@ public class FeatureModelTree {
 
     public FeatureModelTree getParent() {
         return parent;
-    }
-    public boolean istlocationcorrect (){
-        return location.getLineBegin() != -1 && location.getLineEnd() != -1;
-    }
-    public boolean checkTree(){
-        if (subfeatures.isEmpty()){
-            return location.hasLines();
-            // we could also check for a name that ist not "undefinedName"
-        }
-        for (FeatureModelTree fmt:subfeatures){
-           if(!fmt.checkTree() || !fmt.istlocationcorrect()){
-               return false;
-           }
-
-        }
-        return true;
-
     }
     public boolean getisOptional() {
         return isOptional;
@@ -158,4 +146,61 @@ public class FeatureModelTree {
             fmt.replaceduplicates(replaced,duplicates);
         }
     }
+
+    public FeatureModelTree search(String name){
+        return searchForTree(this,name);
+    }
+
+    private FeatureModelTree searchForTree(FeatureModelTree tree, String name) {
+
+        if (tree.name != null) {
+            if(tree.getName().equalsIgnoreCase(name)){
+                return tree;
+            }
+        }
+        if (tree.getSubfeatures().isEmpty()) {
+            return null;
+        } else {
+            for (FeatureModelTree tree1 : tree.getSubfeatures()) {
+                if(searchForTree(tree1, name)!= null){
+                    return searchForTree(tree1, name);
+                }
+
+            }
+        }
+        return null;
+    }
+
+    public FeatureModelTree getChiled(String name){
+        for (FeatureModelTree fmt : subfeatures) {
+            if(fmt.name.equalsIgnoreCase(name)){
+                return fmt;
+            }
+        }
+        return null;
+    }
+
+    public int getFeatureEnd() {
+        return FeatureEnd;
+    }
+
+    public int getFeatureStart() {
+        return FeatureStart;
+    }
+
+    public void setFeatureEnd(int featureEnd) {
+        FeatureEnd = featureEnd;
+    }
+
+    public void setFeatureStart(int featureStart) {
+        FeatureStart = featureStart;
+    }
+
+    public void removeLocationFile(String uri){
+        this.location.removeIf(fl -> fl.getLocation().equals(uri));
+        for (FeatureModelTree fmt : subfeatures) {
+            fmt.removeLocationFile(uri);
+        }
+    }
+
 }

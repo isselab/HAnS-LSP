@@ -2,16 +2,29 @@ grammar FeatureToFile;
 
 
 //Parser rules
-document: file Newline features;
+document: ( mapping)*;
 
-file: Dateiname;
+mapping: (files Newline features Newline);
 
-features: FEATURENAME (Kommer FEATURENAME)* ;
+files:Dateiname (Kommer WS* Dateiname)* ;
+
+features: feature (WS* Kommer WS* feature)* ;
+
+feature:FEATURENAME ('::' FEATURENAME)*;
 
 //lexer rules
-WS: [ \t] -> skip;
+WS: [ \t];
 Newline:[\r\n] | [\n];
 FEATURENAME:
-    [a-zA-Z_][a-zA-Z_0-9:]*;
+    [a-zA-Z_][a-zA-Z_0-9]*;
 Kommer: ',';
 Dateiname: [a-zA-Z_][a-zA-Z_0-9:./]*  ;
+
+/*
+    test.java
+    test1
+    kp.java
+    test2
+
+
+*/

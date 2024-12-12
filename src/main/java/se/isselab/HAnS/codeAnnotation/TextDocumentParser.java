@@ -16,26 +16,27 @@ public class TextDocumentParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, WS=3, Begin=4, End=5, Line=6, FEATURENAME=7, Text=8;
+		T__0=1, T__1=2, T__2=3, T__3=4, WS=5, AND=6, Begin=7, End=8, Line=9, FEATURENAME=10, 
+		Text=11;
 	public static final int
-		RULE_document = 0, RULE_block = 1, RULE_feature = 2, RULE_begin = 3, RULE_end = 4, 
-		RULE_line = 5, RULE_text = 6;
+		RULE_document = 0, RULE_block = 1, RULE_type = 2, RULE_features = 3, RULE_feature = 4;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"document", "block", "feature", "begin", "end", "line", "text"
+			"document", "block", "type", "features", "feature"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'['", "']'", null, "'&Begin'", "'&End'", "'&Line'"
+			null, "'['", "']'", "','", "'::'", null, "'&'", "'Begin'", "'End'", "'Line'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, "WS", "Begin", "End", "Line", "FEATURENAME", "Text"
+			null, null, null, null, null, "WS", "AND", "Begin", "End", "Line", "FEATURENAME", 
+			"Text"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -97,12 +98,6 @@ public class TextDocumentParser extends Parser {
 		public BlockContext block(int i) {
 			return getRuleContext(BlockContext.class,i);
 		}
-		public List<TextContext> text() {
-			return getRuleContexts(TextContext.class);
-		}
-		public TextContext text(int i) {
-			return getRuleContext(TextContext.class,i);
-		}
 		public DocumentContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -125,54 +120,36 @@ public class TextDocumentParser extends Parser {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(20); 
+			setState(13);
+			_errHandler.sync(this);
+			_alt = getInterpreter().adaptivePredict(_input,0,_ctx);
+			while ( _alt!=1 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+				if ( _alt==1+1 ) {
+					{
+					{
+					setState(10);
+					matchWildcard();
+					}
+					} 
+				}
+				setState(15);
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,0,_ctx);
+			}
+			setState(19);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			do {
+			while (_la==AND) {
 				{
-				setState(20);
-				_errHandler.sync(this);
-				switch (_input.LA(1)) {
-				case Begin:
-				case End:
-				case Line:
-					{
-					setState(14);
-					block();
-					}
-					break;
-				case Text:
-					{
-					setState(16); 
-					_errHandler.sync(this);
-					_alt = 1+1;
-					do {
-						switch (_alt) {
-						case 1+1:
-							{
-							{
-							setState(15);
-							text();
-							}
-							}
-							break;
-						default:
-							throw new NoViableAltException(this);
-						}
-						setState(18); 
-						_errHandler.sync(this);
-						_alt = getInterpreter().adaptivePredict(_input,0,_ctx);
-					} while ( _alt!=1 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER );
-					}
-					break;
-				default:
-					throw new NoViableAltException(this);
+				{
+				setState(16);
+				block();
 				}
 				}
-				setState(22); 
+				setState(21);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & 368L) != 0) );
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -188,17 +165,12 @@ public class TextDocumentParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class BlockContext extends ParserRuleContext {
-		public FeatureContext feature() {
-			return getRuleContext(FeatureContext.class,0);
+		public TerminalNode AND() { return getToken(TextDocumentParser.AND, 0); }
+		public TypeContext type() {
+			return getRuleContext(TypeContext.class,0);
 		}
-		public BeginContext begin() {
-			return getRuleContext(BeginContext.class,0);
-		}
-		public EndContext end() {
-			return getRuleContext(EndContext.class,0);
-		}
-		public LineContext line() {
-			return getRuleContext(LineContext.class,0);
+		public FeaturesContext features() {
+			return getRuleContext(FeaturesContext.class,0);
 		}
 		public BlockContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -218,38 +190,144 @@ public class TextDocumentParser extends Parser {
 		BlockContext _localctx = new BlockContext(_ctx, getState());
 		enterRule(_localctx, 2, RULE_block);
 		try {
+			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(27);
-			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case Begin:
-				{
-				setState(24);
-				begin();
-				}
-				break;
-			case End:
-				{
-				setState(25);
-				end();
-				}
-				break;
-			case Line:
-				{
-				setState(26);
-				line();
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
-			}
-			setState(29);
+			setState(22);
+			match(AND);
+			setState(23);
+			type();
+			setState(24);
 			match(T__0);
-			setState(30);
-			feature();
-			setState(31);
+			setState(25);
+			features();
+			setState(26);
 			match(T__1);
+			setState(30);
+			_errHandler.sync(this);
+			_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
+			while ( _alt!=1 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+				if ( _alt==1+1 ) {
+					{
+					{
+					setState(27);
+					matchWildcard();
+					}
+					} 
+				}
+				setState(32);
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,2,_ctx);
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	@SuppressWarnings("CheckReturnValue")
+	public static class TypeContext extends ParserRuleContext {
+		public TerminalNode Begin() { return getToken(TextDocumentParser.Begin, 0); }
+		public TerminalNode End() { return getToken(TextDocumentParser.End, 0); }
+		public TerminalNode Line() { return getToken(TextDocumentParser.Line, 0); }
+		public TypeContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_type; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TextDocumentListener ) ((TextDocumentListener)listener).enterType(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TextDocumentListener ) ((TextDocumentListener)listener).exitType(this);
+		}
+	}
+
+	public final TypeContext type() throws RecognitionException {
+		TypeContext _localctx = new TypeContext(_ctx, getState());
+		enterRule(_localctx, 4, RULE_type);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(33);
+			_la = _input.LA(1);
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & 896L) != 0)) ) {
+			_errHandler.recoverInline(this);
+			}
+			else {
+				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+				_errHandler.reportMatch(this);
+				consume();
+			}
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	@SuppressWarnings("CheckReturnValue")
+	public static class FeaturesContext extends ParserRuleContext {
+		public List<FeatureContext> feature() {
+			return getRuleContexts(FeatureContext.class);
+		}
+		public FeatureContext feature(int i) {
+			return getRuleContext(FeatureContext.class,i);
+		}
+		public FeaturesContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_features; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof TextDocumentListener ) ((TextDocumentListener)listener).enterFeatures(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof TextDocumentListener ) ((TextDocumentListener)listener).exitFeatures(this);
+		}
+	}
+
+	public final FeaturesContext features() throws RecognitionException {
+		FeaturesContext _localctx = new FeaturesContext(_ctx, getState());
+		enterRule(_localctx, 6, RULE_features);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(35);
+			feature();
+			setState(40);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==T__2) {
+				{
+				{
+				setState(36);
+				match(T__2);
+				setState(37);
+				feature();
+				}
+				}
+				setState(42);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+			}
 			}
 		}
 		catch (RecognitionException re) {
@@ -265,7 +343,10 @@ public class TextDocumentParser extends Parser {
 
 	@SuppressWarnings("CheckReturnValue")
 	public static class FeatureContext extends ParserRuleContext {
-		public TerminalNode FEATURENAME() { return getToken(TextDocumentParser.FEATURENAME, 0); }
+		public List<TerminalNode> FEATURENAME() { return getTokens(TextDocumentParser.FEATURENAME); }
+		public TerminalNode FEATURENAME(int i) {
+			return getToken(TextDocumentParser.FEATURENAME, i);
+		}
 		public FeatureContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -282,164 +363,29 @@ public class TextDocumentParser extends Parser {
 
 	public final FeatureContext feature() throws RecognitionException {
 		FeatureContext _localctx = new FeatureContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_feature);
+		enterRule(_localctx, 8, RULE_feature);
+		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(33);
+			setState(43);
 			match(FEATURENAME);
+			setState(48);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			while (_la==T__3) {
+				{
+				{
+				setState(44);
+				match(T__3);
+				setState(45);
+				match(FEATURENAME);
+				}
+				}
+				setState(50);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
 			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	@SuppressWarnings("CheckReturnValue")
-	public static class BeginContext extends ParserRuleContext {
-		public TerminalNode Begin() { return getToken(TextDocumentParser.Begin, 0); }
-		public BeginContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_begin; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TextDocumentListener ) ((TextDocumentListener)listener).enterBegin(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TextDocumentListener ) ((TextDocumentListener)listener).exitBegin(this);
-		}
-	}
-
-	public final BeginContext begin() throws RecognitionException {
-		BeginContext _localctx = new BeginContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_begin);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(35);
-			match(Begin);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	@SuppressWarnings("CheckReturnValue")
-	public static class EndContext extends ParserRuleContext {
-		public TerminalNode End() { return getToken(TextDocumentParser.End, 0); }
-		public EndContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_end; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TextDocumentListener ) ((TextDocumentListener)listener).enterEnd(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TextDocumentListener ) ((TextDocumentListener)listener).exitEnd(this);
-		}
-	}
-
-	public final EndContext end() throws RecognitionException {
-		EndContext _localctx = new EndContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_end);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(37);
-			match(End);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	@SuppressWarnings("CheckReturnValue")
-	public static class LineContext extends ParserRuleContext {
-		public TerminalNode Line() { return getToken(TextDocumentParser.Line, 0); }
-		public LineContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_line; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TextDocumentListener ) ((TextDocumentListener)listener).enterLine(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TextDocumentListener ) ((TextDocumentListener)listener).exitLine(this);
-		}
-	}
-
-	public final LineContext line() throws RecognitionException {
-		LineContext _localctx = new LineContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_line);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(39);
-			match(Line);
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	@SuppressWarnings("CheckReturnValue")
-	public static class TextContext extends ParserRuleContext {
-		public TerminalNode Text() { return getToken(TextDocumentParser.Text, 0); }
-		public TextContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_text; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof TextDocumentListener ) ((TextDocumentListener)listener).enterText(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof TextDocumentListener ) ((TextDocumentListener)listener).exitText(this);
-		}
-	}
-
-	public final TextContext text() throws RecognitionException {
-		TextContext _localctx = new TextContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_text);
-		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(41);
-			match(Text);
 			}
 		}
 		catch (RecognitionException re) {
@@ -454,34 +400,38 @@ public class TextDocumentParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001\b,\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
-		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
-		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0001\u0000\u0001\u0000\u0004"+
-		"\u0000\u0011\b\u0000\u000b\u0000\f\u0000\u0012\u0004\u0000\u0015\b\u0000"+
-		"\u000b\u0000\f\u0000\u0016\u0001\u0001\u0001\u0001\u0001\u0001\u0003\u0001"+
-		"\u001c\b\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0002"+
-		"\u0001\u0002\u0001\u0003\u0001\u0003\u0001\u0004\u0001\u0004\u0001\u0005"+
-		"\u0001\u0005\u0001\u0006\u0001\u0006\u0001\u0006\u0001\u0012\u0000\u0007"+
-		"\u0000\u0002\u0004\u0006\b\n\f\u0000\u0000)\u0000\u0014\u0001\u0000\u0000"+
-		"\u0000\u0002\u001b\u0001\u0000\u0000\u0000\u0004!\u0001\u0000\u0000\u0000"+
-		"\u0006#\u0001\u0000\u0000\u0000\b%\u0001\u0000\u0000\u0000\n\'\u0001\u0000"+
-		"\u0000\u0000\f)\u0001\u0000\u0000\u0000\u000e\u0015\u0003\u0002\u0001"+
-		"\u0000\u000f\u0011\u0003\f\u0006\u0000\u0010\u000f\u0001\u0000\u0000\u0000"+
-		"\u0011\u0012\u0001\u0000\u0000\u0000\u0012\u0013\u0001\u0000\u0000\u0000"+
-		"\u0012\u0010\u0001\u0000\u0000\u0000\u0013\u0015\u0001\u0000\u0000\u0000"+
-		"\u0014\u000e\u0001\u0000\u0000\u0000\u0014\u0010\u0001\u0000\u0000\u0000"+
-		"\u0015\u0016\u0001\u0000\u0000\u0000\u0016\u0014\u0001\u0000\u0000\u0000"+
-		"\u0016\u0017\u0001\u0000\u0000\u0000\u0017\u0001\u0001\u0000\u0000\u0000"+
-		"\u0018\u001c\u0003\u0006\u0003\u0000\u0019\u001c\u0003\b\u0004\u0000\u001a"+
-		"\u001c\u0003\n\u0005\u0000\u001b\u0018\u0001\u0000\u0000\u0000\u001b\u0019"+
-		"\u0001\u0000\u0000\u0000\u001b\u001a\u0001\u0000\u0000\u0000\u001c\u001d"+
-		"\u0001\u0000\u0000\u0000\u001d\u001e\u0005\u0001\u0000\u0000\u001e\u001f"+
-		"\u0003\u0004\u0002\u0000\u001f \u0005\u0002\u0000\u0000 \u0003\u0001\u0000"+
-		"\u0000\u0000!\"\u0005\u0007\u0000\u0000\"\u0005\u0001\u0000\u0000\u0000"+
-		"#$\u0005\u0004\u0000\u0000$\u0007\u0001\u0000\u0000\u0000%&\u0005\u0005"+
-		"\u0000\u0000&\t\u0001\u0000\u0000\u0000\'(\u0005\u0006\u0000\u0000(\u000b"+
-		"\u0001\u0000\u0000\u0000)*\u0005\b\u0000\u0000*\r\u0001\u0000\u0000\u0000"+
-		"\u0004\u0012\u0014\u0016\u001b";
+		"\u0004\u0001\u000b4\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0001"+
+		"\u0000\u0005\u0000\f\b\u0000\n\u0000\f\u0000\u000f\t\u0000\u0001\u0000"+
+		"\u0005\u0000\u0012\b\u0000\n\u0000\f\u0000\u0015\t\u0000\u0001\u0001\u0001"+
+		"\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0001\u0005\u0001\u001d"+
+		"\b\u0001\n\u0001\f\u0001 \t\u0001\u0001\u0002\u0001\u0002\u0001\u0003"+
+		"\u0001\u0003\u0001\u0003\u0005\u0003\'\b\u0003\n\u0003\f\u0003*\t\u0003"+
+		"\u0001\u0004\u0001\u0004\u0001\u0004\u0005\u0004/\b\u0004\n\u0004\f\u0004"+
+		"2\t\u0004\u0001\u0004\u0002\r\u001e\u0000\u0005\u0000\u0002\u0004\u0006"+
+		"\b\u0000\u0001\u0001\u0000\u0007\t3\u0000\r\u0001\u0000\u0000\u0000\u0002"+
+		"\u0016\u0001\u0000\u0000\u0000\u0004!\u0001\u0000\u0000\u0000\u0006#\u0001"+
+		"\u0000\u0000\u0000\b+\u0001\u0000\u0000\u0000\n\f\t\u0000\u0000\u0000"+
+		"\u000b\n\u0001\u0000\u0000\u0000\f\u000f\u0001\u0000\u0000\u0000\r\u000e"+
+		"\u0001\u0000\u0000\u0000\r\u000b\u0001\u0000\u0000\u0000\u000e\u0013\u0001"+
+		"\u0000\u0000\u0000\u000f\r\u0001\u0000\u0000\u0000\u0010\u0012\u0003\u0002"+
+		"\u0001\u0000\u0011\u0010\u0001\u0000\u0000\u0000\u0012\u0015\u0001\u0000"+
+		"\u0000\u0000\u0013\u0011\u0001\u0000\u0000\u0000\u0013\u0014\u0001\u0000"+
+		"\u0000\u0000\u0014\u0001\u0001\u0000\u0000\u0000\u0015\u0013\u0001\u0000"+
+		"\u0000\u0000\u0016\u0017\u0005\u0006\u0000\u0000\u0017\u0018\u0003\u0004"+
+		"\u0002\u0000\u0018\u0019\u0005\u0001\u0000\u0000\u0019\u001a\u0003\u0006"+
+		"\u0003\u0000\u001a\u001e\u0005\u0002\u0000\u0000\u001b\u001d\t\u0000\u0000"+
+		"\u0000\u001c\u001b\u0001\u0000\u0000\u0000\u001d \u0001\u0000\u0000\u0000"+
+		"\u001e\u001f\u0001\u0000\u0000\u0000\u001e\u001c\u0001\u0000\u0000\u0000"+
+		"\u001f\u0003\u0001\u0000\u0000\u0000 \u001e\u0001\u0000\u0000\u0000!\""+
+		"\u0007\u0000\u0000\u0000\"\u0005\u0001\u0000\u0000\u0000#(\u0003\b\u0004"+
+		"\u0000$%\u0005\u0003\u0000\u0000%\'\u0003\b\u0004\u0000&$\u0001\u0000"+
+		"\u0000\u0000\'*\u0001\u0000\u0000\u0000(&\u0001\u0000\u0000\u0000()\u0001"+
+		"\u0000\u0000\u0000)\u0007\u0001\u0000\u0000\u0000*(\u0001\u0000\u0000"+
+		"\u0000+0\u0005\n\u0000\u0000,-\u0005\u0004\u0000\u0000-/\u0005\n\u0000"+
+		"\u0000.,\u0001\u0000\u0000\u0000/2\u0001\u0000\u0000\u00000.\u0001\u0000"+
+		"\u0000\u000001\u0001\u0000\u0000\u00001\t\u0001\u0000\u0000\u000020\u0001"+
+		"\u0000\u0000\u0000\u0005\r\u0013\u001e(0";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

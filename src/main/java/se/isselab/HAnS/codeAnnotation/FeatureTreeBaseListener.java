@@ -5,6 +5,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.eclipse.lsp4j.DocumentSymbol;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.SymbolKind;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +32,7 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	private int indent = 4;
 	private boolean inLogicaltree = false;
 	private ArrayList<FeatureModelTreeLO> LOtrees = new ArrayList<>();
+	private ArrayList<DocumentSymbol> SymbolList = new ArrayList<>();
 
 	public FeatureTreeBaseListener(ArrayList<String> features) {
 		logger = new FileLogger(FeatureTreeBaseListener.class);
@@ -64,8 +69,15 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 		if(ctx.FEATURENAME() != null) {
 			features.add(ctx.FEATURENAME().toString());
 			logger.info("foundfeature:" + ctx.FEATURENAME().getText() + " in line: " + line);
-
+			DocumentSymbol symbol = new DocumentSymbol();
+			symbol.setName(ctx.FEATURENAME().getText());
+			symbol.setKind(SymbolKind.Constant);
+			Range range = new Range(new Position(line,ctx.FEATURENAME().getSymbol().getCharPositionInLine()),new Position(line,ctx.FEATURENAME().getSymbol().getCharPositionInLine()+ctx.FEATURENAME().toString().length()));
+			symbol.setRange(range);
+			symbol.setSelectionRange(range);
+			SymbolList.add(symbol);
 		}
+
 	}
 	/**
 	 * {@inheritDoc}
@@ -149,10 +161,14 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 			FeatureModelTree t;
 			if(inLogicaltree){
 				t = new FeatureModelTreeLO(currentTree, ctx.FEATURENAME().toString(),line, isOPtional, LO);
+				t.setFeatureStart(ctx.FEATURENAME().getSymbol().getCharPositionInLine());
+				t.setFeatureEnd(ctx.FEATURENAME().getSymbol().getCharPositionInLine()+ctx.FEATURENAME().toString().length());
 				LOtrees.add((FeatureModelTreeLO) t);
 			}
 			else {
 				t = new FeatureModelTree(currentTree, ctx.FEATURENAME().toString(),line , isOPtional);
+				t.setFeatureStart(ctx.FEATURENAME().getSymbol().getCharPositionInLine());
+				t.setFeatureEnd(ctx.FEATURENAME().getSymbol().getCharPositionInLine()+ctx.FEATURENAME().toString().length());
 			}
 			currentTree.addSubFeatureTree(t);
 			currentTree = t;
@@ -186,4 +202,9 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void visitErrorNode(ErrorNode node) { }
+
+	public List<DocumentSymbol> getSymbolinformation(){
+
+		return SymbolList;
+	}
 }
