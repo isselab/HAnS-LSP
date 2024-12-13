@@ -3,13 +3,16 @@ name: Zip and Publish Userstudy
 on:
   push:
     branches:
-      - "test-with-plugin"
+      - 'test-with-plugin'
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
       - name: Zip Userstudy folder
         run: zip -r Userstudy.zip Userstudy
 
