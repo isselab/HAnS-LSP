@@ -2,7 +2,7 @@
   "name": "hans-lsp-vscode-extension",
   "displayName": "HAnS-LSP-vscode-Extension",
   "description": "Extention for HAnS-LSP-LS",
-  "repository": "https://github.com/isselab/HAnS-LSP" ,
+  "repository": "https://github.com/isselab/HAnS-LSP",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.94.0"
@@ -10,7 +10,6 @@
   "categories": [
     "Other"
   ],
-  
   "activationEvents": [
     "onLanguage:java",
     "onLanguage:Featuremodel",
@@ -23,7 +22,9 @@
       {
         "path": "./syntaxes/HAnS-injection.json",
         "scopeName": "HAnS-vscode.injection",
-        "injectTo": ["source.java"],
+        "injectTo": [
+          "source.java"
+        ],
         "embeddedLanguages": {
           "comment.line.double-slash.java": "java"
         },
@@ -71,7 +72,6 @@
       }
     ],
     "commands": []
-    
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -93,6 +93,7 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
+    "hans-lsp-vscode-extension": "file:",
     "vscode-languageclient": "^9.0.1"
   }
 }
