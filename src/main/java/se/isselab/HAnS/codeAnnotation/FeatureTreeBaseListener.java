@@ -161,13 +161,13 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 
 			FeatureModelTree t;
 			if(inLogicaltree){
-				t = new FeatureModelTreeLO(currentTree, ctx.FEATURENAME().toString(),line, isOPtional, LO);
+				t = new FeatureModelTreeLO(currentTree, ctx.FEATURENAME().toString(),ctx.start.getLine()-1, isOPtional, LO);
 				t.setFeatureStart(ctx.FEATURENAME().getSymbol().getCharPositionInLine());
 				t.setFeatureEnd(ctx.FEATURENAME().getSymbol().getCharPositionInLine()+ctx.FEATURENAME().toString().length());
 				LOtrees.add((FeatureModelTreeLO) t);
 			}
 			else {
-				t = new FeatureModelTree(currentTree, ctx.FEATURENAME().toString(),line , isOPtional);
+				t = new FeatureModelTree(currentTree, ctx.FEATURENAME().toString(),ctx.start.getLine()-1 , isOPtional);
 				t.setFeatureStart(ctx.FEATURENAME().getSymbol().getCharPositionInLine());
 				t.setFeatureEnd(ctx.FEATURENAME().getSymbol().getCharPositionInLine()+ctx.FEATURENAME().toString().length());
 			}

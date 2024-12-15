@@ -192,6 +192,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 FeatureTreeParser parser = new FeatureTreeParser(tokens);
                 featurtrees.clear();
                 ParseTree ptree = parser.featuretree();
+                featurenames.clear();
                 FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(featurenames);
                 ParseTreeWalker walker = new ParseTreeWalker();
                 walker.walk(ftbl, ptree);
@@ -215,6 +216,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 FeatureTreeParser parser = new FeatureTreeParser(tokens);
                 featurtrees.clear();
                 ParseTree ptree = parser.featuretree();
+                featurenames.clear();
                 FeatureTreeBaseListener ftbl = new FeatureTreeBaseListener(featurenames);
                 ParseTreeWalker walker = new ParseTreeWalker();
                 walker.walk(ftbl, ptree);
@@ -657,22 +659,33 @@ public class HAnSTextDocumentService implements TextDocumentService {
                     if (ds.getRange().getStart().getLine() == params.getPosition().getLine()) {
                         if (ds.getRange().getStart().getCharacter() <= params.getPosition().getCharacter() &&
                                 params.getPosition().getCharacter() <= ds.getRange().getEnd().getCharacter()) {
-
                             FeatureModelTree fmt = tree;
                             if(ds.toString().contains("::")) {
                                 String[] features = ds.getName().split("::");
                                 FeatureModelTree feature = fmt.search(features[0]);
                                 for (int i = 1; i < features.length; i++) {
-                                    feature = feature.getChiled(features[i]);
+                                    int j= i;
+                                    String possibleChild = features[i];
+                                    while(j+1 < features.length) {
+                                        possibleChild += ("::" + features[j+1]);
+                                        if (feature.getChiled(possibleChild) != null) {
+                                            feature = feature.getChiled(possibleChild);
+                                            break;
+                                        }
+                                        j++;
+                                    }
+                                    if(j+1 >= features.length) {
+                                        feature = feature.getChiled(features[i]);
+                                    }
                                 }
+                                fmt = feature;
                             }
                             else{
-                                fmt.search(ds.getName());
+                                fmt = fmt.search(ds.getName());
                             }
-
-
+                            logger.info("fmt: " + fmt.toString());
+                            logger.info("line: " + fmt.getFeatureLine());
                             locations.add(new Location(currentFeatureModel.toUri().toString(),new Range(new Position(fmt.getFeatureLine(),fmt.getFeatureStart()),new Position(fmt.getFeatureLine(), fmt.getFeatureEnd()))));
-
                         }
                     }
                 }
@@ -684,7 +697,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
     @Override
     public CompletableFuture<List<? extends Location>> references(ReferenceParams referenceParams) {
         try {
-            if(referenceParams.getTextDocument().getUri().equals(currentFeatureModel.toUri().toString())) {
+            if(!referenceParams.getTextDocument().getUri().equals(currentFeatureModel.toUri().toString())) {
                 currdoc = Path.of(new URI(referenceParams.getTextDocument().getUri()));
                 parseTextdocument();
             }
@@ -709,7 +722,19 @@ public class HAnSTextDocumentService implements TextDocumentService {
                                  String[] features = ds.getName().split("::");
                                  FeatureModelTree feature = fmt.search(features[0]);
                                  for (int i = 1; i < features.length; i++) {
-                                     feature = feature.getChiled(features[i]);
+                                     int j= i;
+                                     String possibleChild = features[i];
+                                     while(j+1 < features.length) {
+                                         possibleChild += ("::" + features[j+1]);
+                                         if (feature.getChiled(possibleChild) != null) {
+                                             feature = feature.getChiled(possibleChild);
+                                             break;
+                                         }
+                                         j++;
+                                     }
+                                     if(j+1 >= features.length) {
+                                         feature = feature.getChiled(features[i]);
+                                     }
                                  }
                                  fmt = feature;
                              }

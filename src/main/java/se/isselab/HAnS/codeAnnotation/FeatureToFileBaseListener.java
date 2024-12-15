@@ -127,7 +127,19 @@ public class FeatureToFileBaseListener implements FeatureToFileListener {
 
 				for (int i = 1; i < features.length; i++) {
 					if (feature != null) {
-						feature = feature.getChiled(features[i]);
+						int j= i;
+						String possibleChild = features[i];
+						while(j+1 < features.length) {
+							possibleChild += ("::" + features[j+1]);
+							if (feature.getChiled(possibleChild) != null) {
+								feature = feature.getChiled(possibleChild);
+								break;
+							}
+							j++;
+						}
+						if(j+1 >= features.length) {
+							feature = feature.getChiled(features[i]);
+						}
 					}
 					else {
 						break;
