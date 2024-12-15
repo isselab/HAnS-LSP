@@ -203,4 +203,20 @@ public class FeatureModelTree {
         }
     }
 
+    public ArrayList<FeatureModelTree> getDuplicateTrees(){
+        ArrayList<String> duplicatenames = this.getDuplicates();
+        ArrayList<FeatureModelTree> duplicates = new ArrayList<>();
+        this.lookforduplicatetrees(duplicates,duplicatenames);
+        return duplicates;
+
+    }
+    private void lookforduplicatetrees(ArrayList<FeatureModelTree> duplicates, ArrayList<String> duplicatenames) {
+        if(duplicatenames.contains(this.getName())) {
+            duplicates.add(this);
+        }
+        for (FeatureModelTree fmt : subfeatures){
+            fmt.lookforduplicatetrees(duplicates,duplicatenames);
+        }
+    }
+
 }

@@ -1,6 +1,7 @@
 package se.isselab.HAnS.codeAnnotation;// Generated from C:/Users/Tim/Documents/GitHub/HAnS-LSP/src/main/java/se/isselab/HAnS/codeAnnotation/FeatureToFolder.g4 by ANTLR 4.13.2
 
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.eclipse.lsp4j.DocumentSymbol;
@@ -31,7 +32,7 @@ public class FeatureToFolderBaseListener implements FeatureToFolderListener {
 	}
 
 	public List<DocumentSymbol> getSymbolinformation(){
-
+		logger.info("symbols: " + SymbolList);
 		return SymbolList;
 	}
 	/**
@@ -39,7 +40,12 @@ public class FeatureToFolderBaseListener implements FeatureToFolderListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterFeatures(FeatureToFolderParser.FeaturesContext ctx) { }
+	@Override public void enterFeatures(FeatureToFolderParser.FeaturesContext ctx) {
+		logger.info("enterFeatures: " +ctx.getText());
+		for(FeatureToFolderParser.FeatureContext tk : ctx.feature()){
+			logger.info("feature found: " + tk.getText());
+		}
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -52,9 +58,16 @@ public class FeatureToFolderBaseListener implements FeatureToFolderListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterFeature(FeatureToFolderParser.FeatureContext ctx) {
+		logger.info("enterFeature: " + ctx.getText());
 		FeatureModelTree fmt = featureModelTree;
-		if(ctx.toString().contains("::")) {
-			String[] features = ctx.toString().split("::");
+		logger.info("featuremodel: "+ fmt.toString());
+
+		for (TerminalNode tn : ctx.FEATURENAME()){
+			logger.info("feature name: " + tn.getText());
+		}
+
+		if(ctx.getText().contains("::")) {
+			String[] features = ctx.getText().split("::");
 			FeatureModelTree feature = featureModelTree.search(features[0]);
 			for (int i = 1; i < features.length; i++) {
 				if (feature != null) {
@@ -67,18 +80,21 @@ public class FeatureToFolderBaseListener implements FeatureToFolderListener {
 			fmt = feature;
 		}
 		else{
-			fmt = fmt.search(ctx.toString());
+			fmt = fmt.search(ctx.getText());
 		}
 
 		if(fmt != null) {
 			fmt.addlocation(new FeatureLocation(currentdoc, type.Folder));
-			int line = ctx.FEATURENAME(0).getSymbol().getLine() - 1;
+			int line = ctx.start.getLine() - 1;
 
 
 			//Range range = new Range(new Position(line, ctx.start.getStartIndex()), new Position(line, ctx.stop.getStopIndex()));
 			Range range = new Range(new Position(line, ctx.start.getCharPositionInLine()), new Position(line, ctx.stop.getCharPositionInLine() + ctx.stop.getText().length()));
-			SymbolList.add(new DocumentSymbol(ctx.FEATURENAME().toString(), SymbolKind.Constant, range, range));
+			SymbolList.add(new DocumentSymbol(ctx.getText(), SymbolKind.Constant, range, range));
 
+		}
+		else {
+			logger.info("fmt is null");
 		}
 	}
 	/**
@@ -93,7 +109,9 @@ public class FeatureToFolderBaseListener implements FeatureToFolderListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterEveryRule(ParserRuleContext ctx) { }
+	@Override public void enterEveryRule(ParserRuleContext ctx) {
+		//logger.info("enterEveryRule: " + ctx.getText());
+	}
 	/**
 	 * {@inheritDoc}
 	 *

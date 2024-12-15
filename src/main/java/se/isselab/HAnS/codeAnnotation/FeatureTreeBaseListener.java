@@ -67,6 +67,7 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	@Override public void enterFeature(FeatureTreeParser.FeatureContext ctx) {
 		featureContexts.add(ctx);
 		if(ctx.FEATURENAME() != null) {
+
 			features.add(ctx.FEATURENAME().toString());
 			logger.info("foundfeature:" + ctx.FEATURENAME().getText() + " in line: " + line);
 			DocumentSymbol symbol = new DocumentSymbol();
@@ -204,7 +205,13 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	@Override public void visitErrorNode(ErrorNode node) { }
 
 	public List<DocumentSymbol> getSymbolinformation(){
-
+		for(FeatureModelTree fmt : root.getDuplicateTrees()){
+			for(DocumentSymbol ds : SymbolList){
+				if(fmt.getName().equalsIgnoreCase(ds.getName())&& ds.getSelectionRange().getStart().getLine() == fmt.getFeatureLine()){
+					ds.setName(fmt.getParent().getName()+"::"+fmt.getName());
+				}
+			}
+		}
 		return SymbolList;
 	}
 }

@@ -58,9 +58,9 @@ public class HAnSTextDocumentService implements TextDocumentService {
         this.workspaceFolders = workspaceFolders;
     }
     public void parseTextdocument(){
+        logger.info("parsing currentdoc");
         try {
-            Lexer l = new TextDocumentLexer(CharStreams.fromPath(currdoc));
-            CommonTokenStream tokens = new CommonTokenStream(l);
+
 
             String comp = currdoc.toUri().toString().split("/")[currdoc.toUri().toString().split("/").length - 1];
             String uri = currdoc.toUri().toString();
@@ -69,20 +69,29 @@ public class HAnSTextDocumentService implements TextDocumentService {
             }
             ParseTreeListenerSymbolProvider tdbl;
             ParseTree ptree;
-            if(comp != ".feature-model") {
+            logger.info("comp string: " +comp);
+            if(!comp.equalsIgnoreCase(".feature-model")){
                 switch (comp.toLowerCase()) {
                     case ".feature-to-file":
-                        FeatureToFileParser parser1 = new FeatureToFileParser(tokens);
+                        logger.info("found feature-to-file");
+                        Lexer l2 = new FeatureToFileLexer(CharStreams.fromPath(currdoc));
+                        CommonTokenStream tokens2 = new CommonTokenStream(l2);
+                        FeatureToFileParser parser1 = new FeatureToFileParser(tokens2);
                         ptree = parser1.document();
                         tdbl = new FeatureToFileBaseListener(tree, uri);
                         break;
                     case ".feature-to-folder":
-                        FeatureToFolderParser parser2 = new FeatureToFolderParser(tokens);
+                        logger.info("found feature-to-folder");
+                        Lexer l1 = new FeatureToFolderLexer(CharStreams.fromPath(currdoc));
+                        CommonTokenStream tokens1 = new CommonTokenStream(l1);
+                        FeatureToFolderParser parser2 = new FeatureToFolderParser(tokens1);
                         ptree = parser2.features();
                         tdbl = new FeatureToFolderBaseListener(tree, uri);
                         break;
                     default:
-                        TextDocumentParser parser0 = new TextDocumentParser(tokens);
+                        Lexer l0 = new TextDocumentLexer(CharStreams.fromPath(currdoc));
+                        CommonTokenStream tokens0 = new CommonTokenStream(l0);
+                        TextDocumentParser parser0 = new TextDocumentParser(tokens0);
                         ptree = parser0.document();
                         tdbl = new TextDocumentBaseListener(tree, uri);
                         break;
@@ -91,36 +100,47 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 ParseTreeWalker walker = new ParseTreeWalker();
                 walker.walk(tdbl, ptree);
                 symboslofcurrentfile = tdbl.getSymbolinformation();
+                logger.info("symbosl of currentdoc: "+symboslofcurrentfile);
             }
             else{
+                logger.info("featuremodel");
                 symboslofcurrentfile = featuremodelsymbols;
             }
         } catch (IOException e) {
-            logger.error("");
+            logger.error("io exeption");
         }
     }
     public void parseTextdocument(String uri){
 
         try {
-            Lexer l = new TextDocumentLexer(CharStreams.fromPath(Paths.get(new URI(uri))));
-            CommonTokenStream tokens = new CommonTokenStream(l);
+
             String comp = uri.split("/")[uri.split("/").length - 1];
             ParseTreeListenerSymbolProvider tdbl;
             ParseTree ptree;
-            if(comp != ".feature-model") {
+            logger.info("comp string: " +comp);
+            if(!comp.equalsIgnoreCase(".feature-model")) {
                 switch (comp.toLowerCase()) {
                     case ".feature-to-file":
-                        FeatureToFileParser parser1 = new FeatureToFileParser(tokens);
+                        logger.info(".feature-to-file");
+                        Lexer l1 = new FeatureToFileLexer(CharStreams.fromPath(Paths.get(new URI(uri))));
+                        CommonTokenStream tokens1 = new CommonTokenStream(l1);
+                        FeatureToFileParser parser1 = new FeatureToFileParser(tokens1);
                         ptree = parser1.document();
                         tdbl = new FeatureToFileBaseListener(tree, uri);
                         break;
                     case ".feature-to-folder":
-                        FeatureToFolderParser parser2 = new FeatureToFolderParser(tokens);
+                        logger.info(".feature-to-folder");
+                        Lexer l2 = new FeatureToFolderLexer(CharStreams.fromPath(Paths.get(new URI(uri))));
+                        CommonTokenStream tokens2 = new CommonTokenStream(l2);
+                        FeatureToFolderParser parser2 = new FeatureToFolderParser(tokens2);
                         ptree = parser2.features();
                         tdbl = new FeatureToFolderBaseListener(tree, uri);
                         break;
                     default:
-                        TextDocumentParser parser0 = new TextDocumentParser(tokens);
+                        logger.info("textfile");
+                        Lexer l0 = new TextDocumentLexer(CharStreams.fromPath(Paths.get(new URI(uri))));
+                        CommonTokenStream tokens0 = new CommonTokenStream(l0);
+                        TextDocumentParser parser0 = new TextDocumentParser(tokens0);
                         ptree = parser0.document();
                         tdbl = new TextDocumentBaseListener(tree, uri);
                         break;
@@ -167,9 +187,9 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 logger.info("Featuretrees: " + featuretreerep );
                 */
                 tree = ftbl.getFeatureModelTree();
-                 logger.info("Featuretrees: " + featurtrees.size());
-                 featuremodelsymbols = ftbl.getSymbolinformation();
-                 logger.info("symbols of featuremodel: " + featuremodelsymbols.toString());
+                logger.info("Featuretrees: " + featurtrees.size());
+                featuremodelsymbols = ftbl.getSymbolinformation();
+                //logger.info("symbols of featuremodel: " + featuremodelsymbols.toString());
             } catch (IOException e) {
                 logger.error("");
             }
@@ -197,7 +217,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 tree = ftbl.getFeatureModelTree();
                 logger.info("Featuretrees: " + featurtrees.size());
                 featuremodelsymbols = ftbl.getSymbolinformation();
-                logger.info("symbols of featuremodel: " + featuremodelsymbols.toString());
+                //logger.info("symbols of featuremodel: " + featuremodelsymbols.toString());
             } catch (IOException e) {
                 logger.error("");
             }
@@ -626,12 +646,14 @@ public class HAnSTextDocumentService implements TextDocumentService {
     public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(DefinitionParams params) {
         try {
             currdoc = Path.of(new URI(params.getTextDocument().getUri()));
+            logger.info("path: " + currdoc);
             parseTextdocument();
         } catch (URISyntaxException e) {
             logger.info("URi problem");
         }
         //logger.info("symbols: "+symboslofcurrentfile.toString());
         logger.info("definition called with params: " + params.getTextDocument().getUri() + " at: " + params.getPosition().toString());
+        logger.info("symbols of currentfile: " + symboslofcurrentfile);
         return CompletableFuture.supplyAsync(()->{
                 ArrayList<Location> locations = new ArrayList<>();
                 for (DocumentSymbol ds : symboslofcurrentfile) {
@@ -685,9 +707,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
                      if (ds.getRange().getStart().getLine() == referenceParams.getPosition().getLine()) {
                          if (ds.getRange().getStart().getCharacter() <= referenceParams.getPosition().getCharacter() &&
                                  referenceParams.getPosition().getCharacter() <= ds.getRange().getEnd().getCharacter()) {
-
                              FeatureModelTree fmt = tree;
-                             if(ds.toString().contains("::")) {
+                             if(ds.getName().contains("::")) {
                                  String[] features = ds.getName().split("::");
                                  FeatureModelTree feature = fmt.search(features[0]);
                                  for (int i = 1; i < features.length; i++) {
@@ -706,14 +727,21 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
                                  for (FeatureLocation fl : fmt.getLocation()) {
                                      logger.info("fl:" + fl.getLocation() + " line: " + fl.getLineBegin());
+                                     logger.info("fl type: " +fl.getType());
                                      switch (fl.getType()) {
                                          case File:
-                                             locations.add(new Location(fl.getLocation(), new Range(new Position(fl.getLineBegin(), fl.getCharBegin()), new Position(fl.getLineEnd(), fl.getCharEnd()))));
+                                             if(!fl.hasLines()){
+                                                 locations.add(new Location(fl.getLocation(), new Range(new Position(0,0), new Position(0, 0))));
+                                             }
+                                             else {
+                                                 locations.add(new Location(fl.getLocation(), new Range(new Position(fl.getLineBegin(), fl.getCharBegin()), new Position(fl.getLineEnd(), fl.getCharEnd()))));
+                                             }
                                              break;
                                          case Folder:
                                              locations.add(new Location(fl.getLocation(), new Range(new Position(0, 0), new Position(0, 0))));
                                              break;
                                          default:
+                                             logger.info("filetype error");
                                              break;
                                      }
                                  }
@@ -724,6 +752,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                          }
                      }
                  }
+                 logger.info("locations: " + locations);
                  return locations;
        });
     }
@@ -852,7 +881,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
         logger.info("File has been changed : "+ params.getTextDocument().getUri() ); //logging change range?
         featurenames.clear();
-        if (tree != null || Path.of( uri) == currentFeatureModel){
+        if (tree != null || Path.of(uri) == currentFeatureModel){
             parseFeatureTreeAfterChange();
             for(String file : files){
                 parseTextdocument(file);
@@ -872,6 +901,11 @@ public class HAnSTextDocumentService implements TextDocumentService {
     public void didSave(DidSaveTextDocumentParams params) {
         String uri = params.getTextDocument().getUri();
         logger.info("File has been saved : {}"+ params.getTextDocument().getUri() );
+        parseFeatureTreeAfterChange();
+        for(String file : files){
+            parseTextdocument(file);
+        }
+        parseTextdocument();
     }
 
     public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> documentSymbol(DocumentSymbolParams params){

@@ -1,8 +1,9 @@
 T__0=1
-WS=2
-Newline=3
-FEATURENAME=4
-Kommer=5
-Dateiname=6
-'::'=1
-','=5
+T__1=2
+WS=3
+Newline=4
+String=5
+Kommer=6
+'.'=1
+'::'=2
+','=6

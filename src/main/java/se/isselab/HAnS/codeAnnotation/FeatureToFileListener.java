@@ -37,6 +37,16 @@ public interface FeatureToFileListener extends ParseTreeListenerSymbolProvider {
 	 */
 	void exitFiles(FeatureToFileParser.FilesContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link FeatureToFileParser#file}.
+	 * @param ctx the parse tree
+	 */
+	void enterFile(FeatureToFileParser.FileContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link FeatureToFileParser#file}.
+	 * @param ctx the parse tree
+	 */
+	void exitFile(FeatureToFileParser.FileContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link FeatureToFileParser#features}.
 	 * @param ctx the parse tree
 	 */

@@ -16,7 +16,7 @@ public class FeatureToFolderParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, WS=2, FEATURENAME=3, Kommer=4;
+		T__0=1, WS=2, Newline=3, FEATURENAME=4, Kommer=5;
 	public static final int
 		RULE_features = 0, RULE_feature = 1;
 	private static String[] makeRuleNames() {
@@ -28,13 +28,13 @@ public class FeatureToFolderParser extends Parser {
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "'::'", null, null, "','"
+			null, "'::'", null, null, null, "','"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, "WS", "FEATURENAME", "Kommer"
+			null, null, "WS", "Newline", "FEATURENAME", "Kommer"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -96,6 +96,10 @@ public class FeatureToFolderParser extends Parser {
 		public FeatureContext feature(int i) {
 			return getRuleContext(FeatureContext.class,i);
 		}
+		public List<TerminalNode> Kommer() { return getTokens(FeatureToFolderParser.Kommer); }
+		public TerminalNode Kommer(int i) {
+			return getToken(FeatureToFolderParser.Kommer, i);
+		}
 		public List<TerminalNode> WS() { return getTokens(FeatureToFolderParser.WS); }
 		public TerminalNode WS(int i) {
 			return getToken(FeatureToFolderParser.WS, i);
@@ -123,31 +127,47 @@ public class FeatureToFolderParser extends Parser {
 			{
 			setState(4);
 			feature();
-			setState(6); 
+			setState(20);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			do {
+			while (_la==WS || _la==Kommer) {
 				{
 				{
-				setState(5);
-				match(WS);
-				}
-				}
-				setState(8); 
+				setState(8);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( _la==WS );
-			setState(13);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==FEATURENAME) {
-				{
-				{
-				setState(10);
+				while (_la==WS) {
+					{
+					{
+					setState(5);
+					match(WS);
+					}
+					}
+					setState(10);
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				}
+				setState(11);
+				match(Kommer);
+				setState(13); 
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				do {
+					{
+					{
+					setState(12);
+					match(WS);
+					}
+					}
+					setState(15); 
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				} while ( _la==WS );
+				setState(17);
 				feature();
 				}
 				}
-				setState(15);
+				setState(22);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -189,26 +209,43 @@ public class FeatureToFolderParser extends Parser {
 		enterRule(_localctx, 2, RULE_feature);
 		int _la;
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(16);
-			match(FEATURENAME);
-			setState(21);
+			setState(31);
 			_errHandler.sync(this);
-			_la = _input.LA(1);
-			while (_la==T__0) {
+			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
 				{
 				{
-				setState(17);
-				match(T__0);
-				setState(18);
+				setState(23);
+				match(FEATURENAME);
+				setState(26); 
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				do {
+					{
+					{
+					setState(24);
+					match(T__0);
+					setState(25);
+					match(FEATURENAME);
+					}
+					}
+					setState(28); 
+					_errHandler.sync(this);
+					_la = _input.LA(1);
+				} while ( _la==T__0 );
+				}
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				{
+				setState(30);
 				match(FEATURENAME);
 				}
 				}
-				setState(23);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-			}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -223,23 +260,30 @@ public class FeatureToFolderParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001\u0004\u0019\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001"+
-		"\u0001\u0000\u0001\u0000\u0004\u0000\u0007\b\u0000\u000b\u0000\f\u0000"+
-		"\b\u0001\u0000\u0005\u0000\f\b\u0000\n\u0000\f\u0000\u000f\t\u0000\u0001"+
-		"\u0001\u0001\u0001\u0001\u0001\u0005\u0001\u0014\b\u0001\n\u0001\f\u0001"+
-		"\u0017\t\u0001\u0001\u0001\u0000\u0000\u0002\u0000\u0002\u0000\u0000\u0019"+
-		"\u0000\u0004\u0001\u0000\u0000\u0000\u0002\u0010\u0001\u0000\u0000\u0000"+
-		"\u0004\u0006\u0003\u0002\u0001\u0000\u0005\u0007\u0005\u0002\u0000\u0000"+
-		"\u0006\u0005\u0001\u0000\u0000\u0000\u0007\b\u0001\u0000\u0000\u0000\b"+
-		"\u0006\u0001\u0000\u0000\u0000\b\t\u0001\u0000\u0000\u0000\t\r\u0001\u0000"+
-		"\u0000\u0000\n\f\u0003\u0002\u0001\u0000\u000b\n\u0001\u0000\u0000\u0000"+
-		"\f\u000f\u0001\u0000\u0000\u0000\r\u000b\u0001\u0000\u0000\u0000\r\u000e"+
-		"\u0001\u0000\u0000\u0000\u000e\u0001\u0001\u0000\u0000\u0000\u000f\r\u0001"+
-		"\u0000\u0000\u0000\u0010\u0015\u0005\u0003\u0000\u0000\u0011\u0012\u0005"+
-		"\u0001\u0000\u0000\u0012\u0014\u0005\u0003\u0000\u0000\u0013\u0011\u0001"+
-		"\u0000\u0000\u0000\u0014\u0017\u0001\u0000\u0000\u0000\u0015\u0013\u0001"+
-		"\u0000\u0000\u0000\u0015\u0016\u0001\u0000\u0000\u0000\u0016\u0003\u0001"+
-		"\u0000\u0000\u0000\u0017\u0015\u0001\u0000\u0000\u0000\u0003\b\r\u0015";
+		"\u0004\u0001\u0005\"\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0001"+
+		"\u0000\u0001\u0000\u0005\u0000\u0007\b\u0000\n\u0000\f\u0000\n\t\u0000"+
+		"\u0001\u0000\u0001\u0000\u0004\u0000\u000e\b\u0000\u000b\u0000\f\u0000"+
+		"\u000f\u0001\u0000\u0005\u0000\u0013\b\u0000\n\u0000\f\u0000\u0016\t\u0000"+
+		"\u0001\u0001\u0001\u0001\u0001\u0001\u0004\u0001\u001b\b\u0001\u000b\u0001"+
+		"\f\u0001\u001c\u0001\u0001\u0003\u0001 \b\u0001\u0001\u0001\u0000\u0000"+
+		"\u0002\u0000\u0002\u0000\u0000$\u0000\u0004\u0001\u0000\u0000\u0000\u0002"+
+		"\u001f\u0001\u0000\u0000\u0000\u0004\u0014\u0003\u0002\u0001\u0000\u0005"+
+		"\u0007\u0005\u0002\u0000\u0000\u0006\u0005\u0001\u0000\u0000\u0000\u0007"+
+		"\n\u0001\u0000\u0000\u0000\b\u0006\u0001\u0000\u0000\u0000\b\t\u0001\u0000"+
+		"\u0000\u0000\t\u000b\u0001\u0000\u0000\u0000\n\b\u0001\u0000\u0000\u0000"+
+		"\u000b\r\u0005\u0005\u0000\u0000\f\u000e\u0005\u0002\u0000\u0000\r\f\u0001"+
+		"\u0000\u0000\u0000\u000e\u000f\u0001\u0000\u0000\u0000\u000f\r\u0001\u0000"+
+		"\u0000\u0000\u000f\u0010\u0001\u0000\u0000\u0000\u0010\u0011\u0001\u0000"+
+		"\u0000\u0000\u0011\u0013\u0003\u0002\u0001\u0000\u0012\b\u0001\u0000\u0000"+
+		"\u0000\u0013\u0016\u0001\u0000\u0000\u0000\u0014\u0012\u0001\u0000\u0000"+
+		"\u0000\u0014\u0015\u0001\u0000\u0000\u0000\u0015\u0001\u0001\u0000\u0000"+
+		"\u0000\u0016\u0014\u0001\u0000\u0000\u0000\u0017\u001a\u0005\u0004\u0000"+
+		"\u0000\u0018\u0019\u0005\u0001\u0000\u0000\u0019\u001b\u0005\u0004\u0000"+
+		"\u0000\u001a\u0018\u0001\u0000\u0000\u0000\u001b\u001c\u0001\u0000\u0000"+
+		"\u0000\u001c\u001a\u0001\u0000\u0000\u0000\u001c\u001d\u0001\u0000\u0000"+
+		"\u0000\u001d \u0001\u0000\u0000\u0000\u001e \u0005\u0004\u0000\u0000\u001f"+
+		"\u0017\u0001\u0000\u0000\u0000\u001f\u001e\u0001\u0000\u0000\u0000 \u0003"+
+		"\u0001\u0000\u0000\u0000\u0005\b\u000f\u0014\u001c\u001f";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

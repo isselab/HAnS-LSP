@@ -1,24 +1,24 @@
 grammar FeatureToFile;
 
-
 //Parser rules
-document: ( mapping)*;
+document: (mapping (Newline mapping)+)|(mapping);
 
-mapping: (files Newline features Newline);
+mapping: (files Newline features);
 
-files:Dateiname (Kommer WS* Dateiname)* ;
+files:(file (WS* Kommer WS* file)+) | (file)  ;
 
-features: feature (WS* Kommer WS* feature)* ;
+file: String '.' String;
 
-feature:FEATURENAME ('::' FEATURENAME)*;
+features: (feature (WS* Kommer WS* feature)+) | (feature) ;
+
+feature:(String ('::' String)+) | (String);
 
 //lexer rules
 WS: [ \t];
-Newline:[\r\n] | [\n];
-FEATURENAME:
+Newline:[\n\r];
+String:
     [a-zA-Z_][a-zA-Z_0-9]*;
 Kommer: ',';
-Dateiname: [a-zA-Z_][a-zA-Z_0-9:./]*  ;
 
 /*
     test.java
