@@ -16,13 +16,13 @@ The purpose of this repo is to test and evaluate the embedded feature annotation
 
 How to set JAVA_HOME on windows:
 
-Search for 'Edit the system environment variables'
+Search for 'Edit the system environment variables'\
 ![alt tag](./guide/system-Variables.png)
-click on 'Environment Variables'
+click on 'Environment Variables'\
 ![alt tag](./guide/Environment-Variables.png)
-click 'new...' to create a new variable.
+click 'new...' to create a new variable.\
 ![alt tag](./guide/JAVA_Home.png)
-Name the Variable 'JAVA_HOME' and add the path to your JDK 22+ as the value
+Name the Variable 'JAVA_HOME' and add the path to your JDK 22+ as the value\
 ![alt tag](./guide/Variable_Value.png)
 
 ### Installation of the HAnS plugin:
@@ -188,7 +188,7 @@ the "Move" feature is already defined in the .feature-model file
 - Definition: while in a code file (e.g. Window.java), right click on the feature's name written between [...] -> Go to -> definition. this will show you where the feature has been defined
 (IMPORTANT: Calling Definition when in the ".feature-model" file results in VS Code calling the reference method instead)
 
-![alt tag](./guide/definition.png)
+![alt tag](./guide/Definition.png)
 
 - Reference: while in .feature-model file, right click on the feature name -> GO to -> reference. The user will then see where this feature has been annotated in the all files that belongs to the feature model.
 
