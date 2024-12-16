@@ -16,13 +16,13 @@ The purpose of this repo is to test and evaluate the embedded feature annotation
 How to set JAVA_HOME on windows:
 
 Search for 'Edit the system environment variables'\
-![alt tag](./guide/system-Variables.png)\
+![alt tag](./guide/system-Variables.png)
 
 click on 'Environment Variables'\
-![alt tag](./guide/Environment-Variables.png)\
+![alt tag](./guide/Environment-Variables.png)
 
 click 'new...' to create a new variable.\
-![alt tag](./guide/JAVA_Home.png)\
+![alt tag](./guide/JAVA_Home.png)
 
 Name the Variable 'JAVA_HOME' and add the path to your JDK 22+ as the value\
 ![alt tag](./guide/Variable_Value.png)
@@ -31,14 +31,14 @@ Name the Variable 'JAVA_HOME' and add the path to your JDK 22+ as the value\
 
 - Open Viusual studio Code -> Extensions (ctrl shift x) -> three points (Views and more actions)"\
 
-  ![alt tag](./guide/VsCODE-install.png)\
+  ![alt tag](./guide/VsCODE-install.png)
 
 
 - Choose the path to the zip file of the plugin.
 
 ### Visual Studio auto-save
 
--auto save would save tthe effort of pressing save after every change :)\
+-auto save would save tthe effort of pressing save after every change :)
 
 ![alt tag](./guide/auto-save.png)
 
@@ -118,7 +118,7 @@ feature. The feature model below is contains all features present in the Snake g
 
 ## Feature child
 
-in this example Playing_Area is a child of Snake_Game\
+in this example Playing_Area is a child of Snake_Game
 
 ![alt tag](./guide/feature-child.png)
 
