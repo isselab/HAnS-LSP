@@ -2,6 +2,7 @@
 
 The purpose of this repo is to test and evaluate the embedded feature annotations plugin
 [HAnS-LSp](https://github.com/isselab/HAnS-LSP/tree/test-with-plugin) for Visual Studio Code.
+*Do not download the repo content, you will be given a different path to download everything you need*
 
 ### Requirements:
 
