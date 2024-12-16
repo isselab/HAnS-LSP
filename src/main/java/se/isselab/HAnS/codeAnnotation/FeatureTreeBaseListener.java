@@ -5,6 +5,10 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.eclipse.lsp4j.DocumentSymbol;
+import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.eclipse.lsp4j.SymbolKind;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +20,6 @@ import java.util.List;
  */
 @SuppressWarnings("CheckReturnValue")
 public class FeatureTreeBaseListener implements FeatureTreeListener {
-	ArrayList<FeatureModelTree> trees;
 	FeatureModelTree root = new FeatureModelTree(null, ".feature-model");
 	FeatureModelTree currentTree = root ;
 	ArrayList<String> features;
@@ -29,10 +32,10 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	private int indent = 4;
 	private boolean inLogicaltree = false;
 	private ArrayList<FeatureModelTreeLO> LOtrees = new ArrayList<>();
+	private ArrayList<DocumentSymbol> SymbolList = new ArrayList<>();
 
-	public FeatureTreeBaseListener(ArrayList<FeatureModelTree> trees, ArrayList<String> features) {
+	public FeatureTreeBaseListener(ArrayList<String> features) {
 		logger = new FileLogger(FeatureTreeBaseListener.class);
-		this.trees = trees;
 		this.features = features;
 	}
 	/**
@@ -52,9 +55,9 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFeaturetree(FeatureTreeParser.FeaturetreeContext ctx) {
-		trees.add(root);
-		logger.info("FeatureTree:" + root.toString());
-		logger.info("FeatureTree:" + root.PreorderNames());
+	}
+	public FeatureModelTree getFeatureModelTree() {
+		return root;
 	}
 	/**
 	 * {@inheritDoc}
@@ -64,10 +67,18 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	@Override public void enterFeature(FeatureTreeParser.FeatureContext ctx) {
 		featureContexts.add(ctx);
 		if(ctx.FEATURENAME() != null) {
+
 			features.add(ctx.FEATURENAME().toString());
 			logger.info("foundfeature:" + ctx.FEATURENAME().getText() + " in line: " + line);
-
+			DocumentSymbol symbol = new DocumentSymbol();
+			symbol.setName(ctx.FEATURENAME().getText());
+			symbol.setKind(SymbolKind.Constant);
+			Range range = new Range(new Position(line,ctx.FEATURENAME().getSymbol().getCharPositionInLine()),new Position(line,ctx.FEATURENAME().getSymbol().getCharPositionInLine()+ctx.FEATURENAME().toString().length()));
+			symbol.setRange(range);
+			symbol.setSelectionRange(range);
+			SymbolList.add(symbol);
 		}
+
 	}
 	/**
 	 * {@inheritDoc}
@@ -150,11 +161,15 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 
 			FeatureModelTree t;
 			if(inLogicaltree){
-				t = new FeatureModelTreeLO(currentTree, ctx.FEATURENAME().toString(),line, isOPtional, LO);
+				t = new FeatureModelTreeLO(currentTree, ctx.FEATURENAME().toString(),ctx.start.getLine()-1, isOPtional, LO);
+				t.setFeatureStart(ctx.FEATURENAME().getSymbol().getCharPositionInLine());
+				t.setFeatureEnd(ctx.FEATURENAME().getSymbol().getCharPositionInLine()+ctx.FEATURENAME().toString().length());
 				LOtrees.add((FeatureModelTreeLO) t);
 			}
 			else {
-				t = new FeatureModelTree(currentTree, ctx.FEATURENAME().toString(),line , isOPtional);
+				t = new FeatureModelTree(currentTree, ctx.FEATURENAME().toString(),ctx.start.getLine()-1 , isOPtional);
+				t.setFeatureStart(ctx.FEATURENAME().getSymbol().getCharPositionInLine());
+				t.setFeatureEnd(ctx.FEATURENAME().getSymbol().getCharPositionInLine()+ctx.FEATURENAME().toString().length());
 			}
 			currentTree.addSubFeatureTree(t);
 			currentTree = t;
@@ -188,4 +203,15 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void visitErrorNode(ErrorNode node) { }
+
+	public List<DocumentSymbol> getSymbolinformation(){
+		for(FeatureModelTree fmt : root.getDuplicateTrees()){
+			for(DocumentSymbol ds : SymbolList){
+				if(fmt.getName().equalsIgnoreCase(ds.getName())&& ds.getSelectionRange().getStart().getLine() == fmt.getFeatureLine()){
+					ds.setName(fmt.getParent().getName()+"::"+fmt.getName());
+				}
+			}
+		}
+		return SymbolList;
+	}
 }

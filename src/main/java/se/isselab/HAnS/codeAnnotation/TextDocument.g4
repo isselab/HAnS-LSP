@@ -2,31 +2,33 @@
 //&Line[]
 //&End[]
 
+
+
 grammar TextDocument;
+options { caseInsensitive = true; }
 
 //Parser rules
-document: (block | text+? )+;
+document: .*? (block)*;
 
-block: (begin | end | line) '[' feature ']' ;
+block: AND type '[' features ']' .*? ;
 
-feature: FEATURENAME;
+type: (Begin |End | Line) ;
 
-begin: Begin;
-end: End;
-line: Line;
+features: feature(',' feature)* ;
 
-text: Text;
-
+feature: FEATURENAME ('::' FEATURENAME)*;
 
 //lexer rules
 
 
 WS: [ \t\r\n] -> skip;
 
-Begin: '&Begin';
-End:'&End';
-Line:'&Line';
+AND: '&';
 
-FEATURENAME: [a-zA-Z_][a-zA-Z_0-9:]*;
+Begin: 'Begin';
+End:'End';
+Line:'Line';
 
-Text: [a-zA-Z_][a-zA-Z_0-9:] .*?;
+FEATURENAME: [a-z_][a-z_0-9:]*;
+
+Text: . -> skip;

@@ -1,15 +1,17 @@
 {
   "name": "hans-lsp-vscode-extension",
   "displayName": "HAnS-LSP-vscode-Extension",
-  "description": "Extention for HAnS-LSP-LS",
-  "version": "0.0.1",
+  "description": "HAnS-LSP developed by Tim Schulz & Taymour Kiwan",
+  "repository": "https://github.com/isselab/HAnS-LSP",
+  "version": "1.0.0",
+  "icon": "images/hans-lsp-logo.png",
+  "publisher": "Tim Schulz & Taymour Kiwan",
   "engines": {
     "vscode": "^1.94.0"
   },
   "categories": [
     "Other"
   ],
-  
   "activationEvents": [
     "onLanguage:java",
     "onLanguage:Featuremodel",
@@ -18,6 +20,21 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "grammars": [
+      {
+        "path": "./syntaxes/HAnS-injection.json",
+        "scopeName": "HAnS-vscode.injection",
+        "injectTo": [
+          "source.java"
+        ],
+        "embeddedLanguages": {
+          "comment.line.double-slash.java": "java"
+        },
+        "tokenTypes": {
+          "comment.line.double-slash.java": "other"
+        }
+      }
+    ],
     "languages": [
       {
         "id": "java",
@@ -41,6 +58,18 @@
         "id": "Featuremodel",
         "extensions": [
           ".feature-model"
+        ]
+      },
+      {
+        "id": "FeatureToFile",
+        "extensions": [
+          ".feature-to-file"
+        ]
+      },
+      {
+        "id": "FeatureToFolder",
+        "extensions": [
+          ".feature-to-folder"
         ]
       }
     ],
@@ -66,6 +95,7 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
+    "hans-lsp-vscode-extension": "file:",
     "vscode-languageclient": "^9.0.1"
   }
 }

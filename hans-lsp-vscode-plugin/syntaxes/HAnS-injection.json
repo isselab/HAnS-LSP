@@ -1,0 +1,32 @@
+{
+    "scopeName": "HAnS-vscode.injection", 
+    "injectionSelector": ["L:comment.line.double-slash.java"],
+    "patterns": [{ "include": "#expression" }],
+    "repository": {
+      "expression": {
+        "patterns": [{"include" : "#text"},{"include": "#Annotation"},{"include": "#text"}]
+      },   
+      "Annotation" : {
+        "patterns": [{"include":"#Annotationtype"},{"include":"#featurename"}]
+      },
+      "text" : {
+        "patterns": [{"match" : "(.)*"  }]
+      },
+      "featurename" : {
+        "begin": "[",
+        "end":"]",
+        "beginCaptures": {
+            "0": { "name": "annotation.feature.open" }
+          },
+          "endCaptures": {
+            "0": { "name": "annotation.feature.close" }
+          },
+        "name": "annotation.feature",
+        "patterns": [{"match" : "([0-9]|[a-z]|[A-Z]|_|:)*"  }]
+      },
+      "Annotationtype" : {
+        "name": "annotation.type" ,
+        "patterns": [{"match" : "(&begin|&Begin|&End|&end|&Line|&line)"  }]
+      }
+    }
+  }
