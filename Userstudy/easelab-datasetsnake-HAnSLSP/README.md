@@ -1,8 +1,8 @@
-
 # Purpose:
 
 The purpose of this repo is to test and evaluate the embedded feature annotations plugin
-[HAnS-LSp](https://github.com/isselab/HAnS-LSP/tree/test-with-plugin) for Visual Studio Code.
+[HAnS-LSP](https://github.com/isselab/HAnS-LSP/tree/test-with-plugin) for Visual Studio Code.
+*Do not download the repo content, you will be given a different path to download everything you need*
 
 ### Requirements:
 
@@ -17,34 +17,41 @@ The purpose of this repo is to test and evaluate the embedded feature annotation
 How to set JAVA_HOME on windows:
 
 Search for 'Edit the system environment variables'\
-![alt tag](./guide/system-Variables.png)\
+![alt tag](./guide/system-Variables.png)
+
 click on 'Environment Variables'\
-![alt tag](./guide/Environment-Variables.png)\
+![alt tag](./guide/Environment-Variables.png)
+
 click 'new...' to create a new variable.\
-![alt tag](./guide/JAVA_Home.png)\
+![alt tag](./guide/JAVA_Home.png)
+
 Name the Variable 'JAVA_HOME' and add the path to your JDK 22+ as the value\
 ![alt tag](./guide/Variable_Value.png)
 
 ### Installation of the HAnS-LSP plugin:
 
-- Open Viusual studio Code -> Extensions (ctrl shift x) -> three points (Views and more actions)"\
-  ![alt tag](./guide/VsCODE-install.png)\
-- Choose the path to the zip file of the plugin.
+- Open Viusual studio Code -> Extensions (ctrl shift x) -> three points (Views and more actions)"
+
+  ![alt tag](./guide/VsCODE-install.png)
+
+
+- Choose the path to the VSIX file of the plugin after unzipping the downloaded Userstudy.zip.
 
 ### Visual Studio auto-save
 
--auto save would save tthe effort of pressing save after every change :)\
+-auto save would save tthe effort of pressing save after every change :)
+
 ![alt tag](./guide/auto-save.png)
 
-### Disabling the extension
+### How to disable the extension
 
 1. To temporarily disable the HAnS-LSP extension -> go to extensions -> search for HAnS-LSP -> click the gear button at the right of an extension entry.
 
-2. Click "Disable".\
+2. Click "Disable".
 
 ![alt tag](./guide/disable.png)
 
-3. Click "restart extensions"\
+3. Click "restart extensions"
 
 ![alt tag](./guide/disable2.png)
 
@@ -54,7 +61,9 @@ A simple snake game in java, forked from [@hexadeciman](https://github.com/hexad
 Swing to display the game.
 
 ### How it looks:
-\
+
+
+
 ![alt tag](https://i.imgur.com/RVxiGad.png)
 
 ### How it works:
@@ -104,24 +113,24 @@ to any file type and programming language (except languages that do not have sup
 this annotation system is a file with the extension `.feature-model`. This is a feature hierarchy model, describing
 feature names, and their hierarchy in textual form. These are all the features present in the system, and they may then
 be referenced by mapping them to code by using the annotations described below. The feature model is where you define a
-feature. The feature model below is contains all features present in the Snake game.\
+feature. The feature model below is contains all features present in the Snake game.
 
-![alt tag](./guide/feature_model.png)\
+![alt tag](./guide/feature_model.png)
 
 ## Feature child
 
-in this example Playing_Area is a child of Snake_Game\
+in this example Playing_Area is a child of Snake_Game
 
-![alt tag](./guide/feature-child.png)\
+![alt tag](./guide/feature-child.png)
 
 ### Feature Reference Names
 
 Inside the feature hierarchy model, features with the same name may appear twice or more often. To reference
 features uniquely the individual feature is pre-extended with its ancestor until the combined feature reference is
 unique (separated by "::"). This technique is called Least-Partially-Qualified name, short LPQ. The feature `Snake`
-is mentioned twice above and must therefore be referenced uniquely in the manner below.\
+is mentioned twice above and must therefore be referenced uniquely in the manner below.
 
-![alt tag](./guide/lpq.png)\
+![alt tag](./guide/lpq.png)
 
 ### Feature-to-code mapping
 
@@ -129,9 +138,9 @@ The feature-to-code mapping serves to link specific blocks and lines of code to 
 source code which are mapped to a certain feature are called annotation scopes. An annotation scope is surrounded by
 annotation markers and contains at least one feature reference. In the example below the feature `Move` is mapped to
 the block encapsulated by the `&begin` and `&end` statements. The feature `Collision` is mapped to the single line
-where it lies.\
+where it lies.
 
-![alt tag](./guide/code_guide.png)\
+![alt tag](./guide/code_guide.png)
 
 ### Feature-to-file mapping
 
@@ -139,9 +148,9 @@ The feature-to-file mapping is a specialized file with the extension `.feature-t
 file(s) and its/their content to one or more features. All content of the linked file is considered fully to be part of
 the given feature references. The mapping file must be stored in the same folder as the source code files and covers
 only the file in this folder. In the example below each feature is mapped to the file listed above. Additional
-mappings can be added beneath existing mappings in the file.\
+mappings can be added beneath existing mappings in the file.
 
-![alt tag](./guide/file_annotation.png)\
+![alt tag](./guide/file_annotation.png)
 
 ### Feature-to-folder mapping
 
@@ -150,9 +159,9 @@ feature references to folders allows linking specific features to the folder, in
 With this, the mapping of complete folder structures to features is possible and may substitute the feature-to-file
 mapping. The mapping file is located on the top level inside the to be annotated folder. Let's say, for example, that
 a feature relates to all code in a folder, then it could be mapped by writing the feature name in a file with the
-extension `.feature-to-folder` as below. Features must be separated by either spaces or new lines.\
+extension `.feature-to-folder` as below. Features must be separated by either spaces or new lines.
 
-![alt tag](./guide/folder_annotation.png)\
+![alt tag](./guide/folder_annotation.png)
 
 ## HAnS-LSP: Helping Annotate Software
 
@@ -164,35 +173,32 @@ For the parsing to work properly, make sure to save your files after changes.
 
 - Embedded Feature Annotations (check .feature-model to browse all defined features)
 
-- Annotation Completion (ctrl space to get suggested completion)\
- 
-![alt tag](./guide/completion-examples.png)\
+- Annotation Completion (ctrl space to get suggested completion)
 
+![alt tag](./guide/completion-examples.png)
 
 - Hover over annotation (either hover over the feature name, or over the annotation marker, e.g. begin, end or line).
   hovering will give information about that feature.
-  **please note: hovering is keeping the mouse on the word, no clicks needed**\
+  **please note: hovering is keeping the mouse on the word, no clicks needed**
 
-![alt tag](./guide/Hover-example.png)\
+![alt tag](./guide/Hover-example.png)
 
+- feature name suggestion (ctrl space to get suggested name)
 
-- feature name suggestion (ctrl space to get suggested name)\
+![alt tag](./guide/name-suggestion.png)
 
-![alt tag](./guide/name-suggestion.png)\
+the "Move" feature is already defined in the .feature-model file 
 
-the "Move" feature is already defined in the .feature-model file \
-
-![alt tag](./guide/name-suggestion2.png)\
-
+![alt tag](./guide/name-suggestion2.png)
 
 - Definition: while in a code file (e.g. Window.java), right click on the feature's name written between [...] -> Go to -> definition. this will show you where the feature has been defined
-(IMPORTANT: Calling Definition when in the ".feature-model" file results in VS Code calling the reference method instead)\
+  (IMPORTANT: Calling Definition when in the ".feature-model" file results in VS Code calling the reference method instead)
 
-![alt tag](./guide/Definition.png)\
+![alt tag](./guide/Definition.png)
 
-- Reference: while in .feature-model file, right click on the feature name -> GO to -> reference. The user will then see where this feature has been annotated in the all files that belongs to the feature model.\
+- Reference: while in .feature-model file, right click on the feature name -> GO to -> reference. The user will then see where this feature has been annotated in the all files that belongs to the feature model.
 
-![alt tag](./guide/reference.png)\
+![alt tag](./guide/reference.png)
 
 ## Study Group
 
