@@ -34,7 +34,7 @@ Name the Variable 'JAVA_HOME' and add the path to your JDK 22+ as the value\
   ![alt tag](./guide/VsCODE-install.png)
 
 
-- Choose the path to the zip file of the plugin.
+- Choose the path to the VSIX file of the plugin after unzipping the downloaded Userstudy.zip.
 
 ### Visual Studio auto-save
 
@@ -42,7 +42,7 @@ Name the Variable 'JAVA_HOME' and add the path to your JDK 22+ as the value\
 
 ![alt tag](./guide/auto-save.png)
 
-### Disabling the extension
+### How to disable the extension
 
 1. To temporarily disable the HAnS-LSP extension -> go to extensions -> search for HAnS-LSP -> click the gear button at the right of an extension entry.
 
