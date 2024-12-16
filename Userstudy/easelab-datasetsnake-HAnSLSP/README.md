@@ -17,11 +17,11 @@ The purpose of this repo is to test and evaluate the embedded feature annotation
 How to set JAVA_HOME on windows:
 
 Search for 'Edit the system environment variables'\
-![alt tag](./guide/system-Variables.png)
+![alt tag](./guide/system-Variables.png)\
 click on 'Environment Variables'\
-![alt tag](./guide/Environment-Variables.png)
+![alt tag](./guide/Environment-Variables.png)\
 click 'new...' to create a new variable.\
-![alt tag](./guide/JAVA_Home.png)
+![alt tag](./guide/JAVA_Home.png)\
 Name the Variable 'JAVA_HOME' and add the path to your JDK 22+ as the value\
 ![alt tag](./guide/Variable_Value.png)
 
