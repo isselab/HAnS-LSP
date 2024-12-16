@@ -17,22 +17,29 @@ How to set JAVA_HOME on windows:
 
 Search for 'Edit the system environment variables'\
 ![alt tag](./guide/system-Variables.png)\
+
 click on 'Environment Variables'\
 ![alt tag](./guide/Environment-Variables.png)\
+
 click 'new...' to create a new variable.\
 ![alt tag](./guide/JAVA_Home.png)\
+
 Name the Variable 'JAVA_HOME' and add the path to your JDK 22+ as the value\
 ![alt tag](./guide/Variable_Value.png)
 
 ### Installation of the HAnS-LSP plugin:
 
 - Open Viusual studio Code -> Extensions (ctrl shift x) -> three points (Views and more actions)"\
+
   ![alt tag](./guide/VsCODE-install.png)\
+
+
 - Choose the path to the zip file of the plugin.
 
 ### Visual Studio auto-save
 
 -auto save would save tthe effort of pressing save after every change :)\
+
 ![alt tag](./guide/auto-save.png)
 
 ### Disabling the extension
@@ -54,7 +61,8 @@ Swing to display the game.
 
 ### How it looks:
 
-\
+
+
 ![alt tag](https://i.imgur.com/RVxiGad.png)
 
 ### How it works:
