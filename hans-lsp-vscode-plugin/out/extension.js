@@ -27,12 +27,11 @@ exports.activate = activate;
 exports.deactivate = deactivate;
 const path = __importStar(require("path"));
 const vscode_1 = require("vscode");
-const vscode = __importStar(require("vscode"));
 const vscode_2 = require("vscode");
 const node_1 = require("vscode-languageclient/node");
 let client;
 const LS_Launcher_Main = "HAnS-LSP-1.0-SNAPSHOT-jar-with-dependencies";
-const outputChannel = vscode.window.createOutputChannel("LSP-HAnS");
+//const outputChannel = vscode.window.createOutputChannel("LSP-HAnS");
 var LSPPath;
 function activate(context) {
     // The server is implemented in node
@@ -113,7 +112,7 @@ function activate(context) {
     else {
         let clientOptions = {
             // Register the server for plain text documents,
-            documentSelector: [{ scheme: "file", language: "plaintext" }, { scheme: "file", language: "javascript" }, { scheme: "file", language: "typescript" }, { scheme: "file", language: "Featuremodel" }, { scheme: "file", language: "java" }],
+            documentSelector: [{ scheme: "file", language: "plaintext" }, { scheme: "file", language: "javascript" }, { scheme: "file", language: "typescript" }, { scheme: "file", language: "Featuremodel" }, { scheme: "file", language: "java" }, { scheme: "file", language: "FeatureToFile" }, { scheme: "file", language: "FeatureToFolder" }],
             synchronize: {
                 // Notify the server about file changes to '.clientrc files contained in the workspace
                 fileEvents: vscode_1.workspace.createFileSystemWatcher("**/.clientrc"),
@@ -160,7 +159,7 @@ function getServerOptions() {
     let args = ["-jar", LSPPath];
     let serverOptions = {
         command: executable,
-        args: [...args, LS_Launcher_Main],
+        args: [...args],
         options: {},
     };
     //TODO:

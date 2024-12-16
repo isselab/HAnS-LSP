@@ -5,7 +5,6 @@
   "repository": "https://github.com/isselab/HAnS-LSP",
   "version": "1.0.0",
   "icon": "images/hans-lsp-logo.png",
-  "publisher": "Tim Schulz & Taymour Kiwan",
   "engines": {
     "vscode": "^1.94.0"
   },
@@ -95,7 +94,6 @@
     "typescript": "^5.6.2"
   },
   "dependencies": {
-    "hans-lsp-vscode-extension": "file:",
     "vscode-languageclient": "^9.0.1"
   }
 }

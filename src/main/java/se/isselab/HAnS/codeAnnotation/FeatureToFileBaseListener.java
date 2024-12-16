@@ -157,11 +157,24 @@ public class FeatureToFileBaseListener implements FeatureToFileListener {
 			if (index > 0) {
 				parrent = currentdoc.substring(0, index);
 			}
+			//logger.info("parrent directory: " + parrent);
 			for (String file : files) {
-				File f = new File(parrent + "/" + file);
+				String path = (parrent + "/" + file);
+				//logger.info("path: " + path);
+                File f = null;
+                try {
+                    f = new File(new URI(path));
+                } catch (URISyntaxException e) {
+                    //logger.info("uri error");
+					f= new File(path);
+                }
+                //logger.info("searching for file: " + file.toString());
+				//logger.info("file exists: " +f.exists());
 				if(f.exists()) {
-					if(file.endsWith(".java")||file.endsWith(".c")||file.endsWith(".json")||file.endsWith(".yaml")) {
+					//logger.info("file exists: " + file.toString());
+					if(file.toLowerCase().endsWith(".java")||file.toLowerCase().endsWith(".c")||file.toLowerCase().endsWith(".json")||file.toLowerCase().endsWith(".yaml")) {
 						fmt.addlocation(new FeatureLocation(parrent + "/" + file, type.File));
+						//logger.info("found file with feature: " + file.toString());
 					}
 				}
 			}

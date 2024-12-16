@@ -7,25 +7,29 @@
         "patterns": [{"include" : "#text"},{"include": "#Annotation"},{"include": "#text"}]
       },   
       "Annotation" : {
-        "patterns": [{"include":"#Annotationtype"},{"include":"#featurename"}]
+        "patterns": [{"include":"#Annotationtype"},{"include":"#features"}]
       },
       "text" : {
         "patterns": [{"match" : "(.)*"  }]
       },
-      "featurename" : {
+      "features" : {
         "begin": "[",
         "end":"]",
         "beginCaptures": {
-            "0": { "name": "annotation.feature.open" }
+            "0": { "name": "annotation.features.open" }
           },
           "endCaptures": {
-            "0": { "name": "annotation.feature.close" }
+            "0": { "name": "annotation.features.close" }
           },
-        "name": "annotation.feature",
-        "patterns": [{"match" : "([0-9]|[a-z]|[A-Z]|_|:)*"  }]
+        "name": "annotation.features",
+        "patterns": [{"match" : "([0-9]|[a-z]|[A-Z]|_|:|,)*"  }]
       },
       "Annotationtype" : {
         "name": "annotation.type" ,
+        "patterns": [{"match" : "(&begin|&Begin|&End|&end|&Line|&line)"  }]
+      },
+      "featurename" : {
+        "name": "annotation.feature" ,
         "patterns": [{"match" : "(&begin|&Begin|&End|&end|&Line|&line)"  }]
       }
     }

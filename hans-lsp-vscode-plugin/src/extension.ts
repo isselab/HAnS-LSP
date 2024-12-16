@@ -15,7 +15,7 @@ import { Server } from "http";
 
 let client: LanguageClient;
 const LS_Launcher_Main = "HAnS-LSP-1.0-SNAPSHOT-jar-with-dependencies";
-const outputChannel = vscode.window.createOutputChannel("LSP-HAnS");
+//const outputChannel = vscode.window.createOutputChannel("LSP-HAnS");
 var LSPPath:string;
 
 export function activate(context: ExtensionContext) {
@@ -127,7 +127,7 @@ export function activate(context: ExtensionContext) {
   else{
     let clientOptions : LanguageClientOptions = {
       // Register the server for plain text documents,
-      documentSelector: [{ scheme: "file", language: "plaintext" },{scheme: "file", language: "javascript"},{scheme: "file", language: "typescript"},{scheme: "file", language: "Featuremodel"},{scheme: "file", language: "java"}],
+      documentSelector: [{ scheme: "file", language: "plaintext" },{scheme: "file", language: "javascript"},{scheme: "file", language: "typescript"},{scheme: "file", language: "Featuremodel"},{scheme: "file", language: "java"},{scheme: "file", language: "FeatureToFile"},{scheme: "file", language: "FeatureToFolder"}],
       synchronize: {
         // Notify the server about file changes to '.clientrc files contained in the workspace
         fileEvents: workspace.createFileSystemWatcher("**/.clientrc"), 
@@ -194,7 +194,7 @@ function getServerOptions() {
 
   let serverOptions: ServerOptions = {
     command: executable,
-    args: [...args, LS_Launcher_Main],
+    args: [...args],
     options: {
        
     },
