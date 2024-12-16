@@ -1,9 +1,11 @@
 {
   "name": "hans-lsp-vscode-extension",
   "displayName": "HAnS-LSP-vscode-Extension",
-  "description": "Extention for HAnS-LSP-LS",
+  "description": "HAnS-LSP developed by Tim Schulz & Taymour Kiwan",
   "repository": "https://github.com/isselab/HAnS-LSP",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "icon": "images/hans-lsp-logo.png",
+  "publisher": "Tim Schulz & Taymour Kiwan",
   "engines": {
     "vscode": "^1.94.0"
   },

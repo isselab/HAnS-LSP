@@ -1,3 +1,4 @@
+
 # Purpose:
 
 The purpose of this repo is to test and evaluate the embedded feature annotations plugin
@@ -8,7 +9,8 @@ The purpose of this repo is to test and evaluate the embedded feature annotation
 - Visual Studio code installed
 - Required JDK 22+
 - Installed HAnS-LSP-vscode plugin
-- JAVA_Home Set
+- JAVA_Home Set to JDK 22+
+- Make sure you turn on auto-save in Visual studio code or save your changes after every step for the extension to work correctly.
 
 ### JAVA HOME SETTINGS
 
@@ -28,6 +30,23 @@ Name the Variable 'JAVA_HOME' and add the path to your JDK 22+ as the value
 - Open Viusual studio Code -> Extensions (ctrl shift x) -> three points (Views and more actions)"
   ![alt tag](./guide/VsCODE-install.png)
 - Choose the path to the zip file of the plugin.
+
+### Visual Studio auto-save
+
+-auto save would save tthe effort of pressing save after every change :)
+![alt tag](./guide/auto-save.png)
+
+### Disabling the extension
+
+1. To temporarily disable the HAnS-LSP extension -> go to extensions -> search for HAnS-LSP -> click the gear button at the right of an extension entry.
+
+2. Click "Disable".
+
+![alt tag](./guide/disable.png)
+
+3. Click "restart extensions"
+
+![alt tag](./guide/disable2.png)
 
 ## The Snake
 
@@ -166,11 +185,12 @@ the "Move" feature is already defined in the .feature-model file
 ![alt tag](./guide/name-suggestion2.png)
 
 
-- Definition: while in a code file (e.g. Window.java), right click on the feature's name written between [..] -> Go to -> definition. this will show you where the feature has been defined
+- Definition: while in a code file (e.g. Window.java), right click on the feature's name written between [...] -> Go to -> definition. this will show you where the feature has been defined
+(IMPORTANT: Calling Definition when in the ".feature-model" file results in VS Code calling the reference method instead)
 
 ![alt tag](./guide/definition.png)
 
-- Reference: while in .feature-model file, right click on the feature name -> GO to -> reference. The user will then be able to see where this feature has been annotated in the opened files.
+- Reference: while in .feature-model file, right click on the feature name -> GO to -> reference. The user will then see where this feature has been annotated in the all files that belongs to the feature model.
 
 ![alt tag](./guide/reference.png)
 
