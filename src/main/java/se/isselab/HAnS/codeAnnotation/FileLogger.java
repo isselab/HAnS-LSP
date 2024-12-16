@@ -9,7 +9,7 @@ public class FileLogger {
     String name ;
     BufferedWriter writer;
     File logFile;
-    Boolean logging = true;
+    Boolean logging = false;
     public FileLogger(Class o) {
         if(logging) {
             name = o.toString();

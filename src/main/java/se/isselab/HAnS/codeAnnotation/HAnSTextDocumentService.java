@@ -526,7 +526,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
         List<String> availableKeywords = new ArrayList<>();
         for (String keyword : keywords) {
             //logger.info("testing available keyword:" + keyword);
-            if (selectedText.contains(keyword)){
+            if (selectedText.toLowerCase().contains(keyword.toLowerCase())) {
                 availableKeywords.add(keyword); // name::name
                 logger.info("available keyword:" + keyword);
             }
@@ -539,7 +539,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
         logger.info("found available keywords:" + availableKeywords.toString() );
         for (String keyword : availableKeywords) {
-            int startIndex = selectedText.indexOf(keyword);
+            int startIndex = selectedText.toLowerCase().indexOf(keyword.toLowerCase());
             int endIndex = startIndex + keyword.length() -1;
             logger.info("keyword:" + keyword + " at: "+startIndex +", "+endIndex);
             if (keyword.equalsIgnoreCase("&begin") || keyword.equalsIgnoreCase("&end") || keyword.equalsIgnoreCase("&line")) {
@@ -683,8 +683,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
                             else{
                                 fmt = fmt.search(ds.getName());
                             }
-                            logger.info("fmt: " + fmt.toString());
-                            logger.info("line: " + fmt.getFeatureLine());
+                            //logger.info("fmt: " + fmt.toString());
+                            //logger.info("line: " + fmt.getFeatureLine());
                             locations.add(new Location(currentFeatureModel.toUri().toString(),new Range(new Position(fmt.getFeatureLine(),fmt.getFeatureStart()),new Position(fmt.getFeatureLine(), fmt.getFeatureEnd()))));
                         }
                     }
