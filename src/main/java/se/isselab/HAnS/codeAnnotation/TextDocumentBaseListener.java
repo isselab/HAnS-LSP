@@ -3,13 +3,8 @@ package se.isselab.HAnS.codeAnnotation;// Generated from C:/Users/Tim/Documents/
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.eclipse.lsp4j.DocumentSymbol;
-import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
-import org.eclipse.lsp4j.SymbolKind;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class provides an empty implementation of {@link TextDocumentListener},
@@ -18,53 +13,22 @@ import java.util.List;
  */
 @SuppressWarnings("CheckReturnValue")
 public class TextDocumentBaseListener implements TextDocumentListener {
-	enum Annotationtype{
-		Begin,
-		End,
-		Line,
-	}
+	ArrayList<String> features;
+	private static FileLogger logger;
 
-	private class FeatureLocationTuple{
-		private FeatureLocation featureLocation;
-		private String feature;
-		public FeatureLocationTuple(FeatureLocation featureLocation, String feature){
-			this.featureLocation = featureLocation;
-			this.feature = feature;
-		}
-		public FeatureLocation getFeatureLocation(){
-			return featureLocation;
-		}
-		public String getFeature(){
-			return feature;
-		}
-	}
-
-
-	FileLogger logger;
-	ArrayList<DocumentSymbol> SymbolList;
-	FeatureModelTree featureModelTree;
-	String currentdoc;
-	private Annotationtype Atype;
-	private ArrayList<FeatureLocationTuple> unfinishedFeatureLocations;
-
-	public TextDocumentBaseListener(FeatureModelTree featureModelTree, String currentdoc) {
+	public TextDocumentBaseListener(ArrayList<String> features) {
 		logger = new FileLogger(TextDocumentBaseListener.class);
-		this.featureModelTree = featureModelTree;
-		this.currentdoc = currentdoc;
-		SymbolList = new ArrayList<>();
-		unfinishedFeatureLocations = new ArrayList<>();
+		this.features = features;
 	}
 
-	public List<DocumentSymbol> getSymbolinformation(){
-
-		return SymbolList;
-	}
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterDocument(TextDocumentParser.DocumentContext ctx) { }
+	@Override public void enterDocument(TextDocumentParser.DocumentContext ctx) {
+		logger.info("document found: " + ctx.getText());
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -76,7 +40,9 @@ public class TextDocumentBaseListener implements TextDocumentListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterBlock(TextDocumentParser.BlockContext ctx) { }
+	@Override public void enterBlock(TextDocumentParser.BlockContext ctx) {
+		logger.info("block found");
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -88,124 +54,8 @@ public class TextDocumentBaseListener implements TextDocumentListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterType(TextDocumentParser.TypeContext ctx) {
-		String annotationTypeString = "";
-		switch (ctx.getChild(0).getText().toLowerCase()){
-			case "begin": Atype = Annotationtype.Begin;
-				annotationTypeString = "begin";
-				break;
-			case "end": Atype = Annotationtype.End;
-				annotationTypeString = "end";
-				break;
-			case "line": Atype = Annotationtype.Line;
-				annotationTypeString = "line";
-				break;
-			default:
-				logger.info("Unknown type: " + ctx.getChild(0).getText());
-
-				break; //[23 16]
-		}
-		int line = ctx.start.getLine()-1;
-		Range range =  new Range(new Position(line, ctx.start.getCharPositionInLine()), new Position(line, ctx.stop.getCharPositionInLine()+ctx.stop.getText().length()));
-		SymbolList.add(new DocumentSymbol(annotationTypeString, SymbolKind.Method, range, range));
-		if (!featureModelTree.getSubfeatures().isEmpty()) {
-			logger.info("annotation found in line: " + line);
-		}
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitType(TextDocumentParser.TypeContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFeatures(TextDocumentParser.FeaturesContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFeatures(TextDocumentParser.FeaturesContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterFeature(TextDocumentParser.FeatureContext ctx) {
-		FeatureModelTree fmt = featureModelTree;
-		if (!featureModelTree.getSubfeatures().isEmpty()) {
-			if (ctx.getText().contains("::")) {
-				String[] features = ctx.getText().split("::");
-				FeatureModelTree feature = featureModelTree.search(features[0]);
-
-					for (int i = 1; i < features.length; i++) {
-						if (feature != null) {
-							int j= i;
-							String possibleChild = features[i];
-							while(j+1 < features.length) {
-								possibleChild += ("::" + features[j+1]);
-								if (feature.getChiled(possibleChild) != null) {
-									feature = feature.getChiled(possibleChild);
-									break;
-								}
-								j++;
-							}
-							if(j+1 >= features.length) {
-								feature = feature.getChiled(features[i]);
-							}
-						}
-						else {
-							break;
-						}
-				}
-				fmt = feature;
-
-			} else {
-				fmt = fmt.search(ctx.getText());
-			}
-
-			if (fmt != null) {
-				int line = ctx.FEATURENAME(0).getSymbol().getLine() - 1;
-
-				logger.info("feature: " + ctx.getText() + " found in line: " + line + " adding to tree: " + fmt.toString());
-
-
-				Range range = new Range(new Position(line, ctx.start.getCharPositionInLine()), new Position(line, ctx.stop.getCharPositionInLine() + ctx.stop.getText().length()));
-				SymbolList.add(new DocumentSymbol(ctx.getText(), SymbolKind.Constant, range, range));
-
-				switch (Atype) {
-					case Begin:
-						FeatureLocation beginoffeaturelocation = new FeatureLocation(currentdoc, type.File, line);
-						beginoffeaturelocation.setCharBegin(ctx.start.getCharPositionInLine());
-						unfinishedFeatureLocations.add(new FeatureLocationTuple(beginoffeaturelocation, ctx.getText()));
-						break;
-					case Line:
-						FeatureLocation featureLocation = new FeatureLocation(currentdoc, type.File, line, line);
-						featureLocation.setCharBegin(ctx.start.getCharPositionInLine());
-						featureLocation.setCharEnd(ctx.stop.getCharPositionInLine() + ctx.stop.getText().length());
-						fmt.addlocation(featureLocation);
-						break;
-					case End:
-						for (FeatureLocationTuple fl : unfinishedFeatureLocations) {
-							if (fl.getFeature().equals(ctx.getText())) {
-								fl.getFeatureLocation().setLineEnd(line);
-								fl.getFeatureLocation().setCharEnd(ctx.stop.getCharPositionInLine() + ctx.stop.getText().length());
-								fmt.addlocation(fl.getFeatureLocation());
-								unfinishedFeatureLocations.remove(fl);
-								break;
-							}
-						}
-						break;
-				}
-			}
-			else{
-				logger.info("symbol not found in tree");
-			}
-		}
+		logger.info("found feature: " + ctx.getText());
 	}
 	/**
 	 * {@inheritDoc}
@@ -213,6 +63,56 @@ public class TextDocumentBaseListener implements TextDocumentListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFeature(TextDocumentParser.FeatureContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBegin(TextDocumentParser.BeginContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBegin(TextDocumentParser.BeginContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterEnd(TextDocumentParser.EndContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEnd(TextDocumentParser.EndContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLine(TextDocumentParser.LineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLine(TextDocumentParser.LineContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterText(TextDocumentParser.TextContext ctx) {
+		logger.info("found text: " + ctx.getText());
+	}
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitText(TextDocumentParser.TextContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

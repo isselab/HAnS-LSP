@@ -81,11 +81,6 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
         completionOptions.setResolveProvider(true);
         result.getCapabilities().setCompletionProvider(completionOptions);
 
-        result.getCapabilities().setDocumentSymbolProvider(true);
-
-        result.getCapabilities().setDefinitionProvider(true);
-        result.getCapabilities().setReferencesProvider(true);
-
         WorkspaceFoldersOptions wspo = new WorkspaceFoldersOptions();
         wspo.setSupported(Boolean.TRUE);
         wspo.setChangeNotifications(Boolean.TRUE);
