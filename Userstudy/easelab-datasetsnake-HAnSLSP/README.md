@@ -2,15 +2,15 @@
 
 The purpose of this repo is to test and evaluate the embedded feature annotations plugin
 [HAnS-LSP](https://github.com/isselab/HAnS-LSP/tree/test-with-plugin) for Visual Studio Code.
-*Do not download the repo content, you will be given a different path to download everything you need*
+_Do not download the repo content, you will be given a different path to download everything you need_
 
 ### Requirements:
 
 - Visual Studio code installed
 - Required JDK 22+
-- Installed HAnS-LSP-vscode plugin
-- JAVA_Home Set to JDK 22+
-- Make sure you turn on auto-save in Visual studio code or save your changes after every step for the extension to work correctly.
+- Installed HAnS-LSP-vscode plugin (Installation guide below)
+- JAVA_Home Set to JDK 22+ (Setting guide below)
+- Make sure you turn on auto-save in Visual studio code or save your changes after every step for the extension to work correctly (Setting guide below).
 
 ### JAVA HOME SETTINGS
 
@@ -28,22 +28,25 @@ click 'new...' to create a new variable.\
 Name the Variable 'JAVA_HOME' and add the path to your JDK 22+ as the value\
 ![alt tag](./guide/Variable_Value.png)
 
-### Installation of the HAnS-LSP plugin:
+### HAnS-LSP plugin installation:
 
 - Open Viusual studio Code -> Extensions (ctrl shift x) -> three points (Views and more actions)"
 
   ![alt tag](./guide/VsCODE-install.png)
 
+- Choose the VSIX file to install. The VSIX file could be found in the unzipped Userstudy file.
 
-- Choose the path to the VSIX file of the plugin after unzipping the downloaded Userstudy.zip.
+- a prompt will popup after installing the file. please press on restart tool for the extension to work.
 
 ### Visual Studio auto-save
 
--auto save would save tthe effort of pressing save after every change :)
+-auto save would spare you the effort of pressing save after every change (genius). Saving after every step is necessary for the tool to work properly.
 
 ![alt tag](./guide/auto-save.png)
 
 ### How to disable the extension
+
+During the Task, you will be asked to disable the extension. if so, this is how to do it:
 
 1. To temporarily disable the HAnS-LSP extension -> go to extensions -> search for HAnS-LSP -> click the gear button at the right of an extension entry.
 
@@ -57,12 +60,11 @@ Name the Variable 'JAVA_HOME' and add the path to your JDK 22+ as the value\
 
 ## The Snake
 
-A simple snake game in java, forked from [@hexadeciman](https://github.com/hexadeciman/Snake), using Threads and Java
+Clone the game and open it in visual studio code.
+This is a simple snake game in java, forked from [@hexadeciman](https://github.com/hexadeciman/Snake), using Threads and Java
 Swing to display the game.
 
 ### How it looks:
-
-
 
 ![alt tag](https://i.imgur.com/RVxiGad.png)
 
@@ -173,7 +175,7 @@ For the parsing to work properly, make sure to save your files after changes.
 
 - Embedded Feature Annotations (check .feature-model to browse all defined features)
 
-- Annotation Completion (ctrl space to get suggested completion)
+- Annotation Completion (ctrl space to get suggested completion of the annotation)
 
 ![alt tag](./guide/completion-examples.png)
 
@@ -187,7 +189,7 @@ For the parsing to work properly, make sure to save your files after changes.
 
 ![alt tag](./guide/name-suggestion.png)
 
-the "Move" feature is already defined in the .feature-model file 
+the "Move" feature is already defined in the .feature-model file
 
 ![alt tag](./guide/name-suggestion2.png)
 
