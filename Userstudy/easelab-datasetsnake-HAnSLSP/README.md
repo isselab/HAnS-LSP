@@ -60,7 +60,7 @@ During the Task, you will be asked to disable the extension. if so, this is how 
 
 ## The Snake
 
-Clone the game and open it in visual studio code.
+Don't clone the game for the link below, just open the game folder in the provided zip file.
 This is a simple snake game in java, forked from [@hexadeciman](https://github.com/hexadeciman/Snake), using Threads and Java
 Swing to display the game.
 
