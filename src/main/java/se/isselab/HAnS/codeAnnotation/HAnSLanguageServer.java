@@ -42,39 +42,12 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
         System.exit(0);
     }
 
-    /*public NotebookDocumentService getNotebookDocumentService() {
-
-    }*/
-
 
     @Override
     public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
         logger.info("Initializing language server with params: {}");
 
-        //new code for workspacefolder
-
-        /*
-        if (params.getInitializationOptions() instanceof Map) {
-            Map<?, ?> options = (Map<?, ?>) params.getInitializationOptions();
-            if (options.containsKey("workspaceFolder")) {
-                String workspaceFolder = (String) options.get("workspaceFolder");
-                if (workspaceFolder != null) {
-                    this.workspaceFolderPath = Paths.get(workspaceFolder);
-                    tdservice.setWorkspaceFolderPath(this.workspaceFolderPath); // Pass to text document service
-                    logger.info("Workspace folder path set to: " + workspaceFolder);
-                } else {
-                    logger.warn("Workspace folder path is null");
-                }
-            } else {
-                logger.warn("Initialization options did not contain workspace folder key.");
-            }
-        } else {
-            logger.warn("Initialization options is not a map or is null.");
-        }
-        */
-
-
-        InitializeResult result = new InitializeResult(new ServerCapabilities());
+         InitializeResult result = new InitializeResult(new ServerCapabilities());
         result.getCapabilities().setTextDocumentSync(TextDocumentSyncKind.Full);
         result.getCapabilities().setHoverProvider(true);
         CompletionOptions completionOptions = new CompletionOptions();
@@ -115,10 +88,6 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
         return CompletableFuture.completedFuture(null);
     }
 
-    //@Override
-    //public NotebookDocumentService getNotebookDocumentService() {
-//        return this;
-//}
 
     @Override
     public TextDocumentService getTextDocumentService() {
@@ -135,15 +104,9 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
     }
 
     @Override
-    /*public void cancelProgress(WorkDoneProgressCancelParams params) {
-    }*/
+   
 
     public void connect(LanguageClient client) {
         logger.info("connecting language server with client: {}"+ client.toString());
         this.client = client;
     }
-
-//    public boolean isDynamicCompletionRegistration() {
-//        return false;
-//    }
-}
