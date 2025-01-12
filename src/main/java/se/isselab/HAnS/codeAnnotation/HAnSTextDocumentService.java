@@ -37,59 +37,70 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private List<String> files = new ArrayList<>();
     private List<DocumentSymbol> symboslofcurrentfile;
     private List<DocumentSymbol> featuremodelsymbols;
-    
+
     private ArrayList<FeatureModelTree> featurtrees = new ArrayList<>();
     private ArrayList<String> featurenames = new ArrayList<>();
 
-    private Path workspaceFolderPath;//Store the workspace folder path
+    private Path workspaceFolderPath;// Store the workspace folder path
+
+    public HAnSTextDocumentService() {
+        logger = new FileLogger(HAnSTextDocumentService.class);
+        this.langugageServer = null;
+        this.tree = new FeatureModelTree(null);
+        this.currtree = tree;
+    }
+
     public HAnSTextDocumentService(HAnSLanguageServer x, FeatureModelTree y) {
-       // System.setProperty("log4j.configurationFile", "log4jconfig.xml");
+        // System.setProperty("log4j.configurationFile", "log4jconfig.xml");
         logger = new FileLogger(HAnSTextDocumentService.class);
         this.langugageServer = x;
         this.tree = y;
         this.currtree = tree;
     }
 
-    private void findWorkspaceFolders(){
+    private void findWorkspaceFolders() {
         try {
             logger.info("searching for files");
             Files.walk(currentFeatureModel.getParent())
-                    .filter(path -> path.toString().endsWith(".java")||path.endsWith(".feature-to-file")||path.endsWith(".feature-to-folder")||path.toString().endsWith(".c")||path.toString().endsWith(".js"))
-                    .forEach(path ->{
-                        logger.info("path: "+path.toUri() +" with featuremoddel: "+ findNextFeatureModel(path).toUri());
-                        if(findNextFeatureModel(path).equals(currentFeatureModel)) {
-                        files.add(path.toUri().toString());
-                        logger.info("found file with same feature-model: "+ path.toUri());
-                    }
+                    .filter(path -> path.toString().endsWith(".java") || path.endsWith(".feature-to-file")
+                            || path.endsWith(".feature-to-folder") || path.toString().endsWith(".c")
+                            || path.toString().endsWith(".js"))
+                    .forEach(path -> {
+                        logger.info(
+                                "path: " + path.toUri() + " with featuremoddel: " + findNextFeatureModel(path).toUri());
+                        if (findNextFeatureModel(path).equals(currentFeatureModel)) {
+                            files.add(path.toUri().toString());
+                            logger.info("found file with same feature-model: " + path.toUri());
+                        }
 
-            });
+                    });
         } catch (IOException e) {
             logger.error("IO exeption in findWorkspaceFolders");
         }
 
     }
-    private void parseFiles(){
+
+    private void parseFiles() {
         logger.info("parsing files: " + files);
-        for(String file : files){
+        for (String file : files) {
             parseTextdocument(file);
         }
 
     }
 
-
-    public void parseTextdocument(){
+    public void parseTextdocument() {
         logger.info("parsing currentdoc");
         try {
             String comp = currdoc.toUri().toString().split("/")[currdoc.toUri().toString().split("/").length - 1];
             String uri = currdoc.toUri().toString();
-            if(tree == null){
+            if (tree == null) {
                 parseFeaturetree();
                 parseFiles();
             }
             ParseTreeListenerSymbolProvider tdbl;
             ParseTree ptree;
-            logger.info("comp string: " +comp);
-            if(!comp.equalsIgnoreCase(".feature-model")){
+            logger.info("comp string: " + comp);
+            if (!comp.equalsIgnoreCase(".feature-model")) {
                 switch (comp.toLowerCase()) {
                     case ".feature-to-file":
                         logger.info("found feature-to-file");
@@ -118,9 +129,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 ParseTreeWalker walker = new ParseTreeWalker();
                 walker.walk(tdbl, ptree);
                 symboslofcurrentfile = tdbl.getSymbolinformation();
-                logger.info("symbosl of currentdoc: "+symboslofcurrentfile);
-            }
-            else{
+                logger.info("symbosl of currentdoc: " + symboslofcurrentfile);
+            } else {
                 logger.info("featuremodel");
                 symboslofcurrentfile = featuremodelsymbols;
             }
@@ -128,13 +138,14 @@ public class HAnSTextDocumentService implements TextDocumentService {
             logger.error("io exeption");
         }
     }
-    public void parseTextdocument(String uri){
+
+    public void parseTextdocument(String uri) {
         try {
             String comp = uri.split("/")[uri.split("/").length - 1];
             ParseTreeListenerSymbolProvider tdbl;
             ParseTree ptree;
-            logger.info("comp string: " +comp);
-            if(!comp.equalsIgnoreCase(".feature-model")) {
+            logger.info("comp string: " + comp);
+            if (!comp.equalsIgnoreCase(".feature-model")) {
                 switch (comp.toLowerCase()) {
                     case ".feature-to-file":
                         logger.info(".feature-to-file");
@@ -167,8 +178,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                     symboslofcurrentfile = tdbl.getSymbolinformation();
                     logger.info("symbols of current doc: " + tdbl.getSymbolinformation());
                 }
-            }
-            else {
+            } else {
                 symboslofcurrentfile = featuremodelsymbols;
             }
 
@@ -179,8 +189,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
     }
 
-    public void parseFeaturetree(){
-        //walker erstellen listener erstellen
+    public void parseFeaturetree() {
+        // walker erstellen listener erstellen
         logger.info("Parsing Featuretree");
         findProjektRoot();
         currentFeatureModel = findNextFeatureModel();
@@ -197,18 +207,18 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 ParseTreeWalker walker = new ParseTreeWalker();
                 walker.walk(ftbl, ptree);
                 logger.info("Features found" + featurenames.toString());
-                String featuretreerep ="";
+                String featuretreerep = "";
                 tree = ftbl.getFeatureModelTree();
                 logger.info("Featuretrees: " + featurtrees.size());
                 featuremodelsymbols = ftbl.getSymbolinformation();
-                //logger.info("symbols of featuremodel: " + featuremodelsymbols.toString());
+                // logger.info("symbols of featuremodel: " + featuremodelsymbols.toString());
             } catch (IOException e) {
                 logger.error("");
             }
         }
     }
 
-    public void parseFeatureTreeAfterChange(){
+    public void parseFeatureTreeAfterChange() {
         if (currentFeatureModel != null) {
             try {
                 Lexer l = new FeatureTreeLexer(CharStreams.fromPath(currentFeatureModel));
@@ -221,11 +231,11 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 ParseTreeWalker walker = new ParseTreeWalker();
                 walker.walk(ftbl, ptree);
                 logger.info("Features found" + featurenames.toString());
-                String featuretreerep ="";
+                String featuretreerep = "";
                 tree = ftbl.getFeatureModelTree();
                 logger.info("Featuretrees: " + featurtrees.size());
                 featuremodelsymbols = ftbl.getSymbolinformation();
-                //logger.info("symbols of featuremodel: " + featuremodelsymbols.toString());
+                // logger.info("symbols of featuremodel: " + featuremodelsymbols.toString());
             } catch (IOException e) {
                 logger.error("");
             }
@@ -248,7 +258,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
             while (featuremodel == null && currparrent.startsWith(endpath)) {
                 currDir = new File(currparrent.toString() + "\\" + ".feature-model");
                 if (currDir.exists()) {
-                    logger.info("found featuremodel at: " + currparrent.toString()+ "\\" + ".feature-model");
+                    logger.info("found featuremodel at: " + currparrent.toString() + "\\" + ".feature-model");
                     featuremodel = currDir.toPath();
                 } else {
                     if (currparrent.getParent() != null) {
@@ -291,9 +301,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
         return null;
     }
 
-
-    public void findProjektRoot(){
-        if(currdoc != null){
+    public void findProjektRoot() {
+        if (currdoc != null) {
             projectroot = null;
             Path currparrent = currdoc.getParent();
             File currDir;
@@ -316,10 +325,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
     }
 
-    
-
-
-    public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams completionParams) {
+    public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(
+            CompletionParams completionParams) {
         // Provide completion item.
         logger.info("completion");
         return CompletableFuture.supplyAsync(() -> {
@@ -327,7 +334,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
             try {
                 // Completion Item (Begin End blocks)
                 CompletionItem completionItem = new CompletionItem();
-                // Define the text to be inserted in to the file if the completion item is selected.
+                // Define the text to be inserted in to the file if the completion item is
+                // selected.
                 completionItem.setInsertText("//&Begin[]\n\n//&End[]\n");
                 // Set the label that shows when the completion drop down appears in the Editor.
                 completionItem.setLabel("//&Begin[] ... //&End[]");
@@ -404,12 +412,11 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 completionItem9.setDetail("Creating a new Line Annotation");
                 completionItems.add(completionItem9);
 
-
                 ArrayList<String> duplicates = tree.getDuplicates();
-                //completion für featureliste
-                logger.info("duplicates: "+duplicates.toString() );
-                for(String feature : featurenames){
-                    if(!duplicates.contains(feature)){
+                // completion für featureliste
+                logger.info("duplicates: " + duplicates.toString());
+                for (String feature : featurenames) {
+                    if (!duplicates.contains(feature)) {
                         CompletionItem completionItemi = new CompletionItem();
                         completionItemi.setInsertText(feature);
                         completionItemi.setLabel(feature);
@@ -419,8 +426,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
                     }
                 }
                 ArrayList<String> DuplicateFeatures = tree.getDuplicatesWithParrent();
-                logger.info("duplicates ersetzt: "+DuplicateFeatures.toString() );
-                if(!DuplicateFeatures.isEmpty()) {
+                logger.info("duplicates ersetzt: " + DuplicateFeatures.toString());
+                if (!DuplicateFeatures.isEmpty()) {
                     for (String feature : DuplicateFeatures) {
                         CompletionItem completionItemi = new CompletionItem();
                         completionItemi.setInsertText(feature);
@@ -431,16 +438,14 @@ public class HAnSTextDocumentService implements TextDocumentService {
                     }
                 }
 
-
             } catch (Exception e) {
-                //TODO: Handle the exception.
+                // TODO: Handle the exception.
             }
 
             // Return the list of completion items.
             return Either.forLeft(completionItems);
         });
     }
-
 
     @Override
     public CompletableFuture<CompletionItem> resolveCompletionItem(CompletionItem completionItem) {
@@ -469,8 +474,8 @@ public class HAnSTextDocumentService implements TextDocumentService {
             try {
                 BufferedReader text = new BufferedReader(new FileReader(filePath));
                 logger.info("Document URI: {} " + doc.getUri());
-                logger.info("Hover request received at line: {}, character: {} " + line+ " " + cha);
-                while ((nextline ) <= line) {
+                logger.info("Hover request received at line: {}, character: {} " + line + " " + cha);
+                while ((nextline) <= line) {
                     workline = text.readLine();
                     nextline++;
                 }
@@ -482,7 +487,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
                 throw new RuntimeException(e);
             }
             if (workline != null) {
-                logger.info("workline: "+ workline);
+                logger.info("workline: " + workline);
                 return hoverForReferences(workline, cha);
 
             }
@@ -496,36 +501,40 @@ public class HAnSTextDocumentService implements TextDocumentService {
         // Additional check in hoverForReferences to avoid null references
         if (selectedText == null || selectedText.isEmpty()) {
             logger.info("No text available for analysis in hoverForReferences.");
-            //return new Hover(new MarkupContent(MarkupKind.MARKDOWN, "No text available for analysis."));
+            // return new Hover(new MarkupContent(MarkupKind.MARKDOWN, "No text available
+            // for analysis."));
             return null;
         }
 
         ArrayList<String> featurenameswithoutduplicates = new ArrayList<>(featurenames);
-        for(String dup : tree.getDuplicates()){
+        for (String dup : tree.getDuplicates()) {
             featurenameswithoutduplicates.remove(dup);
         }
         /*
-        logger.info("duplicates: "+ tree.getDuplicates());
-        logger.info("featurenameswithoutduplicates: "+ featurenameswithoutduplicates);
-        logger.info("duplicateswithparrent: "+ tree.getDuplicatesWithParrent());
-
+         * logger.info("duplicates: "+ tree.getDuplicates());
+         * logger.info("featurenameswithoutduplicates: "+
+         * featurenameswithoutduplicates);
+         * logger.info("duplicateswithparrent: "+ tree.getDuplicatesWithParrent());
+         * 
          */
 
-        List<String> keywords = new ArrayList<String>() {{
-            add("&Begin");
-            add("&End");
-            add("&Line");
-            add("&begin");
-            add("&end");
-            add("&line");
-            addAll(featurenameswithoutduplicates);
-            addAll(tree.getDuplicatesWithParrent());
-        }};
-        //logger.info("duplicates: " + tree.getDuplicates());
-        logger.info("keywords :" + keywords.toString() );
+        List<String> keywords = new ArrayList<String>() {
+            {
+                add("&Begin");
+                add("&End");
+                add("&Line");
+                add("&begin");
+                add("&end");
+                add("&line");
+                addAll(featurenameswithoutduplicates);
+                addAll(tree.getDuplicatesWithParrent());
+            }
+        };
+        // logger.info("duplicates: " + tree.getDuplicates());
+        logger.info("keywords :" + keywords.toString());
         List<String> availableKeywords = new ArrayList<>();
         for (String keyword : keywords) {
-            //logger.info("testing available keyword:" + keyword);
+            // logger.info("testing available keyword:" + keyword);
             if (selectedText.toLowerCase().contains(keyword.toLowerCase())) {
                 availableKeywords.add(keyword); // name::name
                 logger.info("available keyword:" + keyword);
@@ -534,21 +543,22 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
         if (availableKeywords.isEmpty()) {
             logger.info("No matching keywords found.");
-            //return new Hover(new MarkupContent(MarkupKind.MARKDOWN, "No keyword found, availableKeywords.isEmpty"));
+            // return new Hover(new MarkupContent(MarkupKind.MARKDOWN, "No keyword found,
+            // availableKeywords.isEmpty"));
             return null;
         }
-        logger.info("found available keywords:" + availableKeywords.toString() );
+        logger.info("found available keywords:" + availableKeywords.toString());
         for (String keyword : availableKeywords) {
             int startIndex = selectedText.toLowerCase().indexOf(keyword.toLowerCase());
-            int endIndex = startIndex + keyword.length() -1;
-            logger.info("keyword:" + keyword + " at: "+startIndex +", "+endIndex);
-            if (keyword.equalsIgnoreCase("&begin") || keyword.equalsIgnoreCase("&end") || keyword.equalsIgnoreCase("&line")) {
-                if (startIndex-1 < cha && cha < endIndex + 1) {
+            int endIndex = startIndex + keyword.length() - 1;
+            logger.info("keyword:" + keyword + " at: " + startIndex + ", " + endIndex);
+            if (keyword.equalsIgnoreCase("&begin") || keyword.equalsIgnoreCase("&end")
+                    || keyword.equalsIgnoreCase("&line")) {
+                if (startIndex - 1 < cha && cha < endIndex + 1) {
                     logger.info("found keyword:" + keyword);
                     return createHoverForKeyword(keyword);
                 }
-            }
-            else{
+            } else {
                 if (startIndex < cha && cha < endIndex) {
                     logger.info("found keyword:" + keyword);
                     return createHoverForKeyword(keyword);
@@ -561,7 +571,7 @@ public class HAnSTextDocumentService implements TextDocumentService {
     private Hover createHoverForKeyword(String keyword) {
         logger.info("createHoverForKeyword");
         MarkupContent markupContent = new MarkupContent();
-        markupContent.setKind(MarkupKind.PLAINTEXT); //MARKDOWN
+        markupContent.setKind(MarkupKind.PLAINTEXT); // MARKDOWN
 
         switch (keyword.toLowerCase()) {
             case "&begin":
@@ -576,16 +586,15 @@ public class HAnSTextDocumentService implements TextDocumentService {
             default:
                 FeatureModelTree fmt;
                 if (keyword.toLowerCase().contains("::")) {
-                    //logger.info("contains: ::");
+                    // logger.info("contains: ::");
                     String[] features = keyword.toLowerCase().split("::");
                     FeatureModelTree feature = tree.search(features[0]);
-                    //logger.info("feature:" + feature.getName());
+                    // logger.info("feature:" + feature.getName());
                     for (int i = 1; i < features.length; i++) {
                         if (feature != null) {
                             feature = feature.getChiled(features[i]);
-                            //logger.info("feature:" + feature.getName());
-                        }
-                        else {
+                            // logger.info("feature:" + feature.getName());
+                        } else {
                             break;
                         }
                     }
@@ -595,54 +604,51 @@ public class HAnSTextDocumentService implements TextDocumentService {
                     fmt = tree.search(keyword.toLowerCase());
                 }
 
-                if(fmt != null){
+                if (fmt != null) {
                     String children = "";
                     boolean first = true;
-                    for(FeatureModelTree subf : fmt.getSubfeatures()){
-                        if(first){
+                    for (FeatureModelTree subf : fmt.getSubfeatures()) {
+                        if (first) {
                             children += subf.getName();
                             first = false;
-                        }
-                        else{
-                            children += ", "+subf.getName();
+                        } else {
+                            children += ", " + subf.getName();
                         }
 
                     }
 
-                    if(fmt.getParent() != null){
-                        if (fmt.getParent().getParent() != null){
+                    if (fmt.getParent() != null) {
+                        if (fmt.getParent().getParent() != null) {
                             markupContent.setValue(keyword + " is a Feature defined in the feature-model"
                                     + System.lineSeparator() + "parrent: " + fmt.getParent().getName()
                                     + System.lineSeparator() + "children: " + children
                                     + System.lineSeparator() + "Defined  at: " + (currentFeatureModel)
                                     + System.lineSeparator() + "in line: " + fmt.getFeatureLine());
-                        }
-                        else {
+                        } else {
                             markupContent.setValue(keyword + " is a Feature defined in the feature-model"
                                     + System.lineSeparator() + "children: " + children
                                     + System.lineSeparator() + "Defined  at: " + (currentFeatureModel)
                                     + System.lineSeparator() + "in line: " + fmt.getFeatureLine());
                         }
-                    }
-                    else {
+                    } else {
                         markupContent.setValue(keyword + " is a Feature defined in the feature-model"
                                 + System.lineSeparator() + "Defined  at: " + (currentFeatureModel)
                                 + System.lineSeparator() + "in line: " + fmt.getFeatureLine());
                     }
-                }
-                else {
-                    markupContent.setValue(keyword + " is a Feature defined in the feature-model" + System.lineSeparator() + "Defined  at: " + (currentFeatureModel));
+                } else {
+                    markupContent.setValue(keyword + " is a Feature defined in the feature-model"
+                            + System.lineSeparator() + "Defined  at: " + (currentFeatureModel));
                 }
                 break;
         }
-
 
         Hover hover = new Hover(markupContent);
         return hover;
     }
 
     @Override
-    public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(DefinitionParams params) {
+    public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(
+            DefinitionParams params) {
         try {
             currdoc = Path.of(new URI(params.getTextDocument().getUri()));
             logger.info("path: " + currdoc);
@@ -650,46 +656,48 @@ public class HAnSTextDocumentService implements TextDocumentService {
         } catch (URISyntaxException e) {
             logger.info("URi problem");
         }
-        //logger.info("symbols: "+symboslofcurrentfile.toString());
-        logger.info("definition called with params: " + params.getTextDocument().getUri() + " at: " + params.getPosition().toString());
+        // logger.info("symbols: "+symboslofcurrentfile.toString());
+        logger.info("definition called with params: " + params.getTextDocument().getUri() + " at: "
+                + params.getPosition().toString());
         logger.info("symbols of currentfile: " + symboslofcurrentfile);
-        return CompletableFuture.supplyAsync(()->{
-                ArrayList<Location> locations = new ArrayList<>();
-                for (DocumentSymbol ds : symboslofcurrentfile) {
-                    if (ds.getRange().getStart().getLine() == params.getPosition().getLine()) {
-                        if (ds.getRange().getStart().getCharacter() <= params.getPosition().getCharacter() &&
-                                params.getPosition().getCharacter() <= ds.getRange().getEnd().getCharacter()) {
-                            FeatureModelTree fmt = tree;
-                            if(ds.toString().contains("::")) {
-                                String[] features = ds.getName().split("::");
-                                FeatureModelTree feature = fmt.search(features[0]);
-                                for (int i = 1; i < features.length; i++) {
-                                    int j= i;
-                                    String possibleChild = features[i];
-                                    while(j+1 < features.length) {
-                                        possibleChild += ("::" + features[j+1]);
-                                        if (feature.getChiled(possibleChild) != null) {
-                                            feature = feature.getChiled(possibleChild);
-                                            break;
-                                        }
-                                        j++;
+        return CompletableFuture.supplyAsync(() -> {
+            ArrayList<Location> locations = new ArrayList<>();
+            for (DocumentSymbol ds : symboslofcurrentfile) {
+                if (ds.getRange().getStart().getLine() == params.getPosition().getLine()) {
+                    if (ds.getRange().getStart().getCharacter() <= params.getPosition().getCharacter() &&
+                            params.getPosition().getCharacter() <= ds.getRange().getEnd().getCharacter()) {
+                        FeatureModelTree fmt = tree;
+                        if (ds.toString().contains("::")) {
+                            String[] features = ds.getName().split("::");
+                            FeatureModelTree feature = fmt.search(features[0]);
+                            for (int i = 1; i < features.length; i++) {
+                                int j = i;
+                                String possibleChild = features[i];
+                                while (j + 1 < features.length) {
+                                    possibleChild += ("::" + features[j + 1]);
+                                    if (feature.getChiled(possibleChild) != null) {
+                                        feature = feature.getChiled(possibleChild);
+                                        break;
                                     }
-                                    if(j+1 >= features.length) {
-                                        feature = feature.getChiled(features[i]);
-                                    }
+                                    j++;
                                 }
-                                fmt = feature;
+                                if (j + 1 >= features.length) {
+                                    feature = feature.getChiled(features[i]);
+                                }
                             }
-                            else{
-                                fmt = fmt.search(ds.getName());
-                            }
-                            //logger.info("fmt: " + fmt.toString());
-                            //logger.info("line: " + fmt.getFeatureLine());
-                            locations.add(new Location(currentFeatureModel.toUri().toString(),new Range(new Position(fmt.getFeatureLine(),fmt.getFeatureStart()),new Position(fmt.getFeatureLine(), fmt.getFeatureEnd()))));
+                            fmt = feature;
+                        } else {
+                            fmt = fmt.search(ds.getName());
                         }
+                        // logger.info("fmt: " + fmt.toString());
+                        // logger.info("line: " + fmt.getFeatureLine());
+                        locations.add(new Location(currentFeatureModel.toUri().toString(),
+                                new Range(new Position(fmt.getFeatureLine(), fmt.getFeatureStart()),
+                                        new Position(fmt.getFeatureLine(), fmt.getFeatureEnd()))));
                     }
                 }
-                return Either.forLeft(locations);
+            }
+            return Either.forLeft(locations);
 
         });
     }
@@ -697,11 +705,10 @@ public class HAnSTextDocumentService implements TextDocumentService {
     @Override
     public CompletableFuture<List<? extends Location>> references(ReferenceParams referenceParams) {
         try {
-            if(!referenceParams.getTextDocument().getUri().equals(currentFeatureModel.toUri().toString())) {
+            if (!referenceParams.getTextDocument().getUri().equals(currentFeatureModel.toUri().toString())) {
                 currdoc = Path.of(new URI(referenceParams.getTextDocument().getUri()));
                 parseTextdocument();
-            }
-            else{
+            } else {
                 logger.info("current file is featuremodel");
                 symboslofcurrentfile = featuremodelsymbols;
             }
@@ -709,76 +716,79 @@ public class HAnSTextDocumentService implements TextDocumentService {
             logger.info("URi problem");
         }
         logger.info("document symbosl: " + symboslofcurrentfile.toString());
-        logger.info("refrence called with params: " + referenceParams.getTextDocument().getUri() +" at: " + referenceParams.getPosition().toString());
-         return CompletableFuture.supplyAsync(()->{
-                 ArrayList<Location> locations = new ArrayList<>();
-                 for (DocumentSymbol ds : symboslofcurrentfile) {
-                     logger.info("symbol: " + ds.getName() + " symbol line: " + ds.getRange().getStart().getLine() + " line of param: " + referenceParams.getPosition().getLine());
-                     if (ds.getRange().getStart().getLine() == referenceParams.getPosition().getLine()) {
-                         if (ds.getRange().getStart().getCharacter() <= referenceParams.getPosition().getCharacter() &&
-                                 referenceParams.getPosition().getCharacter() <= ds.getRange().getEnd().getCharacter()) {
-                             FeatureModelTree fmt = tree;
-                             if(ds.getName().contains("::")) {
-                                 String[] features = ds.getName().split("::");
-                                 FeatureModelTree feature = fmt.search(features[0]);
-                                 for (int i = 1; i < features.length; i++) {
-                                     int j= i;
-                                     String possibleChild = features[i];
-                                     while(j+1 < features.length) {
-                                         possibleChild += ("::" + features[j+1]);
-                                         if (feature.getChiled(possibleChild) != null) {
-                                             feature = feature.getChiled(possibleChild);
-                                             break;
-                                         }
-                                         j++;
-                                     }
-                                     if(j+1 >= features.length) {
-                                         feature = feature.getChiled(features[i]);
-                                     }
-                                 }
-                                 fmt = feature;
-                             }
-                             else{
-                                 fmt = fmt.search(ds.getName());
-                                 //fmt = searchForTree(fmt, ds.getName());
-                             }
+        logger.info("refrence called with params: " + referenceParams.getTextDocument().getUri() + " at: "
+                + referenceParams.getPosition().toString());
+        return CompletableFuture.supplyAsync(() -> {
+            ArrayList<Location> locations = new ArrayList<>();
+            for (DocumentSymbol ds : symboslofcurrentfile) {
+                logger.info("symbol: " + ds.getName() + " symbol line: " + ds.getRange().getStart().getLine()
+                        + " line of param: " + referenceParams.getPosition().getLine());
+                if (ds.getRange().getStart().getLine() == referenceParams.getPosition().getLine()) {
+                    if (ds.getRange().getStart().getCharacter() <= referenceParams.getPosition().getCharacter() &&
+                            referenceParams.getPosition().getCharacter() <= ds.getRange().getEnd().getCharacter()) {
+                        FeatureModelTree fmt = tree;
+                        if (ds.getName().contains("::")) {
+                            String[] features = ds.getName().split("::");
+                            FeatureModelTree feature = fmt.search(features[0]);
+                            for (int i = 1; i < features.length; i++) {
+                                int j = i;
+                                String possibleChild = features[i];
+                                while (j + 1 < features.length) {
+                                    possibleChild += ("::" + features[j + 1]);
+                                    if (feature.getChiled(possibleChild) != null) {
+                                        feature = feature.getChiled(possibleChild);
+                                        break;
+                                    }
+                                    j++;
+                                }
+                                if (j + 1 >= features.length) {
+                                    feature = feature.getChiled(features[i]);
+                                }
+                            }
+                            fmt = feature;
+                        } else {
+                            fmt = fmt.search(ds.getName());
+                            // fmt = searchForTree(fmt, ds.getName());
+                        }
 
-                             if(fmt != null) {
-                                 logger.info("searched for: " +ds.getName() + " returned: " + fmt.toString() + " featurename: " + fmt.getName());
-                                 //logger.info("fmt: " + fmt.toString() );
+                        if (fmt != null) {
+                            logger.info("searched for: " + ds.getName() + " returned: " + fmt.toString()
+                                    + " featurename: " + fmt.getName());
+                            // logger.info("fmt: " + fmt.toString() );
 
-                                 for (FeatureLocation fl : fmt.getLocation()) {
-                                     logger.info("fl:" + fl.getLocation() + " line: " + fl.getLineBegin());
-                                     logger.info("fl type: " +fl.getType());
-                                     switch (fl.getType()) {
-                                         case File:
-                                             if(!fl.hasLines()){
-                                                 locations.add(new Location(fl.getLocation(), new Range(new Position(0,0), new Position(0, 0))));
-                                             }
-                                             else {
-                                                 locations.add(new Location(fl.getLocation(), new Range(new Position(fl.getLineBegin(), fl.getCharBegin()), new Position(fl.getLineEnd(), fl.getCharEnd()))));
-                                             }
-                                             break;
-                                         case Folder:
-                                             locations.add(new Location(fl.getLocation(), new Range(new Position(0, 0), new Position(0, 0))));
-                                             break;
-                                         default:
-                                             logger.info("filetype error");
-                                             break;
-                                     }
-                                 }
-                             }
-                             else{
-                                 logger.info("symbol not found in tree");
-                             }
-                         }
-                     }
-                 }
-                 logger.info("locations: " + locations);
-                 return locations;
-       });
+                            for (FeatureLocation fl : fmt.getLocation()) {
+                                logger.info("fl:" + fl.getLocation() + " line: " + fl.getLineBegin());
+                                logger.info("fl type: " + fl.getType());
+                                switch (fl.getType()) {
+                                    case File:
+                                        if (!fl.hasLines()) {
+                                            locations.add(new Location(fl.getLocation(),
+                                                    new Range(new Position(0, 0), new Position(0, 0))));
+                                        } else {
+                                            locations.add(new Location(fl.getLocation(),
+                                                    new Range(new Position(fl.getLineBegin(), fl.getCharBegin()),
+                                                            new Position(fl.getLineEnd(), fl.getCharEnd()))));
+                                        }
+                                        break;
+                                    case Folder:
+                                        locations.add(new Location(fl.getLocation(),
+                                                new Range(new Position(0, 0), new Position(0, 0))));
+                                        break;
+                                    default:
+                                        logger.info("filetype error");
+                                        break;
+                                }
+                            }
+                        } else {
+                            logger.info("symbol not found in tree");
+                        }
+                    }
+                }
+            }
+            logger.info("locations: " + locations);
+            return locations;
+        });
     }
-
 
     @Override
     public CompletableFuture<List<? extends CodeLens>> codeLens(CodeLensParams codeLensParams) {
@@ -796,67 +806,64 @@ public class HAnSTextDocumentService implements TextDocumentService {
     }
 
     @Override
-    public CompletableFuture<List<? extends TextEdit>> rangeFormatting(DocumentRangeFormattingParams documentRangeFormattingParams) {
+    public CompletableFuture<List<? extends TextEdit>> rangeFormatting(
+            DocumentRangeFormattingParams documentRangeFormattingParams) {
         return null;
     }
 
     @Override
-    public CompletableFuture<List<? extends TextEdit>> onTypeFormatting(DocumentOnTypeFormattingParams documentOnTypeFormattingParams) {
+    public CompletableFuture<List<? extends TextEdit>> onTypeFormatting(
+            DocumentOnTypeFormattingParams documentOnTypeFormattingParams) {
         return null;
     }
 
     @Override
     public CompletableFuture<WorkspaceEdit> rename(RenameParams renameParams) {
         parseFeatureTreeAfterChange();
-        for(String file : files){
+        for (String file : files) {
             parseTextdocument(file);
         }
-        logger.info("rename at:" + renameParams.getTextDocument().getUri() + " " + renameParams.getPosition() );
+        logger.info("rename at:" + renameParams.getTextDocument().getUri() + " " + renameParams.getPosition());
         return null;
     }
 
     @Override
     public void didOpen(DidOpenTextDocumentParams params) {
-        logger.info("File has been opened:"+ params.getTextDocument().getUri() );
+        logger.info("File has been opened:" + params.getTextDocument().getUri());
         String uri = params.getTextDocument().getUri();
         try {
             currdoc = Path.of(new URI(uri));
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-        if(!files.contains(uri)){
+        if (!files.contains(uri)) {
             parseTextdocument();
             files.add(uri);
         }
-        if(currentFeatureModel == null){
+        if (currentFeatureModel == null) {
             parseFeaturetree();
             parseFiles();
-        }
-        else {
+        } else {
             if (currentFeatureModel != findNextFeatureModel()) {
                 files.clear();
                 parseFeaturetree();
                 parseFiles();
-            }
-            else{
+            } else {
                 parseFeatureTreeAfterChange();
                 parseFiles();
             }
         }
-
-
-
 
     }
 
     @Override
     public void didChange(DidChangeTextDocumentParams params) {
         String uri = params.getTextDocument().getUri();
-        logger.info("File has been changed : "+ params.getTextDocument().getUri() ); //logging change range?
+        logger.info("File has been changed : " + params.getTextDocument().getUri()); // logging change range?
         featurenames.clear();
-        if (tree != null || Path.of(uri) == currentFeatureModel){
+        if (tree != null || Path.of(uri) == currentFeatureModel) {
             parseFeatureTreeAfterChange();
-            for(String file : files){
+            for (String file : files) {
                 parseTextdocument(file);
             }
         }
@@ -865,28 +872,29 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
     @Override
     public void didClose(DidCloseTextDocumentParams params) {
-        logger.info("File has been closed : {}"+ params.getTextDocument().getUri() );
-        //remove datei
+        logger.info("File has been closed : {}" + params.getTextDocument().getUri());
+        // remove datei
 
     }
 
     @Override
     public void didSave(DidSaveTextDocumentParams params) {
         String uri = params.getTextDocument().getUri();
-        logger.info("File has been saved : {}"+ params.getTextDocument().getUri() );
+        logger.info("File has been saved : {}" + params.getTextDocument().getUri());
         parseFeatureTreeAfterChange();
         parseFiles();
         parseTextdocument();
     }
 
-    public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> documentSymbol(DocumentSymbolParams params){
+    public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> documentSymbol(
+            DocumentSymbolParams params) {
         String uri = params.getTextDocument().getUri();
         parseTextdocument(uri);
-        //logger.info("symbol information: " + symboslofcurrentfile);
+        // logger.info("symbol information: " + symboslofcurrentfile);
 
-        return CompletableFuture.supplyAsync(()->{
+        return CompletableFuture.supplyAsync(() -> {
             ArrayList<Either<SymbolInformation, DocumentSymbol>> list = new ArrayList<>();
-            for (DocumentSymbol ds : symboslofcurrentfile){
+            for (DocumentSymbol ds : symboslofcurrentfile) {
                 list.add(Either.forRight(ds));
             }
             return list;

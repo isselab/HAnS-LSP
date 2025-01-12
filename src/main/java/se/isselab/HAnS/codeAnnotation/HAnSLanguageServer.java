@@ -110,3 +110,4 @@ public class HAnSLanguageServer implements LanguageServer, LanguageClientAware {
         logger.info("connecting language server with client: {}"+ client.toString());
         this.client = client;
     }
+}

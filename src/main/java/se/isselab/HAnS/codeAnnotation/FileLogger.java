@@ -9,11 +9,11 @@ public class FileLogger {
     String name ;
     BufferedWriter writer;
     File logFile;
-    Boolean logging = false ;
+    Boolean logging = true ;
     public FileLogger(Class o) {
         if(logging) {
             name = o.toString();
-            logFile = new File("C:\\Users\\Tim\\hans-lsp-vscode-extension\\serverlog\\" + name + ".log");
+            logFile = new File("C:\\Users\\Taymo\\Documents\\GitHub\\HAnS-LSP\\hans-lsp-vscode-plugin\\" + name + ".log");
             try {
                 logFile.createNewFile();
                 writer = new BufferedWriter(new FileWriter(logFile, true));
