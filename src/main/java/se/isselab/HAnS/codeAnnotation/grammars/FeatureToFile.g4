@@ -3,7 +3,7 @@ grammar FeatureToFile;
 //Parser rules
 document: (mapping (Newline mapping)+)|(mapping);
 
-mapping: (files Newline features);
+mapping: (files WS* Newline features);
 
 files:(file (WS* Kommer WS* file)+) | (file)  ;
 
@@ -15,7 +15,7 @@ feature:(String ('::' String)+) | (String);
 
 //lexer rules
 WS: [ \t];
-Newline:[\n\r];
+Newline:[\r\n]|[\n]|[\r];
 String:
     [a-zA-Z_][a-zA-Z_0-9]*;
 Kommer: ',';

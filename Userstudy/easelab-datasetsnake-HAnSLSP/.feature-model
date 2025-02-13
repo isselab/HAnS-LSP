@@ -11,6 +11,6 @@ Snake_Game
             Collision
         Position
         Tail
-    Controls
+    Controls    
     GameState
     DataTypes

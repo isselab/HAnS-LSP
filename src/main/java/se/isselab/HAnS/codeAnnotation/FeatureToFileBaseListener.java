@@ -75,6 +75,7 @@ public class FeatureToFileBaseListener implements FeatureToFileListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterFiles(FeatureToFileParser.FilesContext ctx) {
+		logger.info("folder: " + ctx.getText());
 		for (FeatureToFileParser.FileContext fc : ctx.file() ){
 			files.add(fc.getText());
 			logger.info("found file:" + fc.getText());
@@ -106,6 +107,7 @@ public class FeatureToFileBaseListener implements FeatureToFileListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void enterFeatures(FeatureToFileParser.FeaturesContext ctx) {
+		logger.info("features: " + ctx.getText());
 	}
 	/**
 	 * {@inheritDoc}

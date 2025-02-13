@@ -50,6 +50,9 @@ public class HAnSTextDocumentService implements TextDocumentService {
         this.currtree = tree;
     }
 
+    /**
+     * searches through the folder structure to find  all files, that belong to the current feature-modle and adds the paths to the files list
+     */
     private void findWorkspaceFolders(){
         try {
             logger.info("searching for files");
@@ -68,6 +71,10 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
 
     }
+
+    /**
+     * calls the parseTextdocument methode on every path in the files list
+     */
     private void parseFiles(){
         logger.info("parsing files: " + files);
         for(String file : files){
@@ -76,7 +83,10 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
     }
 
-
+    /**
+     * parses the current document(currdoc) based on if the file is named ".feature-to-file", ".feature-to-folder" or something else
+     * it sets the symbolsofcurrentfile to the ones found by the parser
+     */
     public void parseTextdocument(){
         logger.info("parsing currentdoc");
         try {
@@ -128,6 +138,11 @@ public class HAnSTextDocumentService implements TextDocumentService {
             logger.error("io exeption");
         }
     }
+    /**
+     * parses a document based on if the file is named ".feature-to-file", ".feature-to-folder" or something else
+     * it sets the symbolsofcurrentfile to the ones found by the parser if the document is also the current document
+     */
+
     public void parseTextdocument(String uri){
         try {
             String comp = uri.split("/")[uri.split("/").length - 1];
@@ -179,6 +194,9 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
     }
 
+    /**
+     * finds the featuremodel for the opend file and all files that belong to the featuremodel, then parses the featuremodel file and builds a corresponding tree
+     */
     public void parseFeaturetree(){
         //walker erstellen listener erstellen
         logger.info("Parsing Featuretree");
@@ -208,6 +226,9 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
     }
 
+    /**
+     * parses the featuremodel file and builds a corresponding tree
+     */
     public void parseFeatureTreeAfterChange(){
         if (currentFeatureModel != null) {
             try {
@@ -232,6 +253,10 @@ public class HAnSTextDocumentService implements TextDocumentService {
         }
     }
 
+    /**
+     * searches for the feature-model for the opened file(currdoc)  by going through parent directory's
+     * @return the path of the found feature-model
+     */
     public Path findNextFeatureModel() {
 
         if (currdoc != null) {
@@ -265,6 +290,11 @@ public class HAnSTextDocumentService implements TextDocumentService {
         return null;
     }
 
+    /**
+     * searches for the feature-model for a file by going through parent directory's
+     * @param path of the file who's feature-model you seek
+     * @return the path of the found feature-model
+     */
     public Path findNextFeatureModel(Path path) {
         if (currdoc != null) {
             Path currparrent = path.getParent();
@@ -291,7 +321,9 @@ public class HAnSTextDocumentService implements TextDocumentService {
         return null;
     }
 
-
+    /**
+     * searches the src file in the project and setts the projectroot variable
+     */
     public void findProjektRoot(){
         if(currdoc != null){
             projectroot = null;
@@ -316,8 +348,12 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
     }
 
-    
 
+    /***
+     * builds a list of all completions the IDE should suggest for the User
+     * @param completionParams
+     * @return List with compleationItems for the IDE
+     */
 
     public CompletableFuture<Either<List<CompletionItem>, CompletionList>> completion(CompletionParams completionParams) {
         // Provide completion item.
@@ -447,6 +483,11 @@ public class HAnSTextDocumentService implements TextDocumentService {
         return null;
     }
 
+    /**
+     * reads the word that the hover was called on and calls the hoverForReferences methode
+     * @param params
+     * @return Hover
+     */
     @Override
     public CompletableFuture<Hover> hover(HoverParams params) {
         logger.info("Hover request received.");
@@ -490,6 +531,12 @@ public class HAnSTextDocumentService implements TextDocumentService {
         });
     }
 
+    /**
+     * checks if the hover corresponds with a feature or an annotations. if yes it calls the createHoverForKeyword methode
+     * @param selectedText where the hover was called
+     * @param cha position in line where the hover was called
+     * @return
+     */
     private Hover hoverForReferences(String selectedText, int cha) {
         logger.info("Entered hoverForReferences");
 
@@ -558,6 +605,11 @@ public class HAnSTextDocumentService implements TextDocumentService {
         return null;
     }
 
+    /**
+     * creates a hover
+     * @param keyword that corresponds to a feature or a annotation
+     * @return Hover for the keyword
+     */
     private Hover createHoverForKeyword(String keyword) {
         logger.info("createHoverForKeyword");
         MarkupContent markupContent = new MarkupContent();
@@ -641,6 +693,12 @@ public class HAnSTextDocumentService implements TextDocumentService {
         return hover;
     }
 
+    /**
+     * goes through the symboslofcurrentfile and compares there positions with the position the definition was called.
+     * if the position is the same the position where the feature is annotated is defined is retrieved from the tree
+     * @param params
+     * @return CompletableFuture that returns a list with locations
+     */
     @Override
     public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(DefinitionParams params) {
         try {
@@ -694,6 +752,12 @@ public class HAnSTextDocumentService implements TextDocumentService {
         });
     }
 
+    /**
+     * goes through the symboslofcurrentfile and compares there positions with the position the definition was called.
+     * if the position is the same the positions where the feature is referenced are retrieved from the tree
+     * @param referenceParams
+     * @return CompletableFuture that returns a list with locations
+     */
     @Override
     public CompletableFuture<List<? extends Location>> references(ReferenceParams referenceParams) {
         try {
@@ -815,6 +879,10 @@ public class HAnSTextDocumentService implements TextDocumentService {
         return null;
     }
 
+    /**
+     * sets the currdoc variable to the correct file and parses the opend file
+     * @param params
+     */
     @Override
     public void didOpen(DidOpenTextDocumentParams params) {
         logger.info("File has been opened:"+ params.getTextDocument().getUri() );
@@ -849,6 +917,10 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
     }
 
+    /**
+     * parses the file after a change
+     * @param params
+     */
     @Override
     public void didChange(DidChangeTextDocumentParams params) {
         String uri = params.getTextDocument().getUri();
@@ -870,6 +942,10 @@ public class HAnSTextDocumentService implements TextDocumentService {
 
     }
 
+    /**
+     * parses the files after a save
+     * @param params
+     */
     @Override
     public void didSave(DidSaveTextDocumentParams params) {
         String uri = params.getTextDocument().getUri();
@@ -879,6 +955,12 @@ public class HAnSTextDocumentService implements TextDocumentService {
         parseTextdocument();
     }
 
+
+    /**
+     * provides the IDE with symbol information
+     * @param params
+     * @return SymbolInformation of the currently opened file(currdoc)
+     */
     public CompletableFuture<List<Either<SymbolInformation, DocumentSymbol>>> documentSymbol(DocumentSymbolParams params){
         String uri = params.getTextDocument().getUri();
         parseTextdocument(uri);

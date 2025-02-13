@@ -31,6 +31,7 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 	private int line = 0;
 	private int indent = 4;
 	private boolean inLogicaltree = false;
+	private boolean logicaltreeparrent = false;
 	private ArrayList<FeatureModelTreeLO> LOtrees = new ArrayList<>();
 	private ArrayList<DocumentSymbol> SymbolList = new ArrayList<>();
 
@@ -97,6 +98,7 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 				LOtrees.clear();
 			}
 			inLogicaltree = false;
+			logicaltreeparrent = false;
 		}
 		else {
 			/*
@@ -148,14 +150,18 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 			if(workingcurrentindent < workingindent) {
 				indent = workingindent - workingcurrentindent;
 			}
-
-			while ( workingcurrentindent > workingindent) {
-				if (currentTree.getParent() != null) {
-					currentTree = currentTree.getParent();
-					logger.info("escaping featuretree in line: " + line +" currentindent: "+ workingcurrentindent + " ws size: " +workingindent );
+			if(!logicaltreeparrent){
+				while (workingcurrentindent > workingindent) {
+					if (currentTree.getParent() != null) {
+						currentTree = currentTree.getParent();
+						logger.info("escaping featuretree in line: " + line + " currentindent: " + workingcurrentindent + " ws size: " + workingindent);
+					}
+					logger.info("diffrent WS in line : " + line + " currentindent: " + workingcurrentindent + " ws size: " + workingindent);
+					workingindent += indent;
 				}
-				logger.info("diffrent WS in line : " + line +" currentindent: "+ workingcurrentindent + " ws size: " +workingindent );
-				workingindent += indent;
+			}
+			else{
+				currentTree = currentTree.getParent();
 			}
 			currentindentdepht = lineindent;
 
@@ -164,7 +170,12 @@ public class FeatureTreeBaseListener implements FeatureTreeListener {
 				t = new FeatureModelTreeLO(currentTree, ctx.FEATURENAME().toString(),ctx.start.getLine()-1, isOPtional, LO);
 				t.setFeatureStart(ctx.FEATURENAME().getSymbol().getCharPositionInLine());
 				t.setFeatureEnd(ctx.FEATURENAME().getSymbol().getCharPositionInLine()+ctx.FEATURENAME().toString().length());
-				LOtrees.add((FeatureModelTreeLO) t);
+				if(logicaltreeparrent) {
+					LOtrees.add((FeatureModelTreeLO) t);
+				}
+				if(!logicaltreeparrent){
+					logicaltreeparrent = true;
+				}
 			}
 			else {
 				t = new FeatureModelTree(currentTree, ctx.FEATURENAME().toString(),ctx.start.getLine()-1 , isOPtional);
