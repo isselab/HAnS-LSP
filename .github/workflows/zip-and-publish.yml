@@ -21,3 +21,4 @@ jobs:
         with:
           name: Userstudy-package
           path: Userstudy
+          include-hidden-files: true 

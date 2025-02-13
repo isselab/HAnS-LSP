@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="HAnS-LSP">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/src/HAnS-LSP.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
